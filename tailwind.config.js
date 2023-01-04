@@ -30,7 +30,8 @@ module.exports = {
         '128':'32rem',
         '108':'27rem',
         '113.5':'28.375rem',
-        '21':'5.375rem'
+        '21':'5.375rem',
+        '50':'12.5rem',
       },
       width: {
         '68': '272px'
@@ -76,6 +77,9 @@ module.exports = {
         'manta-blue-secondary': '#3A4DAE',
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)'
+      },
+      colors: {
+        'manta-gray-secondary': '#4A516B',
       }
     }
   },

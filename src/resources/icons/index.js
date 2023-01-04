@@ -71,6 +71,13 @@ import KeyIcon from 'resources/icons/key.svg';
 import WarningIcon from 'resources/icons/warning.svg';
 import ArrowRightIcon from 'resources/icons/arrow-right.svg';
 import CancelIcon from 'resources/icons/cancel.svg';
+import TxSuccessIcon from 'resources/icons/tx-success.svg';
+import TxFailedIcon from 'resources/icons/tx-failed.svg';
+import TxPendingIcon from 'resources/icons/tx-pending.svg';
+import DashLineIcon from 'resources/icons/dash-line.svg';
+import GrayThinLineIcon from 'resources/icons/gray-thin-line.svg';
+import BlueSolidLineIcon from 'resources/icons/blue-solid-line.svg';
+import ThreeRightArrowIcon from 'resources/icons/three-right-arrow.svg';
 
 
 const Svgs = {
@@ -137,7 +144,14 @@ const Svgs = {
   RightIcon,
   ShieldIcon,
   Talisman,
-  Metamask
+  Metamask,
+  TxSuccessIcon,
+  TxFailedIcon,
+  TxPendingIcon,
+  DashLineIcon,
+  GrayThinLineIcon,
+  BlueSolidLineIcon,
+  ThreeRightArrowIcon,
 };
 
 export default Svgs;
