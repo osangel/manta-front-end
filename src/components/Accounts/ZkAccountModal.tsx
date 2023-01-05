@@ -136,9 +136,11 @@ const PrivateActivityItem = ({ transaction }) => {
 };
 
 const PrivateActivityTableContent = () => {
+
+  // Dummy Data used for testing
   const privateTransactionHistory = [
     {
-      transactionType: 'Deposit',
+      transactionType: 'Transact',
       assetBaseType: 'KAR',
       amount: '100',
       date: 'Wed, 14 Jun 2017 07:00:00 GMT',
@@ -147,7 +149,7 @@ const PrivateActivityTableContent = () => {
         'https://dolphin.subscan.io/extrinsic/0xa5770659ea5f915604cbb3f9ecc799a805e3cd73a91bb45db45851251f64cb51'
     },
     {
-      transactionType: 'Deposit',
+      transactionType: 'Transact',
       assetBaseType: 'KAR',
       amount: '200',
       date: 'Wed, 14 Jun 2017 07:00:01 GMT',
