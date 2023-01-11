@@ -6,6 +6,8 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
 import CopyPasteIcon from 'components/CopyPasteIcon';
 import Svgs from 'resources/icons';
+import { getPrivateTransactionHistory } from 'utils/persistence/privateTransactionHistory';
+import TX_STATUS from 'constants/TxStatusConstants';
 
 const PrivateTokenItem = ({ balance }) => {
   return (
@@ -46,16 +48,31 @@ const PrivateAssetTableContent = ({ balances }) => {
 };
 
 const PrivateActivityItem = ({ transaction }) => {
-  const { transactionType, assetBaseType, amount, date, status, subscanUrl } =
-    transaction;
+  const {
+    transactionType,
+    toPrivate,
+    assetBaseType,
+    amount,
+    date,
+    status,
+    subscanUrl
+  } = transaction;
 
   const ActivityMessage = () => {
-    if (transactionType === 'Deposit') {
+    if (transactionType === 'Transact' && toPrivate) {
       return (
         <div className="text-secondary text-xss flex flex-row items-center gap-2">
           {`${amount} ${assetBaseType}`}
           <img src={Svgs.ThreeRightArrowIcon} alt={'ThreeArrowRightIcon'} />
           {`${amount} zk${assetBaseType}`}
+        </div>
+      );
+    } else if ( transactionType === 'Transact' && !toPrivate) {
+      return (
+        <div className="text-secondary text-xss flex flex-row items-center gap-2">
+          {`${amount} zk${assetBaseType}`}
+          <img src={Svgs.ThreeRightArrowIcon} alt={'ThreeArrowRightIcon'} />
+          {`${amount} ${assetBaseType}`}
         </div>
       );
     } else if (transactionType === 'Send') {
@@ -64,16 +81,18 @@ const PrivateActivityItem = ({ transaction }) => {
           {`${amount} zk${assetBaseType}`}
         </div>
       );
+    } else {
+      return null;
     }
   };
 
   const StatusMessage = () => {
     let textColor;
-    if (status === 'Failed') {
+    if (status === TX_STATUS.FAILED) {
       textColor = 'text-red-500';
-    } else if (status === 'Pending') {
+    } else if (status === TX_STATUS.PENDING) {
       textColor = 'text-yellow-500';
-    } else if (status === 'Success') {
+    } else if (status === TX_STATUS.SUCCESS) {
       textColor = 'text-green-300';
     }
     const StatusMessageTemplate = ({ iconSrc, iconAlt, message }) => {
@@ -88,28 +107,28 @@ const PrivateActivityItem = ({ transaction }) => {
         </div>
       );
     };
-    if (status === 'Success') {
+    if (status === TX_STATUS.SUCCESS) {
       return (
         <StatusMessageTemplate
           iconSrc={Svgs.TxSuccessIcon}
           iconAlt={'TxSuccessIcon'}
-          message={'Success'}
+          message={TX_STATUS.SUCCESS}
         />
       );
-    } else if (status === 'Failed') {
+    } else if (status === TX_STATUS.FAILED) {
       return (
         <StatusMessageTemplate
           iconSrc={Svgs.TxFailedIcon}
           iconAlt={'TxFailedIcon'}
-          message={'Failed'}
+          message={TX_STATUS.FAILED}
         />
       );
-    } else if (status === 'Pending') {
+    } else if (status === TX_STATUS.PENDING) {
       return (
         <StatusMessageTemplate
           iconSrc={Svgs.TxPendingIcon}
           iconAlt={'TxPendingIcon'}
-          message={'Pending'}
+          message={TX_STATUS.PENDING}
         />
       );
     }
@@ -137,36 +156,7 @@ const PrivateActivityItem = ({ transaction }) => {
 
 const PrivateActivityTableContent = () => {
 
-  // Dummy Data used for testing
-  const privateTransactionHistory = [
-    {
-      transactionType: 'Transact',
-      assetBaseType: 'KAR',
-      amount: '100',
-      date: 'Wed, 14 Jun 2017 07:00:00 GMT',
-      status: 'Pending',
-      subscanUrl:
-        'https://dolphin.subscan.io/extrinsic/0xa5770659ea5f915604cbb3f9ecc799a805e3cd73a91bb45db45851251f64cb51'
-    },
-    {
-      transactionType: 'Transact',
-      assetBaseType: 'KAR',
-      amount: '200',
-      date: 'Wed, 14 Jun 2017 07:00:01 GMT',
-      status: 'Success',
-      subscanUrl:
-        'https://dolphin.subscan.io/extrinsic/0xa5770659ea5f915604cbb3f9ecc799a805e3cd73a91bb45db45851251f64cb51'
-    },
-    {
-      transactionType: 'Send',
-      assetBaseType: 'KAR',
-      amount: '50',
-      date: 'Wed, 14 Jun 2017 07:00:02 GMT',
-      status: 'Failed',
-      subscanUrl:
-        'https://dolphin.subscan.io/extrinsic/0xa5770659ea5f915604cbb3f9ecc799a805e3cd73a91bb45db45851251f64cb51'
-    }
-  ];
+  const privateTransactionHistory = getPrivateTransactionHistory().reverse();
 
   if (privateTransactionHistory && privateTransactionHistory.length > 0) {
     return (

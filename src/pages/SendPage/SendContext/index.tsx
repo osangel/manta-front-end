@@ -15,6 +15,14 @@ import { useConfig } from 'contexts/configContext';
 import { MantaPrivateWallet, MantaUtilities } from 'manta.js-kg-dev';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
+import {
+  addPendingPrivateTransaction,
+  updateFinalizedPrivateTransaction,
+  removePendingPrivateTransaction,
+  privateTransactionBuilder
+} from 'utils/persistence/privateTransactionHistory';
+import TX_STATUS from 'constants/TxStatusConstants';
+
 
 const SendContext = React.createContext();
 
@@ -22,10 +30,7 @@ export const SendContextProvider = (props) => {
   const config = useConfig();
   const { api } = useSubstrate();
   const { setTxStatus, txStatus } = useTxStatus();
-  const {
-    externalAccount,
-    externalAccountSigner
-  } = useExternalAccount();
+  const { externalAccount, externalAccountSigner } = useExternalAccount();
   const privateWallet = usePrivateWallet();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
@@ -188,7 +193,9 @@ export const SendContextProvider = (props) => {
       return null;
     }
     const balanceRaw = await MantaUtilities.getPublicBalance(
-      api, new BN(assetType.assetId), address
+      api,
+      new BN(assetType.assetId),
+      address
     );
     const balance = balanceRaw ? new Balance(assetType, balanceRaw) : null;
     return balance;
@@ -308,8 +315,14 @@ export const SendContextProvider = (props) => {
     if (!senderNativeTokenPublicBalance) {
       return null;
     }
-    const conservativeFeeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 50);
-    const existentialDeposit = Balance.Native(config, AssetType.Native(config).existentialDeposit);
+    const conservativeFeeEstimate = Balance.fromBaseUnits(
+      AssetType.Native(config),
+      50
+    );
+    const existentialDeposit = Balance.Native(
+      config,
+      AssetType.Native(config).existentialDeposit
+    );
     return conservativeFeeEstimate.add(existentialDeposit);
   };
 
@@ -323,8 +336,13 @@ export const SendContextProvider = (props) => {
       senderAssetTargetBalance?.assetType.isNativeToken &&
       !senderAssetTargetBalance?.assetType.isPrivate
     ) {
-      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(AssetType.Native(config), 1);
-      const balanceAfterTx = senderAssetCurrentBalance.sub(senderAssetTargetBalance);
+      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(
+        AssetType.Native(config),
+        1
+      );
+      const balanceAfterTx = senderAssetCurrentBalance.sub(
+        senderAssetTargetBalance
+      );
       return SUGGESTED_MIN_FEE_BALANCE.gte(balanceAfterTx);
     }
     return false;
@@ -333,9 +351,9 @@ export const SendContextProvider = (props) => {
   // Checks if the user has enough funds to pay for a transaction
   const userHasSufficientFunds = () => {
     if (
-      !senderAssetTargetBalance
-      || !senderAssetCurrentBalance
-      || !senderNativeTokenPublicBalance
+      !senderAssetTargetBalance ||
+      !senderAssetCurrentBalance ||
+      !senderNativeTokenPublicBalance
     ) {
       return null;
     } else if (
@@ -398,6 +416,7 @@ export const SendContextProvider = (props) => {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
           setTxStatus(TxStatus.failed());
+          updateFinalizedPrivateTransaction(TX_STATUS.FAILED, null);
           console.error('Transaction failed', event);
         }
       }
@@ -410,12 +429,13 @@ export const SendContextProvider = (props) => {
         );
         const extrinsicHash = extrinsic.hash.toHex();
         setTxStatus(TxStatus.finalized(extrinsicHash));
+        updateFinalizedPrivateTransaction(TX_STATUS.SUCCESS, extrinsicHash);
         // Correct private balances will only appear after a sync has completed
         // Until then, do not display stale balances
         privateWallet.setBalancesAreStale(true);
         senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
         receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
-      } catch(error) {
+      } catch (error) {
         console.error(error);
       }
     }
@@ -428,6 +448,16 @@ export const SendContextProvider = (props) => {
     }
     setTxStatus(TxStatus.processing());
     try {
+      if (!isPublicTransfer()) {
+        const privateTx = privateTransactionBuilder(
+          isPrivateTransfer,
+          isToPrivate,
+          senderAssetTargetBalance,
+          TX_STATUS.PENDING,
+          ''
+        );
+        addPendingPrivateTransaction(privateTx);
+      }
       let res;
       if (isPrivateTransfer()) {
         res = await privateTransfer(state);
@@ -441,6 +471,7 @@ export const SendContextProvider = (props) => {
       if (res === WASM_WALLET_FAILURE || res === false) {
         console.error('Transaction failed');
         setTxStatus(TxStatus.failed());
+        removePendingPrivateTransaction();
         return false;
       }
     } catch (error) {
@@ -479,10 +510,15 @@ export const SendContextProvider = (props) => {
     return res;
   };
 
-  const buildPublicTransfer = async (senderAssetTargetBalance, receiverAddress) => {
+  const buildPublicTransfer = async (
+    senderAssetTargetBalance,
+    receiverAddress
+  ) => {
     const assetId = senderAssetTargetBalance.assetType.assetId;
     const valueAtomicUnits = senderAssetTargetBalance.valueAtomicUnits;
-    const assetIdArray = Array.from(MantaPrivateWallet.assetIdToUInt8Array(new BN(assetId)));
+    const assetIdArray = Array.from(
+      MantaPrivateWallet.assetIdToUInt8Array(new BN(assetId))
+    );
     const valueArray = valueAtomicUnits.toArray('le', 16);
     const tx = await api.tx.mantaPay.publicTransfer(
       { id: assetIdArray, value: valueArray },
@@ -493,7 +529,10 @@ export const SendContextProvider = (props) => {
 
   // Attempts to build and send a transaction to some public account
   const publicTransfer = async () => {
-    const tx = await buildPublicTransfer(senderAssetTargetBalance, receiverAddress);
+    const tx = await buildPublicTransfer(
+      senderAssetTargetBalance,
+      receiverAddress
+    );
     const res = await tx.signAndSend(externalAccountSigner, handleTxRes);
     return res;
   };
