@@ -37,10 +37,10 @@ const PrivateAssetTableContent = ({ balances }) => {
       </div>
     );
   } else if (privateWallet?.balancesAreStaleRef.current) {
-    return <div className="whitespace-nowrap text-center">Syncing...</div>;
+    return <div className="whitespace-nowrap text-center mt-6">Syncing...</div>;
   } else {
     return (
-      <div className="whitespace-nowrap text-center">
+      <div className="whitespace-nowrap text-center mt-6">
         You have no zkAssets yet.
       </div>
     );
@@ -135,13 +135,16 @@ const PrivateActivityItem = ({ transaction }) => {
   };
 
   const dateString = `${date.split(' ')[2]} ${date.split(' ')[1]}`;
+  const onCLickHandler = (subscanUrl) => () => {
+    if (subscanUrl) {
+      window.open(subscanUrl, '_blank', 'noopener');
+    }
+  }
 
   return (
-    <a
-      href={subscanUrl}
-      className="flex flex-col hover:bg-thirdry"
-      target="_blank"
-      rel="noreferrer">
+    <div
+      onClick={onCLickHandler(subscanUrl)}
+      className="flex flex-col hover:bg-thirdry">
       <div className="flex items-center justify-between pl-2.5 pr-3.5 py-1.5 text-sm">
         <div className="flex flex-col">
           <div className="text-white">{transactionType}</div>
@@ -150,7 +153,7 @@ const PrivateActivityItem = ({ transaction }) => {
         </div>
         <div className="text-white">{dateString}</div>
       </div>
-    </a>
+    </div>
   );
 };
 
@@ -171,7 +174,7 @@ const PrivateActivityTableContent = () => {
     );
   } else {
     return (
-      <div className="whitespace-nowrap text-center">
+      <div className="whitespace-nowrap text-center mt-6">
         You have no activity yet.
       </div>
     );
@@ -220,7 +223,7 @@ const TableContentSelector = ({
 const ZkAccountModalContent = () => {
   const { privateAddress } = usePrivateWallet();
   const { balances } = useZkAccountBalances();
-  const [displayAssets, setDisplayAssets] = useState(false);
+  const [displayAssets, setDisplayAssets] = useState(true);
 
   const displayAssetsHandler = () => {
     setDisplayAssets(true);
