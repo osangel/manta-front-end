@@ -11,7 +11,13 @@ import { BN } from 'bn.js';
 import Balance from 'types/Balance';
 import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
+import TX_STATUS from 'constants/TxStatusConstants';
+import PRIVATE_TX_TYPE from 'constants/PrivateTransactionType';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
+import {
+  getAmountFromBalance,
+  getAssetBaseTypeFromBalance
+} from 'utils/general/balance';
 import {
   MantaPrivateWallet,
   MantaUtilities,
@@ -22,7 +28,11 @@ import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import { useConfig } from './configContext';
-import { removePendingPrivateTransaction } from 'utils/persistence/privateTransactionHistory';
+import {
+  removePendingPrivateTransaction,
+  addPendingPrivateTransaction,
+  privateTransactionBuilder
+} from 'utils/persistence/privateTransactionHistory';
 
 const PrivateWalletContext = createContext();
 
@@ -47,6 +57,7 @@ export const PrivateWalletContextProvider = (props) => {
   // transaction state
   const txQueue = useRef([]);
   const finalTxResHandler = useRef(null);
+  const pendingPrivateTransactionBuilder = useRef(null); // hack to avoid passing params to publishNextBatch in order to retrieve correct extrinsic hash
   const [balancesAreStale, _setBalancesAreStale] = useState(false);
   const balancesAreStaleRef = useRef(false);
 
@@ -162,6 +173,7 @@ export const PrivateWalletContextProvider = (props) => {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
           setTxStatus(TxStatus.failed());
+          removePendingPrivateTransaction();
           txQueue.current = [];
           console.error('Internal transaction failed', event);
         }
@@ -180,6 +192,10 @@ export const PrivateWalletContextProvider = (props) => {
           externalAccountSigner,
           finalTxResHandler.current
         );
+        if (pendingPrivateTransactionBuilder.current) {
+          pendingPrivateTransactionBuilder.current(lastTx.hash.toString());
+          pendingPrivateTransactionBuilder.current = null;
+        }
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
         setTxStatus(TxStatus.failed());
@@ -197,6 +213,7 @@ export const PrivateWalletContextProvider = (props) => {
         );
       } catch (e) {
         setTxStatus(TxStatus.failed());
+        removePendingPrivateTransaction();
         txQueue.current = [];
       }
     };
@@ -209,6 +226,22 @@ export const PrivateWalletContextProvider = (props) => {
       sendInternal();
     }
   };
+
+  // build and store a pending private transaction
+  const buildPrivateTransaction =
+    (balance, transactionType) => (extrinsicHash) => {
+      const amount = getAmountFromBalance(balance);
+      const assetBaseType = getAssetBaseTypeFromBalance(balance);
+      const privateTx = privateTransactionBuilder(
+        transactionType,
+        assetBaseType,
+        externalAccount.address,
+        amount,
+        TX_STATUS.PENDING,
+        extrinsicHash
+      );
+      addPendingPrivateTransaction(privateTx);
+    };
 
   const publishBatchesSequentially = async (batches, txResHandler) => {
     txQueue.current = batches;
@@ -233,6 +266,10 @@ export const PrivateWalletContextProvider = (props) => {
       return false;
     }
     const batches = signResult.txs;
+    pendingPrivateTransactionBuilder.current = buildPrivateTransaction(
+      balance,
+      PRIVATE_TX_TYPE.TO_PUBLIC
+    );
     const res = await publishBatchesSequentially(batches, txResHandler);
     return res;
   };
@@ -249,6 +286,10 @@ export const PrivateWalletContextProvider = (props) => {
       return false;
     }
     const batches = signResult.txs;
+    pendingPrivateTransactionBuilder.current = buildPrivateTransaction(
+      balance,
+      PRIVATE_TX_TYPE.PRIVATE_TRANSFER
+    );
     const res = await publishBatchesSequentially(batches, txResHandler);
     return res;
   };
@@ -264,6 +305,10 @@ export const PrivateWalletContextProvider = (props) => {
       return false;
     }
     const batches = signResult.txs;
+    pendingPrivateTransactionBuilder.current = buildPrivateTransaction(
+      balance,
+      PRIVATE_TX_TYPE.TO_PRIVATE
+    );
     const res = await publishBatchesSequentially(batches, txResHandler);
     return res;
   };

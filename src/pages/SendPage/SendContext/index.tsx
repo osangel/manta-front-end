@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useReducer, useContext, useEffect } from 'react';
+import React, { useReducer, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
@@ -10,24 +10,26 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import AssetType from 'types/AssetType';
 import { FAILURE as WASM_WALLET_FAILURE } from 'manta-wasm-wallet-api';
-import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
+import getExtrinsicGivenBlockHash from 'utils/api/getExtrinsicGivenBlockHash';
 import { useConfig } from 'contexts/configContext';
 import { MantaPrivateWallet, MantaUtilities } from 'manta.js-kg-dev';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
 import {
-  addPendingPrivateTransaction,
-  updateFinalizedPrivateTransaction,
+  updateFinalizedPrivateTxStatus,
   removePendingPrivateTransaction,
-  privateTransactionBuilder
+  getPrivateTransactionHistory
 } from 'utils/persistence/privateTransactionHistory';
 import TX_STATUS from 'constants/TxStatusConstants';
-
+import initAxios from 'utils/api/initAxios';
+import TxStatusConstants from 'constants/TxStatusConstants';
+import * as axios from 'axios';
 
 const SendContext = React.createContext();
 
 export const SendContextProvider = (props) => {
   const config = useConfig();
+  initAxios(config);
   const { api } = useSubstrate();
   const { setTxStatus, txStatus } = useTxStatus();
   const { externalAccount, externalAccountSigner } = useExternalAccount();
@@ -43,6 +45,45 @@ export const SendContextProvider = (props) => {
     receiverAssetType,
     receiverAddress
   } = state;
+
+  //wait counter for retrieving finalized status for pending transactions
+  const [waitCounter, setWaitCounter] = useState(0);
+
+  /**
+   * Update Private Transaction History
+   */
+
+  const syncPendingPrivateTransactionHistory = async () => {
+    const pendingPrivateTransactions = getPrivateTransactionHistory().filter(
+      (tx) => tx.status === TxStatusConstants.PENDING
+    );
+
+    await pendingPrivateTransactions.forEach(async (tx) => {
+      const extrinsicHash = tx['extrinsicHash'];
+      if (extrinsicHash) {
+        const response = await axios.post(
+          'https://dolphin.api.subscan.io/api/scan/extrinsic',
+          {
+            hash: extrinsicHash
+          }
+        );
+        const data = response.data.data;
+        if (data !== null) {
+          const status = data.success ? TX_STATUS.SUCCESS : TX_STATUS.FAILURE;
+          updateFinalizedPrivateTxStatus(status, extrinsicHash);
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (waitCounter < 10) {
+        syncPendingPrivateTransactionHistory();
+        setWaitCounter(waitCounter + 1);
+      }
+    }, 3000);
+  }, [waitCounter]);
 
   /**
    * Initialization logic
@@ -411,25 +452,33 @@ export const SendContextProvider = (props) => {
    */
 
   // Handles the result of a transaction
-  const handleTxRes = async ({ status, events }) => {
+  const handleTxRes = async ({status, events}) => {
     if (status.isInBlock) {
+      const extrinsic = await getExtrinsicGivenBlockHash(
+        status.asInBlock,
+        externalAccount,
+        api
+      );
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
           setTxStatus(TxStatus.failed());
-          updateFinalizedPrivateTransaction(TX_STATUS.FAILED, null);
+          updateFinalizedPrivateTxStatus(
+            TX_STATUS.FAILED,
+            extrinsic.hash.toString()
+          );
           console.error('Transaction failed', event);
         }
       }
     } else if (status.isFinalized) {
       try {
-        const signedBlock = await api.rpc.chain.getBlock(status.asFinalized);
-        const extrinsics = signedBlock.block.extrinsics;
-        const extrinsic = extrinsics.find((extrinsic) =>
-          extrinsicWasSentByUser(extrinsic, externalAccount, api)
+        const extrinsic = await getExtrinsicGivenBlockHash(
+          status.asInBlock,
+          externalAccount,
+          api
         );
         const extrinsicHash = extrinsic.hash.toHex();
         setTxStatus(TxStatus.finalized(extrinsicHash));
-        updateFinalizedPrivateTransaction(TX_STATUS.SUCCESS, extrinsicHash);
+        updateFinalizedPrivateTxStatus(TX_STATUS.SUCCESS, extrinsic.hash.toString());
         // Correct private balances will only appear after a sync has completed
         // Until then, do not display stale balances
         privateWallet.setBalancesAreStale(true);
@@ -448,16 +497,6 @@ export const SendContextProvider = (props) => {
     }
     setTxStatus(TxStatus.processing());
     try {
-      if (!isPublicTransfer()) {
-        const privateTx = privateTransactionBuilder(
-          isPrivateTransfer,
-          isToPrivate,
-          senderAssetTargetBalance,
-          TX_STATUS.PENDING,
-          ''
-        );
-        addPendingPrivateTransaction(privateTx);
-      }
       let res;
       if (isPrivateTransfer()) {
         res = await privateTransfer(state);

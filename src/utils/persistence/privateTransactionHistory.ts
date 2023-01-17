@@ -1,90 +1,80 @@
 // @ts-nocheck
 import store from 'store';
 import TX_STATUS from 'constants/TxStatusConstants';
+import PRIVATE_TX_TYPE from 'constants/PrivateTransactionType';
 
 const PRIVATE_TRANSACTION_STORAGE_KEY = 'privateTransactionHistory';
 
 export const getPrivateTransactionHistory = () => {
   return store.get(PRIVATE_TRANSACTION_STORAGE_KEY, []);
-}
+};
 
-// call addPendingPrivateTransaction when a private transaction is sent
+// add pending private transaction to the history
 export const addPendingPrivateTransaction = (pendingPrivateTransaction) => {
-    const privateTransactionHistory = [...getPrivateTransactionHistory()];
-    privateTransactionHistory.push(pendingPrivateTransaction);
-    store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
-}
+  const privateTransactionHistory = [...getPrivateTransactionHistory()];
+  privateTransactionHistory.push(pendingPrivateTransaction);
+  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
+};
 
+// remove pending private transaction from the history
 export const removePendingPrivateTransaction = () => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
   if (privateTransactionHistory.length === 0) {
     return;
   }
 
-  // get last transaction and check if it is pending
-  const lastTransaction = privateTransactionHistory[privateTransactionHistory.length - 1];
+  const lastTransaction =
+    privateTransactionHistory[privateTransactionHistory.length - 1];
   if (lastTransaction.status !== TX_STATUS.PENDING) {
     return;
   }
-  
+
   privateTransactionHistory.pop();
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
+};
 
-}
-
-// call updateFinalizedPrivateTransaction when a private transaction is finalized
-export const updateFinalizedPrivateTransaction = (status, extrinsicHash) => {
+// update pending transaction to finalized transaction status
+export const updateFinalizedPrivateTxStatus = (status, extrinsicHash) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
   if (privateTransactionHistory.length === 0) {
     return;
   }
 
-  // get last transaction and check if it is pending
-  const lastTransaction = privateTransactionHistory[privateTransactionHistory.length - 1];
-  if (lastTransaction.status !== TX_STATUS.PENDING) {
-    return;
-  }
-
-
-  // update last transaction with finalized status and subscan url
-  lastTransaction.status = status;
-  if (extrinsicHash) {
-    lastTransaction.subscanUrl = `https://dolphin.subscan.io/extrinsic/${extrinsicHash}`;
-  }
-
-  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
-}
-
-// build the private transaction object which will be paased to persistance functions
-export const privateTransactionBuilder = (
-    isPrivateTransfer,
-    isToPrivate,
-    senderAssetTargetBalance,
-    status,
-    subscanUrl
-  ) => {
-    const transactionType = isPrivateTransfer() ? 'Send' : 'Transact';
-    let toPrivate;
-    if (isPrivateTransfer()) {
-      toPrivate = null;
-    } else if(isToPrivate()) {
-      toPrivate = true;
-    } else {
-      toPrivate = false;
+  privateTransactionHistory.forEach((transaction) => {
+    if (
+      transaction.extrinsicHash === extrinsicHash &&
+      transaction.status === TX_STATUS.PENDING
+    ) {
+      transaction.status = status;
     }
-    const assetBaseType = senderAssetTargetBalance?.assetType.baseTicker;
-    const amount =
-      senderAssetTargetBalance?.valueAtomicUnits /
-      10 ** senderAssetTargetBalance?.assetType.numberOfDecimals;
-    const date = new Date().toUTCString();
-    const transaction = {
-      transactionType,
-      toPrivate,
-      assetBaseType,
-      amount,
-      date,
-      status,
-      subscanUrl
-    };
-    return transaction;
+  });
+  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
+};
+
+// build the private transaction object accepted by addPendingPrivateTransaction
+export const privateTransactionBuilder = (
+  transactionType,
+  assetBaseType,
+  substrateAddress,
+  amount,
+  status,
+  extrinsicHash
+) => {
+  const transactionMsg =
+    transactionType === PRIVATE_TX_TYPE.PRIVATE_TRANSFER ? 'Send' : 'Transact';
+  const date = new Date().toUTCString();
+  const subscanUrl =
+    extrinsicHash && `https://dolphin.subscan.io/extrinsic/${extrinsicHash}`;
+  const transaction = {
+    transactionType,
+    transactionMsg,
+    assetBaseType,
+    substrateAddress,
+    amount,
+    date,
+    status,
+    subscanUrl,
+    extrinsicHash
   };
+  return transaction;
+};

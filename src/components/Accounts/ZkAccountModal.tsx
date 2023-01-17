@@ -8,6 +8,7 @@ import CopyPasteIcon from 'components/CopyPasteIcon';
 import Svgs from 'resources/icons';
 import { getPrivateTransactionHistory } from 'utils/persistence/privateTransactionHistory';
 import TX_STATUS from 'constants/TxStatusConstants';
+import PRIVATE_TX_TYPE from 'constants/PrivateTransactionType';
 
 const PrivateTokenItem = ({ balance }) => {
   return (
@@ -50,7 +51,7 @@ const PrivateAssetTableContent = ({ balances }) => {
 const PrivateActivityItem = ({ transaction }) => {
   const {
     transactionType,
-    toPrivate,
+    transactionMsg,
     assetBaseType,
     amount,
     date,
@@ -59,7 +60,7 @@ const PrivateActivityItem = ({ transaction }) => {
   } = transaction;
 
   const ActivityMessage = () => {
-    if (transactionType === 'Transact' && toPrivate) {
+    if (transactionType === PRIVATE_TX_TYPE.TO_PRIVATE) {
       return (
         <div className="text-secondary text-xss flex flex-row items-center gap-2">
           {`${amount} ${assetBaseType}`}
@@ -67,7 +68,7 @@ const PrivateActivityItem = ({ transaction }) => {
           {`${amount} zk${assetBaseType}`}
         </div>
       );
-    } else if ( transactionType === 'Transact' && !toPrivate) {
+    } else if (transactionType === PRIVATE_TX_TYPE.TO_PUBLIC) {
       return (
         <div className="text-secondary text-xss flex flex-row items-center gap-2">
           {`${amount} zk${assetBaseType}`}
@@ -75,7 +76,7 @@ const PrivateActivityItem = ({ transaction }) => {
           {`${amount} ${assetBaseType}`}
         </div>
       );
-    } else if (transactionType === 'Send') {
+    } else if (transactionType === PRIVATE_TX_TYPE.PRIVATE_TRANSFER) {
       return (
         <div className="text-secondary text-xss">
           {`${amount} zk${assetBaseType}`}
@@ -131,6 +132,8 @@ const PrivateActivityItem = ({ transaction }) => {
           message={TX_STATUS.PENDING}
         />
       );
+    } else {
+      return null;
     }
   };
 
@@ -139,7 +142,7 @@ const PrivateActivityItem = ({ transaction }) => {
     if (subscanUrl) {
       window.open(subscanUrl, '_blank', 'noopener');
     }
-  }
+  };
 
   return (
     <div
@@ -147,7 +150,7 @@ const PrivateActivityItem = ({ transaction }) => {
       className="flex flex-col hover:bg-thirdry">
       <div className="flex items-center justify-between pl-2.5 pr-3.5 py-1.5 text-sm">
         <div className="flex flex-col">
-          <div className="text-white">{transactionType}</div>
+          <div className="text-white">{transactionMsg}</div>
           <ActivityMessage />
           <StatusMessage />
         </div>
@@ -158,7 +161,6 @@ const PrivateActivityItem = ({ transaction }) => {
 };
 
 const PrivateActivityTableContent = () => {
-
   const privateTransactionHistory = getPrivateTransactionHistory().reverse();
 
   if (privateTransactionHistory && privateTransactionHistory.length > 0) {
