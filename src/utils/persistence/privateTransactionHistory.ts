@@ -3,6 +3,25 @@ import store from 'store';
 import TX_STATUS from 'constants/TxStatusConstants';
 import PRIVATE_TX_TYPE from 'constants/PrivateTransactionType';
 
+/**
+ * Private Address History
+ */
+
+const PRIVATE_ADDRESS_STORAGE_KEY = 'privateAddressHistory';
+
+export const getPrivateAddressHistory = () => {
+  return store.get(PRIVATE_ADDRESS_STORAGE_KEY, null);
+}
+
+export const setPrivateAddressHistory = (privateAddress) => {
+  store.set(PRIVATE_ADDRESS_STORAGE_KEY, privateAddress);
+}
+
+
+/**
+ * Private Transaction History
+ */
+
 const PRIVATE_TRANSACTION_STORAGE_KEY = 'privateTransactionHistory';
 
 export const getPrivateTransactionHistory = () => {
@@ -13,6 +32,24 @@ export const getPrivateTransactionHistory = () => {
 export const addPendingPrivateTransaction = (pendingPrivateTransaction) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
   privateTransactionHistory.push(pendingPrivateTransaction);
+  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
+};
+
+// update pending transaction to finalized transaction status
+export const updateFinalizedPrivateTxStatus = (status, extrinsicHash) => {
+  const privateTransactionHistory = [...getPrivateTransactionHistory()];
+  if (privateTransactionHistory.length === 0) {
+    return;
+  }
+
+  privateTransactionHistory.forEach((transaction) => {
+    if (
+      transaction.extrinsicHash === extrinsicHash &&
+      transaction.status === TX_STATUS.PENDING
+    ) {
+      transaction.status = status;
+    }
+  });
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };
 
@@ -33,21 +70,8 @@ export const removePendingPrivateTransaction = () => {
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };
 
-// update pending transaction to finalized transaction status
-export const updateFinalizedPrivateTxStatus = (status, extrinsicHash) => {
-  const privateTransactionHistory = [...getPrivateTransactionHistory()];
-  if (privateTransactionHistory.length === 0) {
-    return;
-  }
-
-  privateTransactionHistory.forEach((transaction) => {
-    if (
-      transaction.extrinsicHash === extrinsicHash &&
-      transaction.status === TX_STATUS.PENDING
-    ) {
-      transaction.status = status;
-    }
-  });
+// set the private transaction history 
+export const setPrivateTransactionHistory = (privateTransactionHistory) => {
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };
 

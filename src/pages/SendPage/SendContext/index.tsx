@@ -472,7 +472,7 @@ export const SendContextProvider = (props) => {
     } else if (status.isFinalized) {
       try {
         const extrinsic = await getExtrinsicGivenBlockHash(
-          status.asInBlock,
+          status.asFinalized,
           externalAccount,
           api
         );

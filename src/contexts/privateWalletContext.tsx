@@ -29,9 +29,13 @@ import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import { useConfig } from './configContext';
 import {
+  setPrivateTransactionHistory,
   removePendingPrivateTransaction,
   addPendingPrivateTransaction,
-  privateTransactionBuilder
+  privateTransactionBuilder,
+  getPrivateAddressHistory,
+  setPrivateAddressHistory,
+  getPrivateTransactionHistory
 } from 'utils/persistence/privateTransactionHistory';
 
 const PrivateWalletContext = createContext();
@@ -65,6 +69,18 @@ export const PrivateWalletContextProvider = (props) => {
     balancesAreStaleRef.current = areBalancesStale;
     _setBalancesAreStale(areBalancesStale);
   };
+
+  useEffect(() => {
+    const resetPrivateTransactionHistory = () => {
+      if (privateAddress && privateAddress !== getPrivateAddressHistory()) {
+        setPrivateAddressHistory(privateAddress);
+        if (getPrivateTransactionHistory().length > 0) {
+          setPrivateTransactionHistory([]);
+        }
+      }
+    };
+    resetPrivateTransactionHistory();
+  }, [privateAddress]);
 
   useEffect(() => {
     setIsReady(privateWallet && signerIsConnected);
