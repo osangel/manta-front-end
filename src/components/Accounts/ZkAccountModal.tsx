@@ -7,8 +7,7 @@ import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
 import CopyPasteIcon from 'components/CopyPasteIcon';
 import Svgs from 'resources/icons';
 import { getPrivateTransactionHistory } from 'utils/persistence/privateTransactionHistory';
-import TX_STATUS from 'constants/TxStatusConstants';
-import PRIVATE_TX_TYPE from 'constants/PrivateTransactionType';
+import { PRIVATE_TX_TYPE, HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
 
 const PrivateTokenItem = ({ balance }) => {
   return (
@@ -89,11 +88,11 @@ const PrivateActivityItem = ({ transaction }) => {
 
   const StatusMessage = () => {
     let textColor;
-    if (status === TX_STATUS.FAILED) {
+    if (status === HISTORY_EVENT_STATUS.FAILED) {
       textColor = 'text-red-500';
-    } else if (status === TX_STATUS.PENDING) {
+    } else if (status === HISTORY_EVENT_STATUS.PENDING) {
       textColor = 'text-yellow-500';
-    } else if (status === TX_STATUS.SUCCESS) {
+    } else if (status === HISTORY_EVENT_STATUS.SUCCESS) {
       textColor = 'text-green-300';
     }
     const StatusMessageTemplate = ({ iconSrc, iconAlt, message }) => {
@@ -108,28 +107,28 @@ const PrivateActivityItem = ({ transaction }) => {
         </div>
       );
     };
-    if (status === TX_STATUS.SUCCESS) {
+    if (status === HISTORY_EVENT_STATUS.SUCCESS) {
       return (
         <StatusMessageTemplate
           iconSrc={Svgs.TxSuccessIcon}
           iconAlt={'TxSuccessIcon'}
-          message={TX_STATUS.SUCCESS}
+          message={HISTORY_EVENT_STATUS.SUCCESS}
         />
       );
-    } else if (status === TX_STATUS.FAILED) {
+    } else if (status === HISTORY_EVENT_STATUS.FAILED) {
       return (
         <StatusMessageTemplate
           iconSrc={Svgs.TxFailedIcon}
           iconAlt={'TxFailedIcon'}
-          message={TX_STATUS.FAILED}
+          message={HISTORY_EVENT_STATUS.FAILED}
         />
       );
-    } else if (status === TX_STATUS.PENDING) {
+    } else if (status === HISTORY_EVENT_STATUS.PENDING) {
       return (
         <StatusMessageTemplate
           iconSrc={Svgs.TxPendingIcon}
           iconAlt={'TxPendingIcon'}
-          message={TX_STATUS.PENDING}
+          message={HISTORY_EVENT_STATUS.PENDING}
         />
       );
     } else {

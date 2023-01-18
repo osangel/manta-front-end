@@ -1,26 +1,6 @@
 // @ts-nocheck
 import store from 'store';
-import TX_STATUS from 'constants/TxStatusConstants';
-import PRIVATE_TX_TYPE from 'constants/PrivateTransactionType';
-
-/**
- * Private Address History
- */
-
-const PRIVATE_ADDRESS_STORAGE_KEY = 'privateAddressHistory';
-
-export const getPrivateAddressHistory = () => {
-  return store.get(PRIVATE_ADDRESS_STORAGE_KEY, null);
-}
-
-export const setPrivateAddressHistory = (privateAddress) => {
-  store.set(PRIVATE_ADDRESS_STORAGE_KEY, privateAddress);
-}
-
-
-/**
- * Private Transaction History
- */
+import { HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
 
 const PRIVATE_TRANSACTION_STORAGE_KEY = 'privateTransactionHistory';
 
@@ -28,33 +8,37 @@ export const getPrivateTransactionHistory = () => {
   return store.get(PRIVATE_TRANSACTION_STORAGE_KEY, []);
 };
 
+export const setPrivateTransactionHistory = (privateTransactionHistory) => {
+  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
+};
+
 // add pending private transaction to the history
-export const addPendingPrivateTransaction = (pendingPrivateTransaction) => {
+export const appendHistoryEvent = (historyEvent) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
-  privateTransactionHistory.push(pendingPrivateTransaction);
+  privateTransactionHistory.push(historyEvent);
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };
 
 // update pending transaction to finalized transaction status
-export const updateFinalizedPrivateTxStatus = (status, extrinsicHash) => {
+export const updateHistoryEventStatus = (status, extrinsicHash) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
   if (privateTransactionHistory.length === 0) {
     return;
   }
 
-  privateTransactionHistory.forEach((transaction) => {
+  privateTransactionHistory.forEach((historyEvent) => {
     if (
-      transaction.extrinsicHash === extrinsicHash &&
-      transaction.status === TX_STATUS.PENDING
+      historyEvent.extrinsicHash === extrinsicHash &&
+      historyEvent.status === HISTORY_EVENT_STATUS.PENDING
     ) {
-      transaction.status = status;
+      historyEvent.status = status;
     }
   });
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };
 
-// remove pending private transaction from the history
-export const removePendingPrivateTransaction = () => {
+// remove pending history event (usually the last one) from the history
+export const removePendingHistoryEvent = () => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
   if (privateTransactionHistory.length === 0) {
     return;
@@ -62,43 +46,10 @@ export const removePendingPrivateTransaction = () => {
 
   const lastTransaction =
     privateTransactionHistory[privateTransactionHistory.length - 1];
-  if (lastTransaction.status !== TX_STATUS.PENDING) {
+  if (lastTransaction.status !== HISTORY_EVENT_STATUS.PENDING) {
     return;
   }
 
   privateTransactionHistory.pop();
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
-};
-
-// set the private transaction history 
-export const setPrivateTransactionHistory = (privateTransactionHistory) => {
-  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
-};
-
-// build the private transaction object accepted by addPendingPrivateTransaction
-export const privateTransactionBuilder = (
-  transactionType,
-  assetBaseType,
-  substrateAddress,
-  amount,
-  status,
-  extrinsicHash
-) => {
-  const transactionMsg =
-    transactionType === PRIVATE_TX_TYPE.PRIVATE_TRANSFER ? 'Send' : 'Transact';
-  const date = new Date().toUTCString();
-  const subscanUrl =
-    extrinsicHash && `https://dolphin.subscan.io/extrinsic/${extrinsicHash}`;
-  const transaction = {
-    transactionType,
-    transactionMsg,
-    assetBaseType,
-    substrateAddress,
-    amount,
-    date,
-    status,
-    subscanUrl,
-    extrinsicHash
-  };
-  return transaction;
 };

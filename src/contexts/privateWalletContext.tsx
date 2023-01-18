@@ -11,13 +11,12 @@ import { BN } from 'bn.js';
 import Balance from 'types/Balance';
 import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
-import TX_STATUS from 'constants/TxStatusConstants';
-import PRIVATE_TX_TYPE from 'constants/PrivateTransactionType';
-import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import {
-  getAmountFromBalance,
-  getAssetBaseTypeFromBalance
-} from 'utils/general/balance';
+  PRIVATE_TX_TYPE,
+  HISTORY_EVENT_STATUS,
+  buildHistoryEvent
+} from 'types/HistoryEvent';
+import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import {
   MantaPrivateWallet,
   MantaUtilities,
@@ -30,13 +29,14 @@ import { useTxStatus } from './txStatusContext';
 import { useConfig } from './configContext';
 import {
   setPrivateTransactionHistory,
-  removePendingPrivateTransaction,
-  addPendingPrivateTransaction,
-  privateTransactionBuilder,
-  getPrivateAddressHistory,
-  setPrivateAddressHistory,
+  removePendingHistoryEvent,
+  appendHistoryEvent,
   getPrivateTransactionHistory
 } from 'utils/persistence/privateTransactionHistory';
+import {
+  getPrivateAddressHistory,
+  setPrivateAddressHistory
+} from 'utils/persistence/privateAddressHistory';
 
 const PrivateWalletContext = createContext();
 
@@ -189,7 +189,7 @@ export const PrivateWalletContextProvider = (props) => {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
           setTxStatus(TxStatus.failed());
-          removePendingPrivateTransaction();
+          removePendingHistoryEvent();
           txQueue.current = [];
           console.error('Internal transaction failed', event);
         }
@@ -215,7 +215,7 @@ export const PrivateWalletContextProvider = (props) => {
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
         setTxStatus(TxStatus.failed());
-        removePendingPrivateTransaction();
+        removePendingHistoryEvent();
         txQueue.current = [];
       }
     };
@@ -229,7 +229,7 @@ export const PrivateWalletContextProvider = (props) => {
         );
       } catch (e) {
         setTxStatus(TxStatus.failed());
-        removePendingPrivateTransaction();
+        removePendingHistoryEvent();
         txQueue.current = [];
       }
     };
@@ -246,17 +246,18 @@ export const PrivateWalletContextProvider = (props) => {
   // build and store a pending private transaction
   const buildPrivateTransaction =
     (balance, transactionType) => (extrinsicHash) => {
-      const amount = getAmountFromBalance(balance);
-      const assetBaseType = getAssetBaseTypeFromBalance(balance);
-      const privateTx = privateTransactionBuilder(
+      const amount = balance.toString();
+      const assetBaseType = balance.assetType.baseTicker;
+      const privateTx = buildHistoryEvent(
         transactionType,
         assetBaseType,
         externalAccount.address,
         amount,
-        TX_STATUS.PENDING,
+        HISTORY_EVENT_STATUS.PENDING,
+        config,
         extrinsicHash
       );
-      addPendingPrivateTransaction(privateTx);
+      appendHistoryEvent(privateTx);
     };
 
   const publishBatchesSequentially = async (batches, txResHandler) => {

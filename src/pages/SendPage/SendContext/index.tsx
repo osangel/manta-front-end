@@ -16,13 +16,12 @@ import { MantaPrivateWallet, MantaUtilities } from 'manta.js-kg-dev';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
 import {
-  updateFinalizedPrivateTxStatus,
-  removePendingPrivateTransaction,
+  updateHistoryEventStatus,
+  removePendingHistoryEvent,
   getPrivateTransactionHistory
 } from 'utils/persistence/privateTransactionHistory';
-import TX_STATUS from 'constants/TxStatusConstants';
 import initAxios from 'utils/api/initAxios';
-import TxStatusConstants from 'constants/TxStatusConstants';
+import { HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
 import * as axios from 'axios';
 
 const SendContext = React.createContext();
@@ -55,22 +54,23 @@ export const SendContextProvider = (props) => {
 
   const syncPendingPrivateTransactionHistory = async () => {
     const pendingPrivateTransactions = getPrivateTransactionHistory().filter(
-      (tx) => tx.status === TxStatusConstants.PENDING
+      (tx) => tx.status === HISTORY_EVENT_STATUS.PENDING
     );
 
     await pendingPrivateTransactions.forEach(async (tx) => {
-      const extrinsicHash = tx['extrinsicHash'];
-      if (extrinsicHash) {
+      if (tx.extrinsicHash) {
         const response = await axios.post(
           'https://dolphin.api.subscan.io/api/scan/extrinsic',
           {
-            hash: extrinsicHash
+            hash: tx.extrinsicHash
           }
         );
         const data = response.data.data;
         if (data !== null) {
-          const status = data.success ? TX_STATUS.SUCCESS : TX_STATUS.FAILURE;
-          updateFinalizedPrivateTxStatus(status, extrinsicHash);
+          const status = data.success
+            ? HISTORY_EVENT_STATUS.SUCCESS
+            : HISTORY_EVENT_STATUS.FAILURE;
+          updateHistoryEventStatus(status, tx.extrinsicHash);
         }
       }
     });
@@ -452,7 +452,7 @@ export const SendContextProvider = (props) => {
    */
 
   // Handles the result of a transaction
-  const handleTxRes = async ({status, events}) => {
+  const handleTxRes = async ({ status, events }) => {
     if (status.isInBlock) {
       const extrinsic = await getExtrinsicGivenBlockHash(
         status.asInBlock,
@@ -462,8 +462,8 @@ export const SendContextProvider = (props) => {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
           setTxStatus(TxStatus.failed());
-          updateFinalizedPrivateTxStatus(
-            TX_STATUS.FAILED,
+          updateHistoryEventStatus(
+            HISTORY_EVENT_STATUS.FAILED,
             extrinsic.hash.toString()
           );
           console.error('Transaction failed', event);
@@ -478,7 +478,10 @@ export const SendContextProvider = (props) => {
         );
         const extrinsicHash = extrinsic.hash.toHex();
         setTxStatus(TxStatus.finalized(extrinsicHash));
-        updateFinalizedPrivateTxStatus(TX_STATUS.SUCCESS, extrinsic.hash.toString());
+        updateHistoryEventStatus(
+          HISTORY_EVENT_STATUS.SUCCESS,
+          extrinsic.hash.toString()
+        );
         // Correct private balances will only appear after a sync has completed
         // Until then, do not display stale balances
         privateWallet.setBalancesAreStale(true);
@@ -510,7 +513,7 @@ export const SendContextProvider = (props) => {
       if (res === WASM_WALLET_FAILURE || res === false) {
         console.error('Transaction failed');
         setTxStatus(TxStatus.failed());
-        removePendingPrivateTransaction();
+        removePendingHistoryEvent();
         return false;
       }
     } catch (error) {
