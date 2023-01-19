@@ -10,8 +10,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import classNames from 'classnames';
-import ZkAccountInfoModal from '../Accounts/ZkAccountInfoModal';
-import ZkAccountModal from '../Accounts/ZkAccountModal';
+import ZkAccountInstallGuideModal from '../ZkAccount/ZkAccountInstallGuideModal';
+import ZkAccountModal from '../ZkAccount/ZkAccountModal';
 
 const ZkAccountDisplay = () => {
   const [showZkModal, setShowZkModal] = useState(false);
@@ -49,7 +49,11 @@ const ZkAccountWarning = ({ title, text, showInstallButton, showWarningIcon }) =
           zkAddress
         </div>
         {showZkModal && (
-          <ZkAccountInfoModal title={title} text={text} showInstallButton={showInstallButton} />
+          <ZkAccountInstallGuideModal
+            title={title}
+            text={text}
+            showInstallButton={showInstallButton}
+          />
         )}
       </OutsideClickHandler>
     </div>
