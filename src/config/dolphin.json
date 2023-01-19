@@ -1,6 +1,7 @@
 {
     "NETWORK_NAME": "Dolphin",
     "SS58_FORMAT": 42,
+    "SUBSCAN_API_ENDPOINT": "https://dolphin.subscan.io/api/scan",
     "SUBSCAN_URL": "https://dolphin.subscan.io",
     "TWITTER_URL": "https://twitter.com/mantanetwork",
     "DOLPHIN_SOCKET": "wss://ws.calamari.seabird.systems",

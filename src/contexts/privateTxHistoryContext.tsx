@@ -93,7 +93,7 @@ export const PrivateTxHistoryContextProvider = (props) => {
     await pendingPrivateTransactions.forEach(async (tx) => {
       if (tx.extrinsicHash) {
         const response = await axios.post(
-          'https://dolphin.api.subscan.io/api/scan/extrinsic',
+          `${config.SUBSCAN_API_ENDPOINT}/extrinsic`,
           {
             hash: tx.extrinsicHash
           }
@@ -111,7 +111,10 @@ export const PrivateTxHistoryContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (getPendingPrivateTransaction().length !== 0 && !txStatus?.isProcessing()) {
+      if (
+        getPendingPrivateTransaction().length !== 0 &&
+        !txStatus?.isProcessing()
+      ) {
         syncPendingPrivateTransactionHistory();
       }
     }, 3000);
