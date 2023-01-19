@@ -1,11 +1,16 @@
 //@ts-nocheck
 import Svgs from 'resources/icons';
 import classNames from 'classnames';
+import { useConfig } from 'contexts/configContext';
 import { getPrivateTransactionHistory } from 'utils/persistence/privateTransactionHistory';
 import { PRIVATE_TX_TYPE, HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
 
 const PrivateActivityTableContent = () => {
-  const privateTransactionHistory = getPrivateTransactionHistory().reverse();
+  const config = useConfig();
+  const allPrivateTransactionHistory = getPrivateTransactionHistory().reverse();
+  const privateTransactionHistory = allPrivateTransactionHistory.filter((historyEvent) => {
+    return historyEvent.network === config.network;
+  });
 
   if (privateTransactionHistory.length > 0) {
     return (

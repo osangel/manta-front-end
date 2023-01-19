@@ -62,7 +62,8 @@ export const PrivateTxHistoryContextProvider = (props) => {
       date,
       HISTORY_EVENT_STATUS.PENDING,
       txStatus.extrinsic,
-      subscanUrl
+      subscanUrl,
+      config.network
     );
     appendHistoryEvent(historyEvent);
   };

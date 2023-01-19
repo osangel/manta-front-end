@@ -2,7 +2,7 @@ export enum HISTORY_EVENT_STATUS {
   FAILED = 'Failed',
   SUCCESS = 'Success',
   PENDING = 'Pending'
-};
+}
 
 export enum PRIVATE_TX_TYPE {
   TO_PRIVATE = 'toPrivate',
@@ -24,6 +24,7 @@ export default class HistoryEvent {
   status: HISTORY_EVENT_STATUS;
   extrinsicHash: string;
   subscanUrl: string;
+  network: string;
   constructor(
     transactionType: PRIVATE_TX_TYPE,
     transactionMsg: TransactionMsgAction,
@@ -32,7 +33,8 @@ export default class HistoryEvent {
     date: string,
     status: HISTORY_EVENT_STATUS,
     extrinsicHash: string,
-    subscanUrl: string
+    subscanUrl: string,
+    network: string
   ) {
     this.transactionType = transactionType;
     this.transactionMsg = transactionMsg;
@@ -42,7 +44,6 @@ export default class HistoryEvent {
     this.status = status;
     this.extrinsicHash = extrinsicHash;
     this.subscanUrl = subscanUrl;
+    this.network = network;
   }
 }
-
-
