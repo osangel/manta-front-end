@@ -2,6 +2,7 @@
 import NETWORK from 'constants/NetworkConstants';
 import React from 'react';
 import PropTypes from 'prop-types';
+import initAxios from 'utils/api/initAxios';
 import { ConfigContextProvider, useConfig } from 'contexts/configContext';
 import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
 import { SubstrateContextProvider } from 'contexts/substrateContext';
@@ -20,6 +21,10 @@ const TxStatusHandler = () => {
 
   const subscanUrl = txStatus?.subscanUrl || config.SUBSCAN_URL;
 
+  useEffect(() => {
+    initAxios(config);
+  }, []);
+  
   useEffect(() => {
     if (txStatus?.isFinalized()) {
       showSuccess(subscanUrl, 'Transaction succeeded', txStatus?.extrinsic);

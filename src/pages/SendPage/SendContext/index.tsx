@@ -19,14 +19,12 @@ import {
   updateHistoryEventStatus,
   removePendingHistoryEvent,
 } from 'utils/persistence/privateTransactionHistory';
-import initAxios from 'utils/api/initAxios';
 import { HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
 
 const SendContext = React.createContext();
 
 export const SendContextProvider = (props) => {
   const config = useConfig();
-  initAxios(config);
   const { api } = useSubstrate();
   const { setTxStatus, txStatus } = useTxStatus();
   const { externalAccount, externalAccountSigner } = useExternalAccount();
