@@ -7,13 +7,13 @@ import { PRIVATE_TX_TYPE, HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
 const PrivateActivityTableContent = () => {
   const privateTransactionHistory = getPrivateTransactionHistory().reverse();
 
-  if (privateTransactionHistory && privateTransactionHistory.length > 0) {
+  if (privateTransactionHistory.length > 0) {
     return (
       <div className="divide-y divide-dashed divide-manta-gray-secondary">
-        {privateTransactionHistory.map((transaction, _) => (
+        {privateTransactionHistory.map((historyEvent, _) => (
           <PrivateActivityItem
-            transaction={transaction}
-            key={transaction.date}
+            historyEvent={historyEvent}
+            key={historyEvent.extrinsicHash}
           />
         ))}
       </div>
@@ -27,7 +27,7 @@ const PrivateActivityTableContent = () => {
   }
 };
 
-const PrivateActivityItem = ({ transaction }) => {
+const PrivateActivityItem = ({ historyEvent }) => {
   const {
     transactionType,
     transactionMsg,
@@ -36,7 +36,7 @@ const PrivateActivityItem = ({ transaction }) => {
     date,
     status,
     subscanUrl
-  } = transaction;
+  } = historyEvent;
 
   const dateString = `${date.split(' ')[2]} ${date.split(' ')[1]}`;
   const onCLickHandler = (subscanUrl) => () => {
@@ -48,7 +48,7 @@ const PrivateActivityItem = ({ transaction }) => {
   return (
     <div
       onClick={onCLickHandler(subscanUrl)}
-      className="flex flex-col hover:bg-thirdry">
+      className="flex flex-col hover:bg-thirdry hover:cursor-pointer">
       <div className="flex items-center justify-between pl-2.5 pr-3.5 py-1.5 text-sm">
         <div className="flex flex-col">
           <div className="text-white">{transactionMsg}</div>
