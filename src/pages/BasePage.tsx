@@ -18,13 +18,8 @@ import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesCont
 const TxStatusHandler = () => {
   const config = useConfig();
   const { txStatus } = useTxStatus();
-
   const subscanUrl = txStatus?.subscanUrl || config.SUBSCAN_URL;
 
-  useEffect(() => {
-    initAxios(config);
-  }, []);
-  
   useEffect(() => {
     if (txStatus?.isFinalized()) {
       showSuccess(subscanUrl, 'Transaction succeeded', txStatus?.extrinsic);
@@ -35,12 +30,12 @@ const TxStatusHandler = () => {
     }
   }, [txStatus]);
 
-  return (
-    <div />
-  );
+  return <div />;
 };
 
-const BasePage = ({children}) => {
+const BasePage = ({ children }) => {
+  const config = useConfig();
+  initAxios(config);
   return (
     <SubstrateContextProvider>
       <ExternalAccountContextProvider>
@@ -58,12 +53,10 @@ BasePage.propTypes = {
   children: PropTypes.any
 };
 
-export const CalamariBasePage = ({children}) => {
+export const CalamariBasePage = ({ children }) => {
   return (
     <ConfigContextProvider network={NETWORK.CALAMARI}>
-      <BasePage>
-        {children}
-      </BasePage>
+      <BasePage>{children}</BasePage>
     </ConfigContextProvider>
   );
 };
@@ -72,7 +65,7 @@ CalamariBasePage.propTypes = {
   children: PropTypes.any
 };
 
-export const DolphinBasePage = ({children}) => {
+export const DolphinBasePage = ({ children }) => {
   return (
     <ConfigContextProvider network={NETWORK.DOLPHIN}>
       <BasePage>
