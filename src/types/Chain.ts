@@ -21,7 +21,7 @@ export default class Chain {
     subscanUrl,
     xcmAssets,
     nativeAsset,
-    xcmAdapter,
+    xcmAdapterClass,
     apiTypes = null,
     apiOptions = null,
     apiTypesBundle = null,
@@ -35,7 +35,7 @@ export default class Chain {
     this.subscanUrl = subscanUrl;
     this.xcmAssets = xcmAssets;
     this.nativeAsset = nativeAsset;
-    this.xcmAdapter = xcmAdapter;
+    this.xcmAdapterClass = xcmAdapterClass;
     this.apiTypes = apiTypes || {};
     this.apiOptions = apiOptions;
     this.apiTypesBundle = apiTypesBundle;
@@ -53,7 +53,7 @@ export default class Chain {
       'https://dolphin.subscan.io',
       [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.DolphinSkinnedCalamari(config),
-      new CalamariAdapter(),
+      CalamariAdapter,
       types
     );
   }
@@ -68,7 +68,7 @@ export default class Chain {
       'https://dolphin.subscan.io',
       [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.DolphinSkinnedCalamari(config),
-      new CalamariAdapter(),
+      CalamariAdapter,
       types
     );
   }
@@ -83,7 +83,7 @@ export default class Chain {
       'https://calamari.subscan.io',
       [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.Calamari(config),
-      new CalamariAdapter(),
+      CalamariAdapter,
       types
     );
   }
@@ -98,7 +98,7 @@ export default class Chain {
       'https://rococo.subscan.io',
       [AssetType.Rococo(config)],
       AssetType.Rococo(config),
-      new KusamaAdapter()
+      KusamaAdapter
     );
   }
 
@@ -112,7 +112,7 @@ export default class Chain {
       'https://kusama.subscan.io',
       [AssetType.Kusama(config)],
       AssetType.Kusama(config),
-      new KusamaAdapter()
+      KusamaAdapter
     );
   }
 
@@ -126,7 +126,7 @@ export default class Chain {
       'https://karura.subscan.io',
       [AssetType.Karura(config)],
       AssetType.Karura(config),
-      new KaruraAdapter(),
+      KaruraAdapter,
       null,
       options
     );
@@ -153,7 +153,7 @@ export default class Chain {
       'https://moonriver.subscan.io',
       [AssetType.Moonriver(config)],
       AssetType.Moonriver(config),
-      new MoonriverAdapter(),
+      MoonriverAdapter,
       typesBundlePre900,
       null,
       null,
@@ -179,20 +179,19 @@ export default class Chain {
     }
   }
 
-  async _initApi() {
+  async getXcmApi() {
     const provider = new WsProvider(this.socket);
     if (this.apiOptions) {
-      this.api = await ApiPromise.create(options({ provider, types: this.apiTypes}));
+      const api = await ApiPromise.create(options({ provider, types: this.apiTypes}));
+      return api;
     } else {
-      this.api = await ApiPromise.create({provider, types: this.apiTypes, typesBundle: this.apiTypesBundle});
+      const api = await ApiPromise.create({provider, types: this.apiTypes, typesBundle: this.apiTypesBundle});
+      return api;
     }
   }
 
-  async initXcmAdapter() {
-    await this._initApi();
-    if (this.xcmAdapter) {
-      await this.xcmAdapter.setApi(this.api);
-    }
+  getXcmAdapter() {
+    return new this.xcmAdapterClass();
   }
 
   canTransferXcm(otherChain) {

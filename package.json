@@ -1,6 +1,6 @@
 {
     "name": "manta-web-app",
-    "version": "4.0.0",
+    "version": "4.0.1",
     "private": false,
     "dependencies": {
         "@acala-network/api": "^4.1.6-29",

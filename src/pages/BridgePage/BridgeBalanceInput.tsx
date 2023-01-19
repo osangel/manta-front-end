@@ -5,8 +5,8 @@ import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
 import BN from 'bn.js';
 import { useSubstrate } from 'contexts/substrateContext';
-import BalanceInput from '../../components/Balance/BalanceInput';
 import { useBridgeData } from 'pages/BridgePage/BridgeContext/BridgeDataContext';
+import BalanceInput from '../../components/Balance/BalanceInput';
 
 const BridgeBalanceInput = () => {
   const { api } = useSubstrate();

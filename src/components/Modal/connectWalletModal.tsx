@@ -4,6 +4,7 @@ import { getWallets } from '@talismn/connect-wallets';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import Svgs from 'resources/icons';
+import getWalletDisplayName from 'utils/text/getWalletDisplayName';
 
 const WalletNotInstalledBlock = ({
   walletName,
@@ -105,7 +106,7 @@ const MetamaskConnectWalletBlock = () => {
   return (
     <ConnectWalletBlock
       key={'metamask'}
-      walletName={'Metamask'}
+      walletName={'Metamask (for Moonriver)'}
       isWalletInstalled={metamaskIsInstalled}
       walletInstallLink={'https://metamask.io/'}
       walletLogo={{ src: Svgs.Metamask, alt: '' }}
@@ -124,10 +125,6 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected }) => {
     setIsMetamaskSelected && setIsMetamaskSelected(false);
   };
 
-  const capitalizeFirstLetter = (name) => {
-    return name.charAt(0).toUpperCase() + name.slice(1);
-  };
-
   return getWallets().map((wallet) => {
     // wallet.extension would not be defined if enabled not called
     const isWalletEnabled = wallet.extension ? true : false;
@@ -135,7 +132,7 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected }) => {
     return (
       <ConnectWalletBlock
         key={wallet.extensionName}
-        walletName={capitalizeFirstLetter(wallet.extensionName)}
+        walletName={getWalletDisplayName(wallet.extensionName)}
         isWalletInstalled={wallet.installed}
         walletInstallLink={wallet.installUrl}
         walletLogo={wallet.logo}

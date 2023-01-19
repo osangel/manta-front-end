@@ -1,4 +1,4 @@
-// @ts-nocheck
+// Wallet names as recognized by @talisman/connect-wallets library
 const WALLET_NAME = {
   TALISMAN: 'talisman',
   SUBWALLET: 'subwallet-js',

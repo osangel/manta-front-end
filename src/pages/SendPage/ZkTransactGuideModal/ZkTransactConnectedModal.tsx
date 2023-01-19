@@ -32,7 +32,7 @@ const ZkTransactConnectedModal = () => {
       <p className="text-sm text-white text-opacity-70">
         You can start to transact now.
       </p>
-      <div className='w-2/3 mb-14'>
+      <div className="w-2/3 mb-14">
         <ConnectedWalletSignerBlock />
       </div>
       <div className="absolute bottom-4 left-6 flex flex-row gap-2">

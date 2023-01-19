@@ -35,7 +35,7 @@ const SendBalanceInput = () => {
   const shouldShowLoader = senderIsPrivate() ? shouldShowPrivateLoader : shouldShowPublicLoader;
 
   const balanceText = shouldShowInitialSync
-    ? 'Syncing to network'
+    ? 'Syncing zk account'
     : senderAssetCurrentBalance?.toString();
 
   const [inputValue, setInputValue] = useState('');

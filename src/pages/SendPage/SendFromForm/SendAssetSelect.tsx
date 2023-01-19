@@ -22,7 +22,7 @@ const SendAssetSelect = () => {
 
   let balanceText = '';
   if (isInitialSync.current && (isPrivateTransfer() || isToPublic())) {
-    balanceText = 'Syncing to ledger';
+    balanceText = 'Syncing zk account';
   } else if (senderAssetCurrentBalance) {
     balanceText = senderAssetCurrentBalance.toDisplayString();
   }

@@ -17,6 +17,20 @@ const getAssetIds = (config) => {
 };
 
 export default class AssetType {
+  assetId: number;
+  baseName: string;
+  name: string;
+  baseTicker: string;
+  ticker: string;
+  logicalTicker: string;
+  icon: string;
+  numberOfDecimals: number;
+  publicExistentialDeposit: BN;
+  existentialDeposit: BN;
+  isPrivate: boolean;
+  isNativeToken: boolean;
+  coingeckoId: string;
+
   constructor(
     assetId,
     baseName,

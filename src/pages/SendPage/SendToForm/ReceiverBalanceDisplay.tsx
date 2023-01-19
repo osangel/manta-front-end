@@ -17,7 +17,7 @@ const ReceiverBalanceDisplay = () => {
   const shouldShowInitialSync =
     isInitialSync.current && (isToPrivate() || isPrivateTransfer());
   const balanceString = shouldShowInitialSync
-    ? 'Syncing to ledger'
+    ? 'Syncing zk account'
     : receiverCurrentBalance?.toString();
 
   const shouldShowLoader =

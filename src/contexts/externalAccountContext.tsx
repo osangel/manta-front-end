@@ -109,7 +109,7 @@ export const ExternalAccountContextProvider = (props) => {
 
   useEffect(() => {
     const handleKeyringAddressesChange = () => {
-      if (!isInitialAccountSet || !api) {
+      if (!isInitialAccountSet) {
         return;
       }
       // ensure newly added account after removing all accounts can be updated

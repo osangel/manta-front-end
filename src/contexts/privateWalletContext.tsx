@@ -70,7 +70,6 @@ export const PrivateWalletContextProvider = (props) => {
   useEffect(() => {
     const canInitWallet = () => {
       return (
-        api &&
         signerIsConnected &&
         signerVersion &&
         !signerIsOutOfDate(config, signerVersion) &&

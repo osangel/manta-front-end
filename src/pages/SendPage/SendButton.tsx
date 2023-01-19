@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import MantaLoading from 'components/Loading';
 import ConnectWallet from 'components/Accounts/ConnectWallet';
@@ -80,7 +80,7 @@ const ValidationSendButton = ({ showModal }) => {
   } else if (!senderAssetTargetBalance) {
     validationMsg = 'Enter amount';
   } else if (userCanPayFee() === false) {
-    validationMsg = `Cannot pay ${senderNativeTokenPublicBalance?.assetType?.baseTicker} fee`;
+    validationMsg = `Insufficient ${senderNativeTokenPublicBalance?.assetType?.baseTicker} to pay transaction fee`;
   } else if (userHasSufficientFunds() === false) {
     validationMsg = 'Insufficient balance';
   } else if (

@@ -99,3 +99,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - [\#320](https://github.com/Manta-Network/manta-front-end/pull/320) UI redesign
+
+## [4.0.0] - 2023-1-12
+
+### Added
+- [\#342](https://github.com/Manta-Network/manta-front-end/pull/342) Add link to web3go on the staking page
+- [\#332](https://github.com/Manta-Network/manta-front-end/pull/332) Add name for a collator
+- [\#349](https://github.com/Manta-Network/manta-front-end/pull/349) Add warning when users are about to send so much Dolphin to private that they will be unable to pay transaction fees
+
+### Fixed
+- [\#340](https://github.com/Manta-Network/manta-front-end/pull/340) Give wallets in connect wallet modal more accurate names
+- [\#351](https://github.com/Manta-Network/manta-front-end/pull/351) Allow wallets and Manta Signer to connect even when user is not connected to a node.
+- [\#354](https://github.com/Manta-Network/manta-front-end/pull/354) Change text to clarify what is happening when private balances are loading; add text to clarify what Metamask is for
+- [\#352](https://github.com/Manta-Network/manta-front-end/pull/352) Fix long load times for bridge page balances
+

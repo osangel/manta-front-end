@@ -17,12 +17,16 @@ export const BridgeTxContextProvider = (props) => {
   const config = useConfig();
   const { provider } = useMetamask();
   const { setTxStatus } = useTxStatus();
-  const { externalAccount, externalAccountSigner, setApiSigner, extensionSigner } = useExternalAccount();
+  const { externalAccount, externalAccountSigner, setApiSigner } = useExternalAccount();
   const {
+    isApiReady,
     senderAssetType,
     senderAssetCurrentBalance,
     senderAssetTargetBalance,
     originChain,
+    originApi,
+    originChainIsEvm,
+    originXcmAdapter,
     destinationChain,
     destinationAddress,
     maxInput,
@@ -82,7 +86,7 @@ export const BridgeTxContextProvider = (props) => {
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
     return (
-      originChain?.api &&
+      isApiReady &&
       destinationAddress &&
       senderAssetTargetBalance &&
       senderAssetCurrentBalance &&
@@ -100,25 +104,24 @@ export const BridgeTxContextProvider = (props) => {
 
   // Handles the result of a transaction
   const handleTxRes = async ({ status, events }) => {
-    const api = originChain.api;
     if (status.isInBlock) {
       for (const event of events) {
-        if (api.events.system.ExtrinsicFailed.is(event.event)) {
+        if (originApi.events.system.ExtrinsicFailed.is(event.event)) {
           const error = event.event.data[0];
           if (error.isModule) {
-            const decoded = api.registry.findMetaError(error.asModule.toU8a());
+            const decoded = originApi.registry.findMetaError(error.asModule.toU8a());
             const { docs, method, section } = decoded;
             console.error(`${section}.${method}: ${docs.join(' ')}`);
           } else {
             console.error(error.toString());
           }
           setTxStatus(TxStatus.failed());
-        } else if (api.events.system.ExtrinsicSuccess.is(event.event)) {
+        } else if (originApi.events.system.ExtrinsicSuccess.is(event.event)) {
           try {
-            const signedBlock = await api.rpc.chain.getBlock(status.asInBlock);
+            const signedBlock = await originApi.rpc.chain.getBlock(status.asInBlock);
             const extrinsics = signedBlock.block.extrinsics;
             const extrinsic = extrinsics.find((extrinsic) =>
-              extrinsicWasSentByUser(extrinsic, externalAccount, api)
+              extrinsicWasSentByUser(extrinsic, externalAccount, originApi)
             );
             const extrinsicHash = extrinsic.hash.toHex();
             setTxStatus(TxStatus.finalized(extrinsicHash, originChain.subscanUrl));
@@ -136,7 +139,7 @@ export const BridgeTxContextProvider = (props) => {
       return;
     }
     setTxStatus(TxStatus.processing());
-    if (originChain.xcmAdapter.chain.type === 'ethereum') {
+    if (originChainIsEvm) {
       await sendEth();
     } else {
       await sendSubstrate();
@@ -146,14 +149,14 @@ export const BridgeTxContextProvider = (props) => {
   // Attempts to build and send a bridge transaction with a substrate origin chain
   const sendSubstrate = async () => {
     const value =  senderAssetTargetBalance.valueAtomicUnits.toString();
-    const tx = originChain.xcmAdapter.createTx({
+    const tx = originXcmAdapter.createTx({
       amount: FixedPointNumber.fromInner(value, 10),
       to: destinationChain.name,
       token: senderAssetTargetBalance.assetType.logicalTicker,
       address: destinationAddress,
     });
     try {
-      setApiSigner(originChain.api);
+      setApiSigner(originApi);
       await tx.signAndSend(externalAccountSigner, handleTxRes);
     } catch (error) {
       console.error('Transaction failed', error);
