@@ -17,6 +17,10 @@ export default class TxStatus {
     return new TxStatus(PROCESSING, null, null, message);
   }
 
+  static processingWithExtrinsic(extrinsic) {
+    return new TxStatus(PROCESSING, extrinsic, null, null);
+  }
+
   // Block explorer URL provided only for transactions on non-manta chains
   static finalized(extrinsic, subscanUrl = null) {
     return new TxStatus(FINALIZED, extrinsic, subscanUrl);

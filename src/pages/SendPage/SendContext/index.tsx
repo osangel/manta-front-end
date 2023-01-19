@@ -18,11 +18,9 @@ import sendReducer, { buildInitState } from './sendReducer';
 import {
   updateHistoryEventStatus,
   removePendingHistoryEvent,
-  getPrivateTransactionHistory
 } from 'utils/persistence/privateTransactionHistory';
 import initAxios from 'utils/api/initAxios';
 import { HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
-import * as axios from 'axios';
 
 const SendContext = React.createContext();
 
@@ -44,46 +42,6 @@ export const SendContextProvider = (props) => {
     receiverAssetType,
     receiverAddress
   } = state;
-
-  //wait counter for retrieving finalized status for pending transactions
-  const [waitCounter, setWaitCounter] = useState(0);
-
-  /**
-   * Update Private Transaction History
-   */
-
-  const syncPendingPrivateTransactionHistory = async () => {
-    const pendingPrivateTransactions = getPrivateTransactionHistory().filter(
-      (tx) => tx.status === HISTORY_EVENT_STATUS.PENDING
-    );
-
-    await pendingPrivateTransactions.forEach(async (tx) => {
-      if (tx.extrinsicHash) {
-        const response = await axios.post(
-          'https://dolphin.api.subscan.io/api/scan/extrinsic',
-          {
-            hash: tx.extrinsicHash
-          }
-        );
-        const data = response.data.data;
-        if (data !== null) {
-          const status = data.success
-            ? HISTORY_EVENT_STATUS.SUCCESS
-            : HISTORY_EVENT_STATUS.FAILURE;
-          updateHistoryEventStatus(status, tx.extrinsicHash);
-        }
-      }
-    });
-  };
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (waitCounter < 10) {
-        syncPendingPrivateTransactionHistory();
-        setWaitCounter(waitCounter + 1);
-      }
-    }, 3000);
-  }, [waitCounter]);
 
   /**
    * Initialization logic
