@@ -9,8 +9,8 @@ import {
   updateHistoryEventStatus
 } from 'utils/persistence/privateTransactionHistory';
 import {
-  getPrivateAddressHistory,
-  setPrivateAddressHistory
+  getLastSeenPrivateAddress,
+  setLastSeenPrivateAddress
 } from 'utils/persistence/privateAddressHistory';
 import HistoryEvent, {
   HISTORY_EVENT_STATUS,
@@ -109,8 +109,8 @@ export const PrivateTxHistoryContextProvider = (props) => {
 
   useEffect(() => {
     const resetPrivateTransactionHistory = () => {
-      if (privateAddress && privateAddress !== getPrivateAddressHistory()) {
-        setPrivateAddressHistory(privateAddress);
+      if (privateAddress && privateAddress !== getLastSeenPrivateAddress()) {
+        setLastSeenPrivateAddress(privateAddress);
         if (getPrivateTransactionHistory().length > 0) {
           setPrivateTransactionHistory([]);
         }

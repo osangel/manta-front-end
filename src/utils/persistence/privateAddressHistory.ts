@@ -1,12 +1,12 @@
 // @ts-nocheck
 import store from 'store';
 
-const PRIVATE_ADDRESS_STORAGE_KEY = 'privateAddressHistory';
+const LAST_SEEN_PRIVATE_ADDRESS_STORAGE_KEY = 'lastSeenPrivateAddressHistory';
 
-export const getPrivateAddressHistory = () => {
-  return store.get(PRIVATE_ADDRESS_STORAGE_KEY, null);
+export const getLastSeenPrivateAddress = () => {
+  return store.get(LAST_SEEN_PRIVATE_ADDRESS_STORAGE_KEY, null);
 };
 
-export const setPrivateAddressHistory = (privateAddress: string) => {
-  store.set(PRIVATE_ADDRESS_STORAGE_KEY, privateAddress);
+export const setLastSeenPrivateAddress = (privateAddress: string) => {
+  store.set(LAST_SEEN_PRIVATE_ADDRESS_STORAGE_KEY, privateAddress);
 };
