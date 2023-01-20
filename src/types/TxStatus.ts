@@ -13,13 +13,10 @@ export default class TxStatus {
     this.totalBatches = null;
   }
 
-  static processing(message) {
-    return new TxStatus(PROCESSING, null, null, message);
+  static processing(message = null, extrinsic = null) {
+    return new TxStatus(PROCESSING, extrinsic, null, message);
   }
 
-  static processingWithExtrinsic(extrinsic) {
-    return new TxStatus(PROCESSING, extrinsic, null, null);
-  }
 
   // Block explorer URL provided only for transactions on non-manta chains
   static finalized(extrinsic, subscanUrl = null) {

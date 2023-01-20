@@ -35,7 +35,9 @@ const TxStatusHandler = () => {
 
 const BasePage = ({ children }) => {
   const config = useConfig();
-  initAxios(config);
+  useEffect(() => {
+    initAxios(config);
+  }, []);
   return (
     <SubstrateContextProvider>
       <ExternalAccountContextProvider>

@@ -182,7 +182,7 @@ export const PrivateWalletContextProvider = (props) => {
           externalAccountSigner,
           finalTxResHandler.current
         );
-        setTxStatus(TxStatus.processingWithExtrinsic(lastTx.hash.toString()));
+        setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
         setTxStatus(TxStatus.failed());
