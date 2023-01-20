@@ -1,17 +1,14 @@
 // @ts-nocheck
 import React, { useEffect } from 'react';
-import Svgs from 'resources/icons';
-import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useConfig } from 'contexts/configContext';
 import DowntimeModal from 'components/Modal/downtimeModal';
-import { UpDownArrowSvg } from 'resources/svgs';
 import Navs from 'components/Navbar/Navs';
 import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
 import userIsMobile from 'utils/ui/userIsMobile';
 import { useKeyring } from 'contexts/keyringContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
+import Icon from 'components/Icon';
 import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
 import { useSend } from './SendContext';
@@ -60,12 +57,12 @@ const SendForm = () => {
           })}>
           <SendFromForm />
           <div onClick={onClickSwapSenderReceiver}>
-            <UpDownArrowSvg
-              className={classNames(
-                'mx-auto my-4 cursor-pointer',
-                { disabled: disabled || disabledSwapSenderReceiver }
-              )}
+            <Icon
+              className={classNames('mx-auto my-4 cursor-pointer', {
+                disabled: disabled || disabledSwapSenderReceiver
+              })}
               fill={disabledSwapSenderReceiver ? 'grey' : 'white'}
+              name="upDownArrow"
             />
           </div>
           <SendToForm />

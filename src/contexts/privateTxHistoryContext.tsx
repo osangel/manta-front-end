@@ -15,7 +15,7 @@ import {
 } from 'utils/persistence/privateAddressHistory';
 import HistoryEvent, {
   HISTORY_EVENT_STATUS,
-  PRIVATE_TX_TYPE,
+  PRIVATE_TX_TYPE
 } from 'types/HistoryEvent';
 
 import PropTypes from 'prop-types';
@@ -75,14 +75,13 @@ export const PrivateTxHistoryContextProvider = (props) => {
 
     await pendingPrivateTransactions.forEach(async (tx) => {
       if (tx.extrinsicHash) {
-        const response = await axios.post(
-          `${config.SUBSCAN_API_ENDPOINT}/extrinsic`,
-          {
+        const response = await axios
+          .post(`${config.SUBSCAN_API_ENDPOINT}/extrinsic`, {
             hash: tx.extrinsicHash
-          }
-        ).catch((error) => {
-          console.log(error);
-        });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
         const data = response?.data.data;
         if (data) {
           const status = data?.success
@@ -127,7 +126,6 @@ export const PrivateTxHistoryContextProvider = (props) => {
     };
     resetPrivateTransactionHistory();
   }, [privateAddress]);
-
 
   return (
     <PrivateTxHistoryContext.Provider value={{}}>

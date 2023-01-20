@@ -1,13 +1,8 @@
 // @ts-nocheck
 import React from 'react';
-import MantaIcon from 'resources/images/manta.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faQuestionCircle,
-  faArrowUpRightFromSquare,
-  faInfoCircle,
-  faChevronRight
-} from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import Icon from 'components/Icon';
 
 const ZkTransactConnectSignerModal = () => {
   return (
@@ -20,7 +15,7 @@ const ZkTransactConnectSignerModal = () => {
       <p className="text-white text-opacity-70 text-sm">
         transact public assets to zkAssets
       </p>
-      <img className="my-3 w-12 h-12" src={MantaIcon} alt="Manta" />
+      <Icon className="my-3 w-12 h-12" name="manta" />
       <p className="text-white text-opacity-70 text-sm">
         Please log in Manta Signer
       </p>

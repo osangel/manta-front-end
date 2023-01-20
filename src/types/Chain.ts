@@ -1,9 +1,8 @@
 // @ts-nocheck
 import NETWORK from 'constants/NetworkConstants';
-import Svgs from 'resources/icons';
 import { KaruraAdapter } from 'manta-polkawallet-bridge/build/adapters/acala';
 import { CalamariAdapter } from 'manta-polkawallet-bridge/build/adapters/manta';
-import { KusamaAdapter} from 'manta-polkawallet-bridge/build/adapters/polkadot';
+import { KusamaAdapter } from 'manta-polkawallet-bridge/build/adapters/polkadot';
 import { MoonriverAdapter } from 'manta-polkawallet-bridge/build/adapters/moonbeam';
 import { typesBundlePre900 } from 'moonbeam-types-bundle';
 import { options } from '@acala-network/api';
@@ -48,10 +47,14 @@ export default class Chain {
       'dolphin',
       'Dolphin',
       9997,
-      Svgs.Dolphin,
+      'dolphin',
       config.DOLPHIN_SOCKET,
       'https://dolphin.subscan.io',
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
+      [
+        AssetType.Kusama(config),
+        AssetType.Karura(config),
+        AssetType.Moonriver(config)
+      ],
       AssetType.DolphinSkinnedCalamari(config),
       CalamariAdapter,
       types
@@ -63,10 +66,14 @@ export default class Chain {
       'calamari',
       'Dolphin',
       2084,
-      Svgs.Dolphin,
+      'dolphin',
       config.DOLPHIN_SOCKET,
       'https://dolphin.subscan.io',
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
+      [
+        AssetType.Kusama(config),
+        AssetType.Karura(config),
+        AssetType.Moonriver(config)
+      ],
       AssetType.DolphinSkinnedCalamari(config),
       CalamariAdapter,
       types
@@ -78,10 +85,14 @@ export default class Chain {
       'calamari',
       'Calamari',
       2084,
-      Svgs.Calamari,
+      'calamari',
       config.CALAMARI_SOCKET,
       'https://calamari.subscan.io',
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
+      [
+        AssetType.Kusama(config),
+        AssetType.Karura(config),
+        AssetType.Moonriver(config)
+      ],
       AssetType.Calamari(config),
       CalamariAdapter,
       types
@@ -93,7 +104,7 @@ export default class Chain {
       'rococo',
       'Rococo',
       null,
-      Svgs.RocIcon,
+      'roc',
       config.ROCOCO_SOCKET,
       'https://rococo.subscan.io',
       [AssetType.Rococo(config)],
@@ -107,7 +118,7 @@ export default class Chain {
       'kusama',
       'Kusama',
       null,
-      Svgs.KusamaIcon,
+      'kusama',
       config.KUSAMA_SOCKET,
       'https://kusama.subscan.io',
       [AssetType.Kusama(config)],
@@ -121,7 +132,7 @@ export default class Chain {
       'karura',
       'Karura',
       2000,
-      Svgs.KarIcon,
+      'kar',
       config.KARURA_SOCKET,
       'https://karura.subscan.io',
       [AssetType.Karura(config)],
@@ -148,7 +159,7 @@ export default class Chain {
       'moonriver',
       'Moonriver',
       1000,
-      Svgs.MovrIcon,
+      'movr',
       config.MOONRIVER_SOCKET,
       'https://moonriver.subscan.io',
       [AssetType.Moonriver(config)],
@@ -179,13 +190,13 @@ export default class Chain {
     }
   }
 
-  async getXcmApi() {
+  getXcmApi() {
     const provider = new WsProvider(this.socket);
     if (this.apiOptions) {
-      const api = await ApiPromise.create(options({ provider, types: this.apiTypes}));
+      const api = new ApiPromise(options({ provider, types: this.apiTypes}));
       return api;
     } else {
-      const api = await ApiPromise.create({provider, types: this.apiTypes, typesBundle: this.apiTypesBundle});
+      const api = new ApiPromise({provider, types: this.apiTypes, typesBundle: this.apiTypesBundle});
       return api;
     }
   }
@@ -200,7 +211,11 @@ export default class Chain {
     }
     for (let i = 0; i < this.xcmAssets.length; i++) {
       const asset = this.xcmAssets[i];
-      if (otherChain.xcmAssets.find(otherAsset => asset.assetId === otherAsset.assetId)) {
+      if (
+        otherChain.xcmAssets.find(
+          (otherAsset) => asset.assetId === otherAsset.assetId
+        )
+      ) {
         return true;
       }
     }

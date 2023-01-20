@@ -5,6 +5,12 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import types from '../config/types.json';
 import { useConfig } from './configContext';
 
+export enum API_STATE {
+  CONNECT_INIT,
+  READY,
+  ERROR,
+  DISCONNECTED
+}
 
 const INIT_STATE = {
   socket: null,
@@ -16,24 +22,29 @@ const INIT_STATE = {
   blockNumber: 0
 };
 
+const SUBSTRATE_ACTIONS = {
+  CONNECT_INIT: 'CONNECT_INIT',
+  CONNECT_SUCCESS: 'CONNECT_SUCCESS',
+  CONNECT_ERROR: 'CONNECT_ERROR',
+  DISCONNECTED: 'DISCONNECTED',
+  UPDATE_BLOCK: 'UPDATE_BLOCK'
+};
+
 const reducer = (state, action) => {
   switch (action.type) {
-  case 'CONNECT_INIT':
-    return { ...state, apiState: 'CONNECT_INIT' };
+  case SUBSTRATE_ACTIONS.CONNECT_INIT:
+    return { ...state, apiState: API_STATE.CONNECT_INIT };
 
-  case 'CONNECT_SUCCESS':
-    return { ...state, api: action.payload, apiState: 'READY' };
+  case SUBSTRATE_ACTIONS.CONNECT_SUCCESS:
+    return { ...state, api: action.payload, apiState: API_STATE.READY };
 
-  case 'CONNECT_ERROR':
-    return { ...state, apiState: 'ERROR', apiError: action.payload };
+  case SUBSTRATE_ACTIONS.CONNECT_ERROR:
+    return { ...state, apiState: API_STATE.ERROR, apiError: action.payload };
 
-  case 'DISCONNECTED':
-    if (state.provider === action.payload) {
-      return { ...state, apiState: 'DISCONNECTED' };
-    }
-    return state;
+  case SUBSTRATE_ACTIONS.DISCONNECTED:
+    return { ...state, apiState: API_STATE.DISCONNECTED };
 
-  case 'UPDATE_BLOCK':
+  case SUBSTRATE_ACTIONS.UPDATE_BLOCK:
     return { ...state, blockNumber: action.payload };
 
   default:
@@ -47,7 +58,7 @@ const reducer = (state, action) => {
 const connect = async (state, dispatch) => {
   const { socket, types, rpc } = state;
 
-  dispatch({ type: 'CONNECT_INIT' });
+  dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_INIT });
 
   const provider = new WsProvider(socket);
   const _api = new ApiPromise({
@@ -61,16 +72,16 @@ const connect = async (state, dispatch) => {
     console.log('polkadot.js api connected');
     // `ready` event is not emitted upon reconnection and is checked explicitly here.
     _api.isReady.then(async () => {
-      dispatch({ type: 'CONNECT_SUCCESS', payload: _api });
+      dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_SUCCESS, payload: _api });
       await _api.rpc.chain.subscribeNewHeads((header) => {
-        dispatch({ type: 'UPDATE_BLOCK', payload: header.number.toHuman() });
+        dispatch({ type: SUBSTRATE_ACTIONS.UPDATE_BLOCK, payload: header.number.toHuman() });
       });
     });
   });
-  _api.on('ready', () => dispatch({ type: 'CONNECT_SUCCESS' }));
-  _api.on('error', (err) => dispatch({ type: 'CONNECT_ERROR', payload: err }));
+  _api.on('ready', () => dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_SUCCESS, payload: _api }));
+  _api.on('error', (err) => dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_ERROR, payload: err }));
   _api.on('disconnected', () =>
-    dispatch({ type: 'DISCONNECTED', payload: provider })
+    dispatch({ type: SUBSTRATE_ACTIONS.DISCONNECTED, payload: provider })
   );
 };
 

@@ -50,7 +50,8 @@ export const buildInitState = (config) => {
     config,
     bridge: null,
     api: null,
-    isApiReady: false,
+    isApiInitialized: false,
+    isApiDisconnected: false,
 
     senderEthAccount: null,
     senderAssetType: initSenderAssetType,
@@ -74,8 +75,11 @@ export const buildInitState = (config) => {
 
 const bridgeReducer = (state, action) => {
   switch (action.type) {
-  case BRIDGE_ACTIONS.SET_IS_API_READY:
-    return setIsApiReady(state, action);
+  case BRIDGE_ACTIONS.SET_API_IS_INITIALIZED:
+    return setApiIsInitialized(state, action);
+
+  case BRIDGE_ACTIONS.SET_IS_API_DISCONNECTED:
+    return setIsApiDisconnected(state, action);
 
   case BRIDGE_ACTIONS.SET_BRIDGE:
     return setBridge(state, action);
@@ -119,15 +123,27 @@ const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
   return stateAssetType?.assetId !== updateAssetType.assetId;
 };
 
-const setIsApiReady = (state, { isApiReady, chain}) => {
+const setApiIsInitialized = (state, { chain }) => {
   if (chain.name === state.originChain.name) {
     return {
       ...state,
-      isApiReady
+      isApiInitialized: true,
+      isApiDisconnected: false
     };
   }
   return state;
 };
+
+const setIsApiDisconnected = (state, { chain, isApiDisconnected }) => {
+  if (chain.name === state.originChain.name) {
+    return {
+      ...state,
+      isApiDisconnected
+    };
+  }
+  return state;
+};
+
 
 const setBridge = (state, { bridge }) => {
   return {
@@ -195,7 +211,7 @@ const setFeeEstimates = (state, action) => {
   };
 };
 
-const setOriginChain = (state, { originChain, isApiReady }) => {
+const setOriginChain = (state, { originChain, isApiInitialized, isApiDisconnected }) => {
   let destinationChain = state.destinationChain;
   const destinationChainOptions = getDestinationChainOptions(originChain, state.originChainOptions);
   if (!originChain.canTransferXcm(destinationChain)) {
@@ -212,7 +228,8 @@ const setOriginChain = (state, { originChain, isApiReady }) => {
   return {
     ...state,
     originChain,
-    isApiReady,
+    isApiInitialized,
+    isApiDisconnected,
     destinationChain,
     destinationChainOptions,
     senderAssetType,
@@ -254,7 +271,7 @@ const setDestinationAddress = (state, { destinationAddress }) => {
   };
 };
 
-const switchOriginAndDestination = (state, { isApiReady }) => {
+const switchOriginAndDestination = (state, { isApiInitialized, isApiDisconnected }) => {
   const { originChain, originChainOptions, destinationChain, senderAssetType, senderAssetTypeOptions} = state;
   if (destinationChain.canTransferXcm(originChain)) {
     const newDestinationChain = originChain;
@@ -262,7 +279,8 @@ const switchOriginAndDestination = (state, { isApiReady }) => {
 
     return {
       ...state,
-      isApiReady,
+      isApiInitialized,
+      isApiDisconnected,
       originChain: newOriginChain,
       destinationChain: newDestinationChain,
       destinationChainOptions: getDestinationChainOptions(newOriginChain, originChainOptions),

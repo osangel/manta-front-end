@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import classNames from 'classnames';
 import FormSwitch from 'components/FormSwitch';
 import { ThemeContext } from 'contexts/themeContext';
-import Svgs from 'resources/icons';
+import Icon from 'components/Icon';
 
 const ChangeThemeButton = () => {
   const { theme, setTheme } = useContext(ThemeContext);
@@ -14,21 +14,19 @@ const ChangeThemeButton = () => {
       <FormSwitch
         checked={isDark}
         onLabel={
-          <img
+          <Icon
+            name="sun"
             className={classNames('absolute theme-icon left-1 top-1', {
-              iconActive: !isDark,
+              iconActive: !isDark
             })}
-            src={Svgs.SunIcon}
-            alt="sun-icon"
           />
         }
         offLabel={
-          <img
+          <Icon
+            name="moon"
             className={classNames('absolute theme-icon right-1 bottom-1.5', {
-              iconActive: isDark,
+              iconActive: isDark
             })}
-            src={Svgs.MoonIcon}
-            alt="off-icon"
           />
         }
         onChange={(e) =>

@@ -156,6 +156,7 @@ export const KeyringContextProvider = (props) => {
       try {
         await selectedWallet.enable(APP_NAME);
         subscribeWalletAccounts(selectedWallet, saveToStorage);
+        return true;
       } catch (e) {
         const walletNames = removeWalletName(
           extensionName,
@@ -163,6 +164,7 @@ export const KeyringContextProvider = (props) => {
         );
         setHasAuthToConnectWalletStorage(walletNames);
         setHasAuthToConnectWallet(walletNames);
+        return false;
       }
     }
   };

@@ -1,11 +1,11 @@
 // @ts-nocheck
 import React from 'react';
-import Svgs from 'resources/icons';
 import classNames from 'classnames';
 import { useMetamask } from 'contexts/metamaskContext';
 import { getWallets } from '@talismn/connect-wallets';
 import { useKeyring } from 'contexts/keyringContext';
 import { useTxStatus } from 'contexts/txStatusContext';
+import Icon from 'components/Icon';
 
 const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
   const { txStatus } = useTxStatus();
@@ -25,7 +25,8 @@ const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
       className={classNames('px-5 py-5 rounded-t-lg', {
         'bg-primary':
           wallet.extensionName === selectedWallet.extensionName &&
-          !isMetamaskSelected, disabled: disabled
+          !isMetamaskSelected,
+        disabled: disabled
       })}
       key={wallet.extensionName}
       onClick={onClickWalletIconHandler(wallet)}>
@@ -46,16 +47,12 @@ const MetamaskWallet = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
   };
   return (
     <button
-      className={classNames(
-        'px-5 py-5',
-        {'bg-primary': isMetamaskSelected, disabled: disabled}
-      )}
+      className={classNames('px-5 py-5', {
+        'bg-primary': isMetamaskSelected,
+        disabled: disabled
+      })}
       onClick={onClickMetamaskHandler}>
-      <img
-        className="w-6 h-6 max-w-6 max-h-6"
-        src={Svgs.Metamask}
-        alt={'metamask'}
-      />
+      <Icon className="w-6 h-6 max-w-6 max-h-6" name="metamask" />
     </button>
   );
 };

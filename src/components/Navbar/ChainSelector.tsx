@@ -11,17 +11,18 @@ import {
   faLink
 } from '@fortawesome/free-solid-svg-icons';
 import { useSubstrate } from 'contexts/substrateContext';
-import Svgs from 'resources/icons';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { useConfig } from 'contexts/configContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-
+import Icon from 'components/Icon';
 
 const ChainDropdownItem = ({ node, activeNode }) => {
   const { apiState } = useSubstrate();
-  const nodeIsDisconnected = apiState === 'ERROR' || apiState === 'DISCONNECTED';
-  const [disconnectedIndicator, setDisconnectedIndicator] = useState(nodeIsDisconnected);
+  const nodeIsDisconnected =
+    apiState === 'ERROR' || apiState === 'DISCONNECTED';
+  const [disconnectedIndicator, setDisconnectedIndicator] =
+    useState(nodeIsDisconnected);
 
   useEffect(() => {
     let timeout;
@@ -39,7 +40,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
 
   ChainDropdownItem.propTypes = {
     node: PropTypes.object,
-    activeNode: PropTypes.object,
+    activeNode: PropTypes.object
   };
 
   return (
@@ -48,13 +49,14 @@ const ChainDropdownItem = ({ node, activeNode }) => {
         className={`px-8 py-4 font-bold text-lg text-white cursor-pointer hover:bg-thirdry ${
           activeNode.name === node.name ? 'bg-thirdry' : ''
         }`}
-        key={node.name}
-      >
+        key={node.name}>
         <div className="flex items-center gap-2 w-full">
-          <img
-            className={classNames('w-8 h-8', {'rounded-full': node.name === 'Calamari'})}
-            src={Svgs[node.name]}
-            alt={node.name}
+          <Icon
+            name={(node.name as string).toLowerCase()}
+            className={classNames('w-8 h-8', {
+              'rounded-full': node.name === 'Calamari',
+              'bg-primary': node.name === 'Calamari'
+            })}
           />
           <div>
             {node.name}&nbsp;
@@ -70,8 +72,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
                 <div className="flex items-center justify-center space-x-2">
                   <div
                     className="spinner-border animate-spin inline-block w-4 h-4 border-1 rounded-full"
-                    role="status"
-                  >
+                    role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
                 </div>
@@ -82,7 +83,10 @@ const ChainDropdownItem = ({ node, activeNode }) => {
         {activeNode.name === node.name ? (
           <div className="mt-2 ml-2 flex items-center justify-between text-white font-normal text-base">
             {node.explorer}
-            <a href={`https://${node.explorer}`} target="_blank" rel="noreferrer">
+            <a
+              href={`https://${node.explorer}`}
+              target="_blank"
+              rel="noreferrer">
               <FontAwesomeIcon icon={faLink} />
             </a>
           </div>
@@ -109,15 +113,15 @@ const ChainSelector = () => {
       <div className="relative" onClick={onClickChainSelector}>
         <div
           className={classNames(
-            'logo-content hidden items-center lg:flex relative cursor-pointer',
+            'logo-content flex items-center lg:flex relative cursor-pointer',
             { disabled: disabled }
-          )}
-        >
-          <div className="logo border-white w-14 h-14">
-            <img
-              className={classNames({'rounded-full': activeNode.name === 'Calamari'})}
-              src={Svgs[activeNode.name]}
-              alt={activeNode.name}
+          )}>
+          <div className="logo border-white w-14 h-14 flex items-center justify-center">
+            <Icon
+              className={classNames({
+                'rounded-full': activeNode.name === 'Calamari'
+              })}
+              name={(activeNode.name as string).toLowerCase()}
             />
           </div>
           <div>
@@ -135,7 +139,11 @@ const ChainSelector = () => {
               Select Network
             </div>
             {nodes.map((node) => (
-              <ChainDropdownItem key={node.name} node={node} activeNode={activeNode} />
+              <ChainDropdownItem
+                key={node.name}
+                node={node}
+                activeNode={activeNode}
+              />
             ))}
           </div>
         )}

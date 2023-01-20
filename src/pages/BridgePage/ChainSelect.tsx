@@ -1,5 +1,6 @@
 // @ts-nocheck
 import classNames from 'classnames';
+import Icon from 'components/Icon';
 import { useTxStatus } from 'contexts/txStatusContext';
 import React from 'react';
 import Select, { components } from 'react-select';
@@ -37,8 +38,7 @@ const ChainSelect = ({ chain, chainOptions, setChain, isOriginChain }) => {
           SingleValue: ChainSingleValue,
           Option: ChainOption,
           IndicatorSeparator: EmptyIndicatorSeparator
-        }}
-      ></Select>
+        }}></Select>
     </div>
   );
 };
@@ -66,7 +66,7 @@ const EmptyIndicatorSeparator = () => {
 const ChainSingleValue = ({ data }) => {
   return (
     <div className="ml-2 flex items-center gap-4 cursor-pointer">
-      <img className="w-6 h-6 rounded-full" src={data?.icon} alt="icon" />
+      <Icon className="w-6 h-6 rounded-full" name={data?.icon} />
       <div className="text-black dark:text-white">{data?.displayName}</div>
     </div>
   );
@@ -78,10 +78,9 @@ const ChainOption = (props) => {
     <div {...innerProps} className="w-full cursor-pointer">
       <div className="flex items-center inline hover:bg-blue-100">
         <div>
-          <img
+          <Icon
             className="w-9 h-9 ml-3 my-2 manta-bg-secondary rounded-full"
-            src={value?.icon}
-            alt="icon"
+            name={value?.icon}
           />
         </div>
         <div className="pl-4 p-2 text-black">
@@ -111,7 +110,7 @@ const dropdownStyles = {
   valueContainer: () => ({
     minHeight: '2rem',
     textAlign: 'center',
-    display: 'flex',
+    display: 'flex'
   }),
   menu: (provided) => ({
     ...provided

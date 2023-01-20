@@ -1,5 +1,4 @@
 // @ts-nocheck
-import MantaIcon from 'resources/images/manta.png';
 import { useKeyring } from 'contexts/keyringContext';
 
 const ConnectedWalletSignerBlock = () => {
@@ -12,7 +11,7 @@ const ConnectedWalletSignerBlock = () => {
           alt={selectedWallet?.logo.alt}
           className="w-6 h-6 rounded-full"
         />
-        <img src={MantaIcon} alt={'Manta'} className="w-6 h-6 rounded-full" />
+        <Icon name="manta" className="w-6 h-6 rounded-full" />
       </div>
       <div className="flex flex-row gap-3 items-center rounded-lg text-xs">
         <div className="rounded full w-2 h-2 bg-green-300"></div>Connected

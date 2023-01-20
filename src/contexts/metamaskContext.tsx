@@ -39,10 +39,12 @@ export const MetamaskContextProvider = (props) => {
       }
       setHasAuthConnectMetamask(true);
       setHasAuthToConnectMetamaskStorage(true);
+      return true;
     } catch (e) {
       console.error(e);
       setHasAuthConnectMetamask(false);
       setHasAuthToConnectMetamaskStorage(false);
+      return false;
     }
   };
 

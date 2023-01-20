@@ -1,5 +1,4 @@
 import React from 'react';
-import MantaIcon from 'resources/images/manta.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faQuestionCircle,
@@ -7,12 +6,13 @@ import {
   faInfoCircle,
   faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
+import Icon from 'components/Icon';
 
 const ConnectSignerModal = () => {
   return (
     <div className="py-2 w-128 h-81.5 flex flex-col justify-center text-sm">
       <h1 className="text-white text-xl font-bold mb-4">Log in</h1>
-      <img className="w-12 h-12" src={MantaIcon} alt="Manta" />
+      <Icon className="w-12 h-12" name="manta" />
       <p className="tracking-tighter mt-4 mb-1 text-white text-opacity-70 text-xss">
         Log in to Manta Signer to see your zkAssets and to start transacting.
       </p>

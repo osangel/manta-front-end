@@ -6,13 +6,20 @@ import { ethers } from 'ethers';
 import { useMetamask } from 'contexts/metamaskContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { validatePublicAddress } from 'utils/validation/validateAddress';
-import Svgs from 'resources/icons';
 import { useKeyring } from 'contexts/keyringContext';
+import Icon from 'components/Icon';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 
 const BridgeDestinationInput = () => {
   const { ethAddress } = useMetamask();
-  const { setDestinationAddress, destinationAddress, destinationChain, originChain, destinationChainIsEvm, originChainIsEvm } = useBridgeData();
+  const {
+    setDestinationAddress,
+    destinationAddress,
+    destinationChain,
+    originChain,
+    destinationChainIsEvm,
+    originChainIsEvm
+  } = useBridgeData();
   const { selectedWallet } = useKeyring();
   const { externalAccount } = useExternalAccount();
   const { txStatus } = useTxStatus();
@@ -56,9 +63,15 @@ const BridgeDestinationInput = () => {
 
   const getAddressIcon = () => {
     if (destinationChainIsEvm) {
-      return <img className="w-6 h-6" src={Svgs.Metamask} alt={'metamask'} />;
+      return <Icon name="metamask" className="w-6 h-6" />;
     } else {
-      return <img className="w-6 h-6" src={selectedWallet.logo.src} alt={selectedWallet.logo.alt} />;
+      return (
+        <img
+          className="w-6 h-6"
+          src={selectedWallet.logo.src}
+          alt={selectedWallet.logo.alt}
+        />
+      );
     }
   };
 
@@ -70,38 +83,40 @@ const BridgeDestinationInput = () => {
     }
   };
 
-  const destinationAccountIsMine = destinationAddress &&
-    (destinationAddress === externalAccount?.address || destinationAddress === ethAddress);
+  const destinationAccountIsMine =
+    destinationAddress &&
+    (destinationAddress === externalAccount?.address ||
+      destinationAddress === ethAddress);
 
   const ButtonContents = () => {
     return (
       <span className="w-32 px-1 flex justify-center whitespace-nowrap overflow-hidden">
-        {
-          destinationAccountIsMine ? (
-            <>
-              <div className="block w-5 mr-1 min-w-full min-h-full"><i >{getAddressIcon()}</i></div>
-              <p className="block min-w-0 w-20 inline-block pt-0.5  overflow-hidden overflow-ellipsis">{getAccountName()}</p>
-            </>
-          )
-            : 'Get Address'
-        }
+        {destinationAccountIsMine ? (
+          <>
+            <div className="block w-5 mr-1 min-w-full min-h-full">
+              <i>{getAddressIcon()}</i>
+            </div>
+            <p className="block min-w-0 w-20 inline-block pt-0.5  overflow-hidden overflow-ellipsis">
+              {getAccountName()}
+            </p>
+          </>
+        ) : (
+          'Get Address'
+        )}
       </span>
     );
   };
 
-  const placeholderMsg = `Enter ${
-    originChainIsEvm ? 'substrate' : 'EVM'} address`;
+  const placeholderMsg = `Enter ${originChainIsEvm ? 'substrate' : 'EVM'} address`;
 
   return (
-    <div
-      className="flex items-center flex-grow h-16 mx-1"
-    >
+    <div className="flex items-center flex-grow h-16 mx-1">
       <input
         id="recipientAddress"
         className={classNames(
           'w-full h-full rounded-lg manta-bg-gray px-5',
           'text-sm text-black dark:text-white outline-none rounded-lg',
-          {disabled: disabled}
+          { disabled: disabled }
         )}
         onChange={(e) => onChangeDestinationtInput(e.target.value)}
         value={inputValue}
@@ -110,11 +125,12 @@ const BridgeDestinationInput = () => {
       />
       <button
         onClick={onClickGetAddress}
-        className={classNames('w-32 ml-1 h-full rounded-lg text-black',
+        className={classNames(
+          'w-32 ml-1 h-full rounded-lg text-black',
           'dark:text-white outline-none rounded-2xl border-2 border-solid border-blue-500',
-          'text-xs text-black dark:text-white', {disabled: disabled}
-        )}
-      >
+          'text-xs text-black dark:text-white',
+          { disabled: disabled }
+        )}>
         <ButtonContents />
       </button>
     </div>

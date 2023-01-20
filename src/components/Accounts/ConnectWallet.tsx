@@ -13,7 +13,7 @@ const ConnectWallet = ({
   text = 'Connect Wallet',
   className = ''
 }) => {
-  const { ModalWrapper, showModal } = useModal();
+  const { ModalWrapper, showModal, hideModal } = useModal();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const onClickPlusIcon = () => !disabled && showModal();
@@ -32,7 +32,10 @@ const ConnectWallet = ({
         />
       )}
       <ModalWrapper>
-        <ConnectWalletModal setIsMetamaskSelected={setIsMetamaskSelected} />
+        <ConnectWalletModal
+          setIsMetamaskSelected={setIsMetamaskSelected}
+          hideModal={hideModal}
+        />
       </ModalWrapper>
     </>
   );

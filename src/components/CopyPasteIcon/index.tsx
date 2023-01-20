@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import Svgs from 'resources/icons';
+import Icon from 'components/Icon';
 
 type ICopyPastIconProps = {
   className?: string;
@@ -29,9 +29,9 @@ const CopyPasteIcon: React.FC<ICopyPastIconProps> = ({
   return copied ? (
     <FontAwesomeIcon className={classNames(className)} icon={faCheck} />
   ) : (
-    <img
+    <Icon
       className={classNames(`${className} cursor-pointer hover:text-link`)}
-      src={Svgs.CopySquareIcon}
+      name="copySquare"
       onClick={(e) => copyToClipboard(e)}
     />
   );

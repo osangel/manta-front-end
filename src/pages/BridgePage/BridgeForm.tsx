@@ -3,11 +3,11 @@ import React, { useEffect } from 'react';
 import Navs from 'components/Navbar/Navs';
 import ChainSelect from 'pages/BridgePage/ChainSelect';
 import SendButton from 'pages/BridgePage/SendButton';
-import Svgs from 'resources/icons';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useKeyring } from 'contexts/keyringContext';
 import { useConfig } from 'contexts/configContext';
 import classNames from 'classnames';
+import Icon from 'components/Icon';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
@@ -55,11 +55,12 @@ const BridgeForm = () => {
             setChain={setOriginChain}
             isOriginChain={true}
           />
-          <img
+          <Icon
+            name="leftRightArrow"
             onClick={onClickSwitchOriginAndDestination}
-            className={classNames('mx-auto pb-7 cursor-pointer', {disabled: disabled})}
-            src={Svgs.LeftRightArrowIcon}
-            alt="switch-icon"
+            className={classNames('mx-auto pb-7 cursor-pointer', {
+              disabled: disabled
+            })}
           />
           <ChainSelect
             chain={destinationChain}

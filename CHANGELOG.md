@@ -100,7 +100,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - [\#320](https://github.com/Manta-Network/manta-front-end/pull/320) UI redesign
 
-## [4.0.0] - 2023-1-12
+## [4.0.1] - 2023-1-17
 
 ### Added
 - [\#342](https://github.com/Manta-Network/manta-front-end/pull/342) Add link to web3go on the staking page
@@ -113,3 +113,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#354](https://github.com/Manta-Network/manta-front-end/pull/354) Change text to clarify what is happening when private balances are loading; add text to clarify what Metamask is for
 - [\#352](https://github.com/Manta-Network/manta-front-end/pull/352) Fix long load times for bridge page balances
 
+
+## [4.0.2] - 2023-1-19
+
+### Added
+- [\#364](https://github.com/Manta-Network/manta-front-end/pull/364) Display connection errors on zkTransact and Bridge pages
+
+### Fixed
+- [\#359](https://github.com/Manta-Network/manta-front-end/pull/359) Cancel transaction error toast now says "Transaction declined" rather than "Transaction failed"
+
+### Changed
+- [\#353](https://github.com/Manta-Network/manta-front-end/pull/353) Wallet modal closes upon connection to a wallet
+- [\#355](https://github.com/Manta-Network/manta-front-end/pull/355) Refactored icons

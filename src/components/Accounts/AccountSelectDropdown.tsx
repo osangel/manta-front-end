@@ -4,10 +4,10 @@ import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
-import Svgs from 'resources/icons';
 import Identicon from '@polkadot/react-identicon';
 import makeBlockie from 'ethereum-blockies-base64';
 import CopyPasteIcon from 'components/CopyPasteIcon';
+import Icon from 'components/Icon';
 
 const SingleAccountDisplay = ({
   accountName,
@@ -45,7 +45,10 @@ const SingleAccountDisplay = ({
   return (
     <div
       key={accountAddress}
-      className={classNames('bg-white bg-opacity-5 cursor-pointer flex items-center gap-5 justify-between border border-white border-opacity-20 rounded-lg px-3 text-green w-68 h-16', {disabled :disabled})}
+      className={classNames(
+        'bg-white bg-opacity-5 cursor-pointer flex items-center gap-5 justify-between border border-white border-opacity-20 rounded-lg px-3 text-green w-68 h-16',
+        { disabled: disabled }
+      )}
       onClick={onClickAccountHandler}>
       <div>
         <div className="flex flex-row items-center gap-3">
@@ -65,9 +68,7 @@ const SingleAccountDisplay = ({
         </div>
       </div>
       <div className="relative right-2">
-        {isAccountSelected && (
-          <img src={Svgs.GreenCheckIcon} alt={'green check'} />
-        )}
+        {isAccountSelected && <Icon name="greenCheck" />}
       </div>
     </div>
   );

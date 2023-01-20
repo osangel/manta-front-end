@@ -6,7 +6,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import React, { useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
-import Svgs from 'resources/icons';
+import Icon from 'components/Icon';
 import WalletSelectBar from './WalletSelectIconBar';
 import ConnectWallet from './ConnectWallet';
 import AccountSelectDropdown from './AccountSelectDropdown';
@@ -37,11 +37,7 @@ const DisplayAccountsButton = () => {
           alt={selectedWallet.logo.alt}
         />
         {isMetamaskEnabled && (
-          <img
-            className="w-6 h-6 rounded-full"
-            src={Svgs.Metamask}
-            alt={'metamask'}
-          />
+          <Icon className="w-6 h-6 rounded-full" name="metamask" />
         )}
         {text}
       </>
@@ -53,7 +49,9 @@ const DisplayAccountsButton = () => {
       <OutsideClickHandler onOutsideClick={() => setShowAccountList(false)}>
         <div
           className={classNames(
-            `flex flex-row justify-center h-12 gap-3 border border-white border-opacity-20 bg-fifth dark:text-black dark:text-white font-medium cursor-pointer rounded-lg items-center ${isMetamaskEnabled ? 'w-44' : 'w-36'}`
+            `flex flex-row justify-center h-12 gap-3 border border-white border-opacity-20 bg-fifth dark:text-black dark:text-white font-medium cursor-pointer rounded-lg items-center ${
+              isMetamaskEnabled ? 'w-44' : 'w-36'
+            }`
           )}
           onClick={() => setShowAccountList(!showAccountList)}>
           <ExternalAccountBlock

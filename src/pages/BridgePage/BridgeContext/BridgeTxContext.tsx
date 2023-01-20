@@ -19,7 +19,8 @@ export const BridgeTxContextProvider = (props) => {
   const { setTxStatus } = useTxStatus();
   const { externalAccount, externalAccountSigner, setApiSigner } = useExternalAccount();
   const {
-    isApiReady,
+    isApiInitialized,
+    isApiDisconnected,
     senderAssetType,
     senderAssetCurrentBalance,
     senderAssetTargetBalance,
@@ -86,7 +87,8 @@ export const BridgeTxContextProvider = (props) => {
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
     return (
-      isApiReady &&
+      isApiInitialized &&
+      !isApiDisconnected &&
       destinationAddress &&
       senderAssetTargetBalance &&
       senderAssetCurrentBalance &&
@@ -160,7 +162,7 @@ export const BridgeTxContextProvider = (props) => {
       await tx.signAndSend(externalAccountSigner, handleTxRes);
     } catch (error) {
       console.error('Transaction failed', error);
-      setTxStatus(TxStatus.failed());
+      setTxStatus(TxStatus.failed('Transaction declined'));
     }
   };
 

@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'components/Button';
 import GradientText from 'components/GradientText';
-import CalamariLogo from 'resources/images/calamari.png';
 import AssetType from 'types/AssetType';
 import Decimal from 'decimal.js';
 import BN from 'bn.js';
@@ -12,6 +11,7 @@ import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
 import DotLoader from 'components/Loaders/DotLoader';
+import Icon from 'components/Icon';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';
 import { MAX_DELEGATIONS } from '../StakeConstants';
@@ -52,10 +52,14 @@ export const StakeModal = ({ hideModal }) => {
     }
   };
 
-  const availableBalanceText = `Available balance: ${getBalanceDisplayString(userAvailableBalance)}`;
+  const availableBalanceText = `Available balance: ${getBalanceDisplayString(
+    userAvailableBalance
+  )}`;
   const minStakeAmountString = selectedCollator.minStake.toDisplayString(0);
   const delegationAmountText = selectedCollatorDelegation
-    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
+    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toDisplayString(
+        0
+      )}`
     : 'Staked: 0 KMA';
 
   const minimumStakeText = ` Minimum stake: ${minStakeAmountString}`;
@@ -158,13 +162,8 @@ export const StakeModal = ({ hideModal }) => {
         <div
           className={`mt-2 px-4 pt-6 h-24 flex flex-wrap items-center rounded-lg border border-gray ${
             errorMessage ? 'border-red-500' : ''
-          }`}
-        >
-          <img
-            className="rounded-full mr-3 w-10"
-            src={CalamariLogo}
-            alt="Calamari(KMA)"
-          />
+          }`}>
+          <Icon className="rounded-full mr-3 w-10 bg-primary" name="calamari" />
           <input
             className="bg-fifth pl-1 flex-grow h-10 outline-none dark:text-white"
             placeholder="Amount"

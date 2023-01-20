@@ -17,15 +17,12 @@ const BridgeDataContext = React.createContext();
 export const BridgeDataContextProvider = (props) => {
   const { ethAddress } = useMetamask();
   const config = useConfig();
-  const {
-    externalAccount,
-    externalAccountSigner
-  } = useExternalAccount();
+  const { externalAccount } = useExternalAccount();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
 
   const {
-    isApiReady,
+    isApiInitialized,
     senderAssetType,
     senderAssetTargetBalance,
     senderAssetCurrentBalance,
@@ -49,16 +46,16 @@ export const BridgeDataContextProvider = (props) => {
   const originChainIsEvm = originChain?.getXcmAdapter().chain.type === 'ethereum';
   const destinationChainIsEvm = destinationChain?.getXcmAdapter().chain.type === 'ethereum';
 
+
   /**
    *
    * Initialization logic
    *
    */
 
-
   useEffect(() => {
     const initBridge = () => {
-      if (bridge || !externalAccount || !externalAccountSigner || !originChainOptions) {
+      if (bridge || !externalAccount || !originChainOptions) {
         return;
       }
       const adapters = originChainOptions.map((chain) => chain.getXcmAdapter());
@@ -68,8 +65,24 @@ export const BridgeDataContextProvider = (props) => {
       });
     };
     initBridge();
-  }, [externalAccountSigner, externalAccount, originChainOptions]);
+  }, [externalAccount, originChainOptions]);
 
+
+  const handleApiDisconnect = (chain) => {
+    dispatch({
+      type: BRIDGE_ACTIONS.SET_IS_API_DISCONNECTED,
+      isApiDisconnected: true,
+      chain
+    });
+  };
+
+  const handleApiConnect = (chain) => {
+    dispatch({
+      type: BRIDGE_ACTIONS.SET_IS_API_DISCONNECTED,
+      isApiDisconnected: false,
+      chain
+    });
+  };
 
   useEffect(() => {
     const initBridgeApis = () => {
@@ -78,14 +91,20 @@ export const BridgeDataContextProvider = (props) => {
       }
       for (const chain of originChainOptions) {
         const adapter = bridge.adapters.find((adapter) => adapter.chain.id === chain.name);
-        chain.getXcmApi().then(api => {
-          adapter.setApi(api);
-          dispatch({
-            type: BRIDGE_ACTIONS.SET_IS_API_READY,
-            isApiReady: true,
-            chain
+        const api = chain.getXcmApi();
+        api.on('connected', () => {
+          handleApiConnect(chain);
+          // only runs on initial connection
+          api.isReady.then(() => {
+            adapter.setApi(api);
+            dispatch({
+              type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+              chain
+            });
           });
         });
+        api.on('error', () => handleApiDisconnect(chain));
+        api.on('disconnected', () => handleApiDisconnect(chain));
       }
     };
     initBridgeApis();
@@ -128,6 +147,7 @@ export const BridgeDataContextProvider = (props) => {
     setDestinationAddressOnChangeExternalAccount();
   }, [externalAccount]);
 
+
   /**
    *
    * Subscriptions
@@ -135,7 +155,7 @@ export const BridgeDataContextProvider = (props) => {
    */
 
   const subscribeBalanceChanges = (assetType, handler) => {
-    if (!assetType || !originAddress || !isApiReady) {
+    if (!assetType || !originAddress || !isApiInitialized) {
       return;
     }
     const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
@@ -146,7 +166,7 @@ export const BridgeDataContextProvider = (props) => {
 
   useEffect(() => {
     const handleSenderNativeAssetBalanceChange = (balanceData) => {
-      if (!isApiReady) {
+      if (!isApiInitialized) {
         return;
       }
       const senderNativeAssetCurrentBalance = Balance.fromBaseUnits(
@@ -162,11 +182,11 @@ export const BridgeDataContextProvider = (props) => {
       originChain.nativeAsset, handleSenderNativeAssetBalanceChange
     );
     return () => subscription?.unsubscribe();
-  }, [senderAssetType, originAddress, originChain, isApiReady]);
+  }, [senderAssetType, originAddress, originChain, isApiInitialized]);
 
   useEffect(() => {
     const handleBalanceChange = (balanceData) => {
-      if (!isApiReady) {
+      if (!isApiInitialized) {
         return;
       }
       const senderAssetCurrentBalance = Balance.fromBaseUnits(
@@ -180,7 +200,7 @@ export const BridgeDataContextProvider = (props) => {
     };
     const subscription = subscribeBalanceChanges(senderAssetType, handleBalanceChange);
     return () => subscription?.unsubscribe();
-  }, [senderAssetType, originAddress, originChain, isApiReady]);
+  }, [senderAssetType, originAddress, originChain, isApiInitialized]);
 
 
   useEffect(() => {
@@ -243,7 +263,7 @@ export const BridgeDataContextProvider = (props) => {
       if (
         !senderAssetType
         || !originAddress
-        || !isApiReady
+        || !isApiInitialized
         || !originChain
       ) {
         return;
@@ -256,8 +276,9 @@ export const BridgeDataContextProvider = (props) => {
     subscribeInputConfig();
   },[
     senderAssetType, senderAssetCurrentBalance, senderAssetTargetBalance,
-    originAddress, destinationAddress, originChain, destinationChain, isApiReady
+    originAddress, destinationAddress, originChain, destinationChain, isApiInitialized
   ]);
+
 
   /**
    *
@@ -282,7 +303,8 @@ export const BridgeDataContextProvider = (props) => {
     dispatch({
       type: BRIDGE_ACTIONS.SET_ORIGIN_CHAIN,
       originChain,
-      isApiReady: getIsApiReady(originChain)
+      isApiInitialized: getisApiInitialized(originChain),
+      isApiDisconnected: getisApiDisconnected(originChain)
     });
   };
 
@@ -307,17 +329,25 @@ export const BridgeDataContextProvider = (props) => {
     if (originChain && destinationChain) {
       dispatch({
         type: BRIDGE_ACTIONS.SWITCH_ORIGIN_AND_DESTINATION,
-        isApiReady: getIsApiReady(destinationChain)
+        isApiInitialized: getisApiInitialized(destinationChain),
+        isApiDisconnected: getisApiDisconnected(destinationChain)
       });
     }
   };
 
   // Returns true if the given chain's api is ready
-  const getIsApiReady = (chain) => {
-    const targetAdapter = bridge?.adapters.find(
+  const getisApiInitialized = (chain) => {
+    const xcmAdapter = bridge?.adapters.find(
       (adapter) => adapter.chain.id === chain?.name
     );
-    return !!targetAdapter?.api?.isReady;
+    return !!xcmAdapter?.api?.isReady;
+  };
+
+  const getisApiDisconnected = (chain) => {
+    const xcmAdapter = bridge?.adapters.find(
+      (adapter) => adapter.chain.id === chain?.name
+    );
+    return !xcmAdapter?.api?.isConnected;
   };
 
   const value = {

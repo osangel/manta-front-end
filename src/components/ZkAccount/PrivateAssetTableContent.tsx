@@ -1,12 +1,13 @@
 //@ts-nocheck
 import { useZkAccountBalances } from "contexts/zkAccountBalancesContext";
 import { usePrivateWallet } from "contexts/privateWalletContext";
+import Icon from "components/Icon";
 
 const PrivateAssetItem = ({ balance }) => {
   return (
     <div className="flex items-center justify-between pl-2.5 pr-3.5 py-2 text-sm hover:bg-thirdry">
       <div className="flex gap-3 items-center">
-        <img className="w-8 h-8 rounded-full" src={balance.assetType.icon} />
+        <Icon className="w-8 h-8 rounded-full" name={balance.assetType.icon} />
         <div>
           <div className="text-white">{balance.assetType.ticker}</div>
           <div className="text-secondary">

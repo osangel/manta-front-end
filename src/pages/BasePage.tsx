@@ -17,14 +17,16 @@ import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesCont
 
 const TxStatusHandler = () => {
   const config = useConfig();
-  const { txStatus } = useTxStatus();
+  const { txStatus, setTxStatus } = useTxStatus();
   const subscanUrl = txStatus?.subscanUrl || config.SUBSCAN_URL;
 
   useEffect(() => {
     if (txStatus?.isFinalized()) {
       showSuccess(subscanUrl, 'Transaction succeeded', txStatus?.extrinsic);
+      setTxStatus(null);
     } else if (txStatus?.isFailed()) {
-      showError('Transaction failed');
+      showError(txStatus.message || 'Transaction failed');
+      setTxStatus(null);
     } else if (txStatus?.isProcessing() && txStatus.message) {
       showInfo(txStatus.message);
     }

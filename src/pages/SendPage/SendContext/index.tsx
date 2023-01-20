@@ -9,7 +9,6 @@ import BN from 'bn.js';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import AssetType from 'types/AssetType';
-import { FAILURE as WASM_WALLET_FAILURE } from 'manta-wasm-wallet-api';
 import getExtrinsicGivenBlockHash from 'utils/api/getExtrinsicGivenBlockHash';
 import { useConfig } from 'contexts/configContext';
 import { MantaPrivateWallet, MantaUtilities } from 'manta.js-kg-dev';
@@ -39,6 +38,7 @@ export const SendContextProvider = (props) => {
     receiverAssetType,
     receiverAddress
   } = state;
+
 
   /**
    * Initialization logic
@@ -461,56 +461,41 @@ export const SendContextProvider = (props) => {
       return;
     }
     setTxStatus(TxStatus.processing());
-    try {
-      let res;
-      if (isPrivateTransfer()) {
-        res = await privateTransfer(state);
-      } else if (isPublicTransfer()) {
-        res = await publicTransfer(state);
-      } else if (isToPrivate()) {
-        res = await toPrivate(state);
-      } else if (isToPublic()) {
-        res = await toPublic(state);
-      }
-      if (res === WASM_WALLET_FAILURE || res === false) {
-        console.error('Transaction failed');
-        setTxStatus(TxStatus.failed());
-        return false;
-      }
-    } catch (error) {
-      console.error('Transaction failed', error);
-      setTxStatus(TxStatus.failed());
-      return false;
+    if (isPrivateTransfer()) {
+      await privateTransfer(state);
+    } else if (isPublicTransfer()) {
+      await publicTransfer(state);
+    } else if (isToPrivate()) {
+      await toPrivate(state);
+    } else if (isToPublic()) {
+      await toPublic(state);
     }
   };
 
   // Attempts to build and send an internal transaction minting public tokens to private tokens
   const toPrivate = async () => {
-    const res = await privateWallet.toPrivate(
+    await privateWallet.toPrivate(
       state.senderAssetTargetBalance,
       handleTxRes
     );
-    return res;
   };
 
   // Attempts to build and send an internal transaction reclaiming private tokens to public tokens
   const toPublic = async () => {
-    const res = await privateWallet.toPublic(
+    await privateWallet.toPublic(
       state.senderAssetTargetBalance,
       handleTxRes
     );
-    return res;
   };
 
   // Attempts to build and send a transaction to some private account
   const privateTransfer = async () => {
     const { senderAssetTargetBalance, receiverAddress } = state;
-    const res = await privateWallet.privateTransfer(
+    await privateWallet.privateTransfer(
       senderAssetTargetBalance,
       receiverAddress,
       handleTxRes
     );
-    return res;
   };
 
   const buildPublicTransfer = async (
@@ -532,12 +517,13 @@ export const SendContextProvider = (props) => {
 
   // Attempts to build and send a transaction to some public account
   const publicTransfer = async () => {
-    const tx = await buildPublicTransfer(
-      senderAssetTargetBalance,
-      receiverAddress
-    );
-    const res = await tx.signAndSend(externalAccountSigner, handleTxRes);
-    return res;
+    const tx = await buildPublicTransfer(senderAssetTargetBalance, receiverAddress);
+    try {
+      await tx.signAndSend(externalAccountSigner, handleTxRes);
+    } catch (e) {
+      console.error('Failed to send transaction', e);
+      setTxStatus(TxStatus.failed('Transaction declined'));
+    }
   };
 
   const isToPrivate = () => {

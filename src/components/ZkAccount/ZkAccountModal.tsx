@@ -1,13 +1,12 @@
 //@ts-nocheck
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import MantaIcon from 'resources/images/manta.png';
 import PrivateActivityTableContent from './PrivateActivityTableContent';
 import PrivateAssetTableContent from './PrivateAssetTableContent';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import CopyPasteIcon from 'components/CopyPasteIcon';
-import Svgs from 'resources/icons';
-
+import Icon from 'components/Icon';
+import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 
 const TableContentSelector = ({
   displayAssets,
@@ -20,36 +19,57 @@ const TableContentSelector = ({
         className="cursor-pointer w-1/2 text-center text-sm"
         onClick={displayAssetsHandler}>
         <div
-          className={classNames('pt-4 pb-2.5', {
+          className={classNames('pt-4 pb-3.5', {
             'text-white': displayAssets
           })}>
           Assets
         </div>
-        <img
-          src={displayAssets ? Svgs.BlueSolidLineIcon : Svgs.GrayThinLineIcon}
-          alt="line"
-        />
+        <Icon name={displayAssets ? 'blueSolidLine' : 'grayThinLine'} />
       </div>
       <div
         className="cursor-pointer w-1/2 text-center text-sm"
         onClick={displayActivityHandler}>
         <div
-          className={classNames('pt-4 pb-2.5', {
+          className={classNames('pt-4 pb-3.5', {
             'text-white': !displayAssets
           })}>
           Activity
         </div>
-        <img
-          src={displayAssets ? Svgs.GrayThinLineIcon : Svgs.BlueSolidLineIcon}
-          alt="line"
-        />
+        <Icon name={displayAssets ? 'grayThinLine' : 'blueSolidLine'} />
       </div>
     </div>
   );
 };
 
-const ZkAccountModalContent = () => {
+const ZkAddressDisplay = () => {
   const { privateAddress } = usePrivateWallet();
+  const privateAddressDisplayString = `zkAddress ${privateAddress.slice(
+    0,
+    6
+  )}..${privateAddress.slice(-4)}`;
+  return (
+    <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-2 text-secondary flex items-center justify-center gap-4">
+      <div className="flex items-center gap-2">
+        <Icon className="w-6 h-6" name="manta" />
+        <span className="text-white font-light">
+          {privateAddressDisplayString}
+        </span>
+      </div>
+      <CopyPasteIcon className="w-5 h-5" textToCopy={privateAddress} />
+    </div>
+  );
+};
+
+const UsdBalanceDisplay = () => {
+  return (
+    <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-1 mt-4 text-secondary flex flex-col justify-center items-center">
+      <span className="pt-3 pb-1 text-base text-white">Total Balance</span>
+      <div className="text-white pb-3 text-2xl font-bold">{'$0.00'}</div>
+    </div>
+  );
+};
+
+const TableContentDisplay = () => {
   const [displayAssets, setDisplayAssets] = useState(true);
 
   const displayAssetsHandler = () => {
@@ -59,44 +79,38 @@ const ZkAccountModalContent = () => {
   const displayActivityHandler = () => {
     setDisplayAssets(false);
   };
-
-  const succinctAddress = `${privateAddress.slice(
-    0,
-    6
-  )}..${privateAddress.slice(-4)}`;
   return (
     <>
-      <div className="w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-white border-opacity-20 text-secondary ">
-        <div className="flex flex-col gap-3">
-          <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-2 text-secondary flex items-center justify-center gap-4">
-            <div className="flex items-center gap-2">
-              <img className="w-6 h-6" src={MantaIcon} alt="Manta" />
-              <span className="text-white font-light">
-                zkAddress&nbsp;
-                {succinctAddress}
-              </span>
-            </div>
-            <CopyPasteIcon className="w-5 h-5" textToCopy={privateAddress} />
-          </div>
-          <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-1 text-secondary flex flex-col justify-center items-center">
-            <span className="pt-3 pb-1 text-base text-white">
-              Total Balance
-            </span>
-            <div className="text-white pb-3 text-2xl font-bold">{'$0.00'}</div>
-          </div>
-        </div>
-        <TableContentSelector
-          displayAssets={displayAssets}
-          displayAssetsHandler={displayAssetsHandler}
-          displayActivityHandler={displayActivityHandler}
-        />
-        <div className="overflow-y-auto h-50">
-          {displayAssets ? (
-            <PrivateAssetTableContent />
-          ) : (
-            <PrivateActivityTableContent />
-          )}
-        </div>
+      <TableContentSelector
+        displayAssets={displayAssets}
+        displayAssetsHandler={displayAssetsHandler}
+        displayActivityHandler={displayActivityHandler}
+      />
+      <div className="overflow-y-auto h-50">
+        {displayAssets ? (
+          <PrivateAssetTableContent />
+        ) : (
+          <PrivateActivityTableContent />
+        )}
+      </div>
+    </>
+  );
+};
+
+const ZkAccountModalContent = () => {
+  const { apiState } = useSubstrate();
+  const isDisconnected =
+    apiState === API_STATE.DISCONNECTED || apiState === API_STATE.ERROR;
+  return (
+    <>
+      <div className="flex flex-col w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-white border-opacity-20 text-secondary ">
+        <ZkAddressDisplay />
+        <UsdBalanceDisplay />
+        {isDisconnected ? (
+          <NetworkDisconnectedDisplay />
+        ) : (
+          <TableContentDisplay />
+        )}
       </div>
     </>
   );

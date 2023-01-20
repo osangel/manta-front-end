@@ -1,6 +1,9 @@
 import React from 'react';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import BalanceDisplay from 'components/Balance/BalanceDisplay';
+import { API_STATE, useSubstrate } from 'contexts/substrateContext';
+import getZkTransactBalanceText from 'utils/display/getZkTransactBalanceText';
+import Icon from 'components/Icon';
 import { useSend } from '../SendContext';
 
 const ReceiverBalanceDisplay = () => {
@@ -8,20 +11,22 @@ const ReceiverBalanceDisplay = () => {
     receiverAssetType,
     receiverCurrentBalance,
     receiverAddress,
-    isToPrivate,
-    isPrivateTransfer,
-    senderAssetTargetBalance,
+    receiverIsPrivate,
+    senderAssetTargetBalance
   } = useSend();
   const { isInitialSync } = usePrivateWallet();
+  const { apiState } = useSubstrate();
 
-  const shouldShowInitialSync =
-    isInitialSync.current && (isToPrivate() || isPrivateTransfer());
-  const balanceString = shouldShowInitialSync
-    ? 'Syncing zk account'
-    : receiverCurrentBalance?.toString();
+  const apiIsDisconnected = apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
 
-  const shouldShowLoader =
-    receiverAddress && !receiverCurrentBalance && !shouldShowInitialSync;
+  const balanceText = getZkTransactBalanceText(
+    receiverCurrentBalance,
+    apiIsDisconnected,
+    receiverIsPrivate(),
+    isInitialSync.current
+  );
+
+  const shouldShowLoader = receiverAddress && !receiverCurrentBalance && !balanceText;
 
   const targetBalanceString = senderAssetTargetBalance
     ? senderAssetTargetBalance.toString()
@@ -33,10 +38,9 @@ const ReceiverBalanceDisplay = () => {
       </div>
       <div className="absolute right-6 top-2 border-0 flex flex-y items-center gap-3 mt-2">
         <div>
-          <img
+          <Icon
             className="w-6 h-6 rounded-full"
-            src={receiverAssetType?.icon}
-            alt="icon"
+            name={receiverAssetType?.icon}
           />
         </div>
         <div className="text-black dark:text-white place-self-center">
@@ -44,7 +48,7 @@ const ReceiverBalanceDisplay = () => {
         </div>
       </div>
       <BalanceDisplay
-        balance={balanceString}
+        balance={balanceText}
         className="absolute text-white right-0 bottom-3 mr-6 mt-2.5 text-xs"
         loader={shouldShowLoader}
       />

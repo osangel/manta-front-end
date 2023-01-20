@@ -1,9 +1,9 @@
 //@ts-nocheck
-import Svgs from 'resources/icons';
 import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
 import { getPrivateTransactionHistory } from 'utils/persistence/privateTransactionHistory';
 import { PRIVATE_TX_TYPE, HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
+import Icon from 'components/Icon';
 import Balance from 'types/Balance';
 
 const PrivateActivityTableContent = () => {
@@ -78,7 +78,7 @@ const ActivityMessage = ({ transactionType, amount, assetBaseType }) => {
     return (
       <div className="text-secondary text-xss flex flex-row items-center gap-2">
         {`${amount} ${assetBaseType}`}
-        <img src={Svgs.ThreeRightArrowIcon} alt={'ThreeArrowRightIcon'} />
+        <Icon name={'threeRightArrow'} />
         {`${amount} zk${assetBaseType}`}
       </div>
     );
@@ -86,7 +86,7 @@ const ActivityMessage = ({ transactionType, amount, assetBaseType }) => {
     return (
       <div className="text-secondary text-xss flex flex-row items-center gap-2">
         {`${amount} zk${assetBaseType}`}
-        <img src={Svgs.ThreeRightArrowIcon} alt={'ThreeArrowRightIcon'} />
+        <Icon name={'threeRightArrow'} />
         {`${amount} ${assetBaseType}`}
       </div>
     );
@@ -110,14 +110,14 @@ const StatusMessage = ({ status }) => {
   } else if (status === HISTORY_EVENT_STATUS.SUCCESS) {
     textColor = 'text-green-300';
   }
-  const StatusMessageTemplate = ({ iconSrc, iconAlt, message }) => {
+  const StatusMessageTemplate = ({ iconName, message }) => {
     return (
       <div
         className={classNames(
           'text-xss flex flex-row items-center gap-1',
           textColor
         )}>
-        <img src={iconSrc} alt={iconAlt} />
+        <Icon name={iconName} />
         {message}
       </div>
     );
@@ -125,24 +125,21 @@ const StatusMessage = ({ status }) => {
   if (status === HISTORY_EVENT_STATUS.SUCCESS) {
     return (
       <StatusMessageTemplate
-        iconSrc={Svgs.TxSuccessIcon}
-        iconAlt={'TxSuccessIcon'}
+        iconName={'txSuccess'}
         message={HISTORY_EVENT_STATUS.SUCCESS}
       />
     );
   } else if (status === HISTORY_EVENT_STATUS.FAILED) {
     return (
       <StatusMessageTemplate
-        iconSrc={Svgs.TxFailedIcon}
-        iconAlt={'TxFailedIcon'}
+        iconName={'txFailed'}
         message={HISTORY_EVENT_STATUS.FAILED}
       />
     );
   } else if (status === HISTORY_EVENT_STATUS.PENDING) {
     return (
       <StatusMessageTemplate
-        iconSrc={Svgs.TxPendingIcon}
-        iconAlt={'TxPendingIcon'}
+        iconName={'txPending'}
         message={HISTORY_EVENT_STATUS.PENDING}
       />
     );

@@ -3,8 +3,8 @@ import React from 'react';
 import { getWallets } from '@talismn/connect-wallets';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
-import Svgs from 'resources/icons';
-import getWalletDisplayName from 'utils/text/getWalletDisplayName';
+import Icon from 'components/Icon';
+import getWalletDisplayName from 'utils/display/getWalletDisplayName';
 
 const WalletNotInstalledBlock = ({
   walletName,
@@ -14,11 +14,15 @@ const WalletNotInstalledBlock = ({
   return (
     <div className="mt-6 py-3 px-4 h-16 text-sm flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
-        <img
-          src={walletLogo.src}
-          alt={walletLogo.alt}
-          className="w-6 h-6 rounded-full"
-        />
+        {walletLogo && typeof walletLogo === 'object' ? (
+          <img
+            src={walletLogo.src}
+            alt={walletLogo.alt}
+            className="w-6 h-6 rounded-full"
+          />
+        ) : (
+          <Icon name={walletLogo} className="w-6 h-6 rounded-full" />
+        )}
         {walletName}
       </div>
       <a href={walletInstallLink} target="_blank" rel="noreferrer">
@@ -36,11 +40,15 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
       onClick={connectHandler}
       className="mt-5 py-3 px-4 h-16 flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
-        <img
-          src={walletLogo.src}
-          alt={walletLogo.alt}
-          className="w-6 h-6 rounded-full"
-        />
+        {walletLogo && typeof walletLogo === 'object' ? (
+          <img
+            src={walletLogo.src}
+            alt={walletLogo.alt}
+            className="w-6 h-6 rounded-full"
+          />
+        ) : (
+          <Icon name={walletLogo} className="w-6 h-6 rounded-full" />
+        )}
         {walletName}
       </div>
       <div className="rounded-lg bg-button-fourth text-white py-2 px-4 text-xs">
@@ -54,11 +62,16 @@ const WalletEnabledBlock = ({ walletName, walletLogo }) => {
   return (
     <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
-        <img
-          src={walletLogo.src}
-          alt={walletLogo.alt}
-          className="w-6 h-6 rounded-full"
-        />
+        {walletLogo && typeof walletLogo === 'object' ? (
+          <img
+            src={walletLogo.src}
+            alt={walletLogo.alt}
+            className="w-6 h-6 rounded-full"
+          />
+        ) : (
+          <Icon name={walletLogo} className="w-6 h-6 rounded-full" />
+        )}
+
         {walletName}
       </div>
       <div className="flex flex-row gap-3 items-center rounded-lg text-xs">
@@ -99,9 +112,17 @@ const ConnectWalletBlock = ({
   }
 };
 
-const MetamaskConnectWalletBlock = () => {
+const MetamaskConnectWalletBlock = ({hideModal}) => {
   const { configureMoonRiver, ethAddress } = useMetamask();
-  const metamaskIsInstalled = window.ethereum?.isMetaMask && !window.ethereum?.isBraveWallet && !window.ethereum.isTalisman;
+  const metamaskIsInstalled =
+    window.ethereum?.isMetaMask &&
+    !window.ethereum?.isBraveWallet &&
+    !window.ethereum.isTalisman;
+
+  const handleConnectWallet = async () => {
+    const isConnected = await configureMoonRiver();
+    isConnected && hideModal();
+  };
 
   return (
     <ConnectWalletBlock
@@ -109,26 +130,28 @@ const MetamaskConnectWalletBlock = () => {
       walletName={'Metamask (for Moonriver)'}
       isWalletInstalled={metamaskIsInstalled}
       walletInstallLink={'https://metamask.io/'}
-      walletLogo={{ src: Svgs.Metamask, alt: '' }}
+      walletLogo="metamask"
       isWalletEnabled={!!ethAddress}
-      connectHandler={configureMoonRiver}
+      connectHandler={handleConnectWallet}
     />
   );
 };
 
-export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected }) => {
+export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
   const { connectWallet, connectWalletExtension } = useKeyring();
 
-  const onSubstrateWalletConnectHandler = (walletName) => () => {
+  const handleConnectWallet = (walletName) => async () => {
     connectWalletExtension(walletName);
-    connectWallet(walletName);
-    setIsMetamaskSelected && setIsMetamaskSelected(false);
+    const isConnected = await connectWallet(walletName);
+    if (isConnected) {
+      setIsMetamaskSelected(false);
+      hideModal();
+    }
   };
 
   return getWallets().map((wallet) => {
     // wallet.extension would not be defined if enabled not called
     const isWalletEnabled = wallet.extension ? true : false;
-
     return (
       <ConnectWalletBlock
         key={wallet.extensionName}
@@ -137,23 +160,24 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected }) => {
         walletInstallLink={wallet.installUrl}
         walletLogo={wallet.logo}
         isWalletEnabled={isWalletEnabled}
-        connectHandler={onSubstrateWalletConnectHandler(wallet.extensionName)}
+        connectHandler={handleConnectWallet(wallet.extensionName)}
       />
     );
   });
 };
 
-const ConnectWalletModal = ({ setIsMetamaskSelected }) => {
+const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
   const isBridgePage = window?.location?.pathname?.includes('dolphin/bridge');
   return (
     <div className="w-96">
       <h1 className="text-xl text-white">Connect Wallet</h1>
       <SubstrateConnectWalletBlock
         setIsMetamaskSelected={setIsMetamaskSelected}
+        hideModal={hideModal}
       />
-      {isBridgePage && <MetamaskConnectWalletBlock />}
+      {isBridgePage && <MetamaskConnectWalletBlock hideModal={hideModal} />}
       <p className="flex flex-row gap-2 mt-5 text-secondary text-xsss">
-        <img src={Svgs.InformationIcon} />
+        <Icon name="information" />
         Already installed? Try refreshing this page
       </p>
     </div>

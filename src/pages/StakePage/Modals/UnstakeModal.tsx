@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'components/Button';
 import GradientText from 'components/GradientText';
-import CalamariLogo from 'resources/images/calamari.png';
 import Balance from 'types/Balance';
 import AssetType from 'types/AssetType';
 import Decimal from 'decimal.js';
@@ -12,6 +11,7 @@ import WarningText from 'components/Error/WarningText';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
+import Icon from 'components/Icon';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';
 import ModalNotes from './ModalNotes';
@@ -34,7 +34,6 @@ export const UnstakeModal = ({ hideModal }) => {
     unstake
   } = useStakeTx();
 
-
   const config = useConfig();
   const { externalAccount } = useExternalAccount();
   const { txStatus } = useTxStatus();
@@ -44,15 +43,18 @@ export const UnstakeModal = ({ hideModal }) => {
   const [warningMessage, setWarningMessage] = useState(null);
 
   const delegationAmountText = selectedCollatorDelegation
-    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
+    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toDisplayString(
+        0
+      )}`
     : 'Staked: 0 KMA';
 
   const minimumStakeAmountString = selectedCollator.minStake.toDisplayString(0);
   const minimumStakeText = ` Minimum stake: ${minimumStakeAmountString}`;
 
-  const usdValueText = (unstakeTargetBalance && usdPerKma)
-    ? unstakeTargetBalance.toUsd(usdPerKma).toString()
-    : '';
+  const usdValueText =
+    unstakeTargetBalance && usdPerKma
+      ? unstakeTargetBalance.toUsd(usdPerKma).toString()
+      : '';
 
   const notes = [
     'The unstaking process takes seven days. After seven days you can withdraw your tokens.',
@@ -65,7 +67,11 @@ export const UnstakeModal = ({ hideModal }) => {
         setErrorMessage('Wallet not connected');
       } else if (txStatus?.isProcessing()) {
         setErrorMessage('Transaction in progress');
-      } else if (!unstakeTargetBalance || !selectedCollator || !userAvailableBalance) {
+      } else if (
+        !unstakeTargetBalance ||
+        !selectedCollator ||
+        !userAvailableBalance
+      ) {
         setErrorMessage(null);
       } else if (!getUnstakeAmountIsOverZero()) {
         setErrorMessage('Cannot unstake zero balance');
@@ -146,13 +152,8 @@ export const UnstakeModal = ({ hideModal }) => {
         <div
           className={`mt-6 px-4 pt-6 h-24 flex flex-wrap items-center rounded-lg border border-gray ${
             errorMessage ? 'border-red-500' : ''
-          }`}
-        >
-          <img
-            className="rounded-full mr-3 w-10"
-            src={CalamariLogo}
-            alt="Calamari(KMA)"
-          />
+          }`}>
+          <Icon className="rounded-full mr-3 w-10 bg-primary" name="calamari" />
           <input
             className="bg-fifth pl-1 flex-grow h-10 outline-none dark:text-white"
             placeholder="Amount"
@@ -164,21 +165,24 @@ export const UnstakeModal = ({ hideModal }) => {
               <GradientText className="text-link text-base" text="MAX" />
             </span>
           </div>
-          <div className="w-full mb-2 text-xss pl-14 text-secondary">{usdValueText}</div>
-          <br/>
+          <div className="w-full mb-2 text-xss pl-14 text-secondary">
+            {usdValueText}
+          </div>
+          <br />
         </div>
       </div>
-      {errorMessage
-        ? <ErrorText errorMessage={errorMessage} />
-        : <WarningText warningMessage={warningMessage} />
-      }
+      {errorMessage ? (
+        <ErrorText errorMessage={errorMessage} />
+      ) : (
+        <WarningText warningMessage={warningMessage} />
+      )}
 
       <div className="mt-2 w-full">
         <Button className="w-full btn-primary" onClick={onClickUnstake}>
           Unstake
         </Button>
       </div>
-      <ModalNotes notes={notes}/>
+      <ModalNotes notes={notes} />
     </div>
   );
 };

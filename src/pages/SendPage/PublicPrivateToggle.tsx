@@ -3,7 +3,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import PropTypes from 'prop-types';
-import Svgs from 'resources/icons';
+import Icon from 'components/Icon';
 
 const PublicPrivateToggle = ({ isPrivate, onToggle, prefix }) => {
   const { txStatus } = useTxStatus();
@@ -29,24 +29,15 @@ const PublicPrivateToggle = ({ isPrivate, onToggle, prefix }) => {
           'flex text-center cursor-pointer place-items-center btn-hover unselectable-text',
           'rounded-full bg-button-secondary text-white',
           { disabled: disabled }
-        )}
-      >
+        )}>
         {isPrivate ? (
           <div className="flex flex-row gap-2 w-24 justify-center items-center text-xss">
-            <img
-              className="w-3 h-3 place-self-center"
-              src={Svgs.LockIcon}
-              alt="icon"
-            />
+            <Icon name="lock" className="w-3 h-3 place-self-center" />
             Private
           </div>
         ) : (
           <div className="flex flex-row gap-2 w-24 justify-center items-center text-xss">
-            <img
-              className="w-3 h-3 place-self-center"
-              src={Svgs.InternetIcon}
-              alt="icon"
-            />
+            <Icon name="internet" className="w-3 h-3 place-self-center" />
             Public
           </div>
         )}

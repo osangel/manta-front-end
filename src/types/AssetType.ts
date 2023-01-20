@@ -1,6 +1,5 @@
 // @ts-nocheck
 import NETWORK from 'constants/NetworkConstants';
-import Svgs from 'resources/icons';
 import BN from 'bn.js';
 
 const AssetIds = {
@@ -71,7 +70,7 @@ export default class AssetType {
       getAssetIds(config).DOL,
       'Dolphin',
       'DOL',
-      Svgs.Dolphin,
+      'dolphin',
       12,
       new BN('100000000000'),
       isPrivate,
@@ -86,7 +85,7 @@ export default class AssetType {
       getAssetIds(config).KMA,
       'Calamari',
       'KMA',
-      Svgs.Calamari,
+      'calamari',
       12,
       new BN('100000000000'),
       isPrivate,
@@ -100,7 +99,7 @@ export default class AssetType {
       getAssetIds(config).KAR,
       'Karura',
       'KAR',
-      Svgs.KarIcon,
+      'kar',
       12,
       new BN('100000000000'),
       isPrivate,
@@ -112,7 +111,7 @@ export default class AssetType {
       getAssetIds(config).KSM,
       'Kusama',
       'KSM',
-      Svgs.KusamaIcon,
+      'kusama',
       12,
       new BN('500000000'),
       isPrivate,
@@ -125,7 +124,7 @@ export default class AssetType {
       getAssetIds(config).ROC,
       'Rococo',
       'ROC',
-      Svgs.RocIcon,
+      'roc',
       12,
       new BN('1'),
       isPrivate,
@@ -138,7 +137,7 @@ export default class AssetType {
       getAssetIds(config).KBTC,
       'Kintsugi BTC',
       'kBTC',
-      Svgs.KbtcIcon,
+      'kbtc',
       8,
       new BN('1'),
       isPrivate,
@@ -151,7 +150,7 @@ export default class AssetType {
       getAssetIds(config).MOVR,
       'Moonriver',
       'MOVR',
-      Svgs.MovrIcon,
+      'movr',
       18,
       new BN('10000000000000000'),
       isPrivate,
@@ -172,7 +171,7 @@ export default class AssetType {
         AssetType.Calamari(config, isPrivate),
         AssetType.Karura(config, isPrivate),
         AssetType.Kusama(config, isPrivate),
-        AssetType.Moonriver(config, isPrivate),
+        AssetType.Moonriver(config, isPrivate)
       ];
     }
   }
@@ -224,7 +223,9 @@ export default class AssetType {
   }
 
   canTransferXcm = (originChain, destinationChain) => {
-    return originChain.xcmAssets.find(asset => asset.name === this.name)
-      && destinationChain.xcmAssets.find(asset => asset.name === this.name);
+    return (
+      originChain.xcmAssets.find((asset) => asset.name === this.name) &&
+      destinationChain.xcmAssets.find((asset) => asset.name === this.name)
+    );
   };
 }
