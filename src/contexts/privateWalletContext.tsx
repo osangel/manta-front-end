@@ -163,7 +163,6 @@ export const PrivateWalletContextProvider = (props) => {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
           setTxStatus(TxStatus.failed());
-          removePendingHistoryEvent();
           txQueue.current = [];
           console.error('Internal transaction failed', event);
         }
@@ -200,7 +199,6 @@ export const PrivateWalletContextProvider = (props) => {
         );
       } catch (e) {
         setTxStatus(TxStatus.failed());
-        removePendingHistoryEvent();
         txQueue.current = [];
       }
     };

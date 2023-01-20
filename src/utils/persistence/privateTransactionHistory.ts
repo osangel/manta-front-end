@@ -38,18 +38,31 @@ export const updateHistoryEventStatus = (status, extrinsicHash) => {
 };
 
 // remove pending history event (usually the last one) from the history
-export const removePendingHistoryEvent = () => {
+export const removePendingHistoryEvent = (extrinsicHash) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
   if (privateTransactionHistory.length === 0) {
     return;
   }
 
-  const lastTransaction =
-    privateTransactionHistory[privateTransactionHistory.length - 1];
-  if (lastTransaction.status !== HISTORY_EVENT_STATUS.PENDING) {
-    return;
-  }
+  if (extrinsicHash) {
+    const historyEvent = privateTransactionHistory.find(
+      (historyEvent) => historyEvent.extrinsicHash === extrinsicHash
+    );
 
-  privateTransactionHistory.pop();
+    if (historyEvent && historyEvent.status === HISTORY_EVENT_STATUS.PENDING) {
+      privateTransactionHistory.splice(
+        privateTransactionHistory.indexOf(historyEvent),
+        1
+      );
+    }
+  } else {
+    const lastTransaction =
+      privateTransactionHistory[privateTransactionHistory.length - 1];
+    if (lastTransaction.status !== HISTORY_EVENT_STATUS.PENDING) {
+      return;
+    }
+
+    privateTransactionHistory.pop();
+  }
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };

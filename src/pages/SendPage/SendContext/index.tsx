@@ -16,8 +16,7 @@ import { MantaPrivateWallet, MantaUtilities } from 'manta.js-kg-dev';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
 import {
-  updateHistoryEventStatus,
-  removePendingHistoryEvent
+  updateHistoryEventStatus
 } from 'utils/persistence/privateTransactionHistory';
 import { HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
 
@@ -476,7 +475,6 @@ export const SendContextProvider = (props) => {
       if (res === WASM_WALLET_FAILURE || res === false) {
         console.error('Transaction failed');
         setTxStatus(TxStatus.failed());
-        removePendingHistoryEvent();
         return false;
       }
     } catch (error) {

@@ -4,6 +4,7 @@ import * as axios from 'axios';
 import { usePrivateWallet } from './privateWalletContext';
 import {
   appendHistoryEvent,
+  removePendingHistoryEvent,
   setPrivateTransactionHistory,
   getPrivateTransactionHistory,
   updateHistoryEventStatus
@@ -79,13 +80,21 @@ export const PrivateTxHistoryContextProvider = (props) => {
           {
             hash: tx.extrinsicHash
           }
-        );
-        const data = response.data.data;
-        if (data !== null) {
-          const status = data.success
+        ).catch((error) => {
+          console.log(error);
+        });
+        const data = response?.data.data;
+        if (data) {
+          const status = data?.success
             ? HISTORY_EVENT_STATUS.SUCCESS
             : HISTORY_EVENT_STATUS.FAILURE;
           updateHistoryEventStatus(status, tx.extrinsicHash);
+        } else {
+          const createdTime = new Date(tx.date).getTime();
+          const currentTime = new Date().getTime();
+          if (currentTime - createdTime > 200000) {
+            removePendingHistoryEvent(tx.extrinsicHash);
+          }
         }
       }
     });
