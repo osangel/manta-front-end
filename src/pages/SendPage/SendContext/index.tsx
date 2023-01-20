@@ -416,35 +416,43 @@ export const SendContextProvider = (props) => {
       );
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
-          setTxStatus(TxStatus.failed());
-          updateHistoryEventStatus(
-            HISTORY_EVENT_STATUS.FAILED,
-            extrinsic.hash.toString()
-          );
-          console.error('Transaction failed', event);
+          handleTxFailure(extrinsic);
         }
       }
     } else if (status.isFinalized) {
-      try {
-        const extrinsic = await getExtrinsicGivenBlockHash(
-          status.asFinalized,
-          externalAccount,
-          api
-        );
-        const extrinsicHash = extrinsic.hash.toHex();
-        setTxStatus(TxStatus.finalized(extrinsicHash));
-        updateHistoryEventStatus(
-          HISTORY_EVENT_STATUS.SUCCESS,
-          extrinsic.hash.toString()
-        );
-        // Correct private balances will only appear after a sync has completed
-        // Until then, do not display stale balances
-        privateWallet.setBalancesAreStale(true);
-        senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
-        receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
-      } catch (error) {
-        console.error(error);
-      }
+      handleTxSuccess(status);
+    }
+  };
+
+  const handleTxFailure = (extrinsic) => {
+    setTxStatus(TxStatus.failed());
+    updateHistoryEventStatus(
+      HISTORY_EVENT_STATUS.FAILED,
+      extrinsic.hash.toString()
+    );
+    console.error('Transaction failed', event);
+  };
+
+  const handleTxSuccess = async (status) => {
+    try {
+      const extrinsic = await getExtrinsicGivenBlockHash(
+        status.asFinalized,
+        externalAccount,
+        api
+      );
+      const extrinsicHash = extrinsic.hash.toHex();
+      setTxStatus(TxStatus.finalized(extrinsicHash));
+      updateHistoryEventStatus(
+        HISTORY_EVENT_STATUS.SUCCESS,
+        extrinsic.hash.toString()
+      );
+      // Correct private balances will only appear after a sync has completed
+      // Until then, do not display stale balances
+      privateWallet.setBalancesAreStale(true);
+      senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
+      receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
+    } catch (error) {
+      console.error(error);
     }
   };
 
