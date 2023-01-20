@@ -4,6 +4,10 @@ import BN from 'bn.js';
 import AssetType from './AssetType';
 import Usd from './Usd';
 
+export type JsonBalance = {
+  assetType: string;
+  valueAtomicUnits: string;
+};
 export default class Balance {
   constructor(assetType, valueAtomicUnits) {
     this.assetType = assetType;
@@ -28,7 +32,9 @@ export default class Balance {
     const atomicUnitsPerBaseUnit = new Decimal(10).pow(
       new Decimal(assetType.numberOfDecimals)
     );
-    const valueAtomicUnits = atomicUnitsPerBaseUnit.mul(new Decimal(valueBaseUnits.toString()));
+    const valueAtomicUnits = atomicUnitsPerBaseUnit.mul(
+      new Decimal(valueBaseUnits.toString())
+    );
     // This conversion to BN doesn't work if our valueAtomicUnits Decimal
     // is formatted as an exponent
     Decimal.set({ toExpPos: 1000 });
@@ -48,8 +54,24 @@ export default class Balance {
     return valueBaseUnits;
   }
 
+  static fromJson(balanceJson) {
+    return new Balance(
+      balanceJson.assetType,
+      new BN(balanceJson.valueAtomicUnits)
+    );
+  }
+
+  toJson(): JsonBalance {
+    return {
+      assetType: this.assetType,
+      valueAtomicUnits: this.valueAtomicUnits.toString()
+    };
+  }
+
   toString(decimals = 3) {
-    return this.valueBaseUnits().toDecimalPlaces(decimals, Decimal.ROUND_DOWN).toString();
+    return this.valueBaseUnits()
+      .toDecimalPlaces(decimals, Decimal.ROUND_DOWN)
+      .toString();
   }
 
   toDisplayString(decimals = 3, roundDown = true) {
@@ -59,7 +81,7 @@ export default class Balance {
       .toNumber()
       .toLocaleString(undefined, {
         maximumFractionDigits: decimals,
-        minimumFractionDigits: 0,
+        minimumFractionDigits: 0
       })} ${this.assetType.ticker}`;
   }
 

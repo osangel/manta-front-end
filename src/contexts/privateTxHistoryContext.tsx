@@ -15,7 +15,6 @@ import {
 import HistoryEvent, {
   HISTORY_EVENT_STATUS,
   PRIVATE_TX_TYPE,
-  TransactionMsgAction
 } from 'types/HistoryEvent';
 
 import PropTypes from 'prop-types';
@@ -36,45 +35,27 @@ export const PrivateTxHistoryContextProvider = (props) => {
     senderAssetTargetBalance
   } = useSend();
 
-  const buildHistoryEvent = () => {
-    const date = new Date().toUTCString();
-    const amount = senderAssetTargetBalance.toString();
-    const assetBaseType = senderAssetTargetBalance.assetType.baseTicker;
-    const subscanUrl = `${config.SUBSCAN_URL}/extrinsic/${txStatus.extrinsic}`;
-    let transactionType;
-    if (isPrivateTransfer()) {
-      transactionType = PRIVATE_TX_TYPE.PRIVATE_TRANSFER;
-    } else if (isToPrivate()) {
-      transactionType = PRIVATE_TX_TYPE.TO_PRIVATE;
-    } else if (isToPublic()) {
-      transactionType = PRIVATE_TX_TYPE.TO_PUBLIC;
-    }
-    const transactionMsg =
-      transactionType === PRIVATE_TX_TYPE.PRIVATE_TRANSFER
-        ? TransactionMsgAction.Transact
-        : TransactionMsgAction.Send;
-
-    const historyEvent = new HistoryEvent(
-      transactionType,
-      transactionMsg,
-      assetBaseType,
-      amount,
-      date,
-      HISTORY_EVENT_STATUS.PENDING,
-      txStatus.extrinsic,
-      subscanUrl,
-      config.network
-    );
-    appendHistoryEvent(historyEvent);
-  };
-
   useEffect(() => {
     if (
       (isPrivateTransfer() || isToPrivate() || isToPublic()) &&
       txStatus?.isProcessing() &&
       txStatus?.extrinsic
     ) {
-      buildHistoryEvent();
+      let transactionType;
+      if (isPrivateTransfer()) {
+        transactionType = PRIVATE_TX_TYPE.PRIVATE_TRANSFER;
+      } else if (isToPrivate()) {
+        transactionType = PRIVATE_TX_TYPE.TO_PRIVATE;
+      } else if (isToPublic()) {
+        transactionType = PRIVATE_TX_TYPE.TO_PUBLIC;
+      }
+      const historyEvent = new HistoryEvent(
+        config,
+        senderAssetTargetBalance,
+        txStatus.extrinsic,
+        transactionType
+      );
+      appendHistoryEvent(historyEvent);
     }
   }, [txStatus]);
 
@@ -138,12 +119,9 @@ export const PrivateTxHistoryContextProvider = (props) => {
     resetPrivateTransactionHistory();
   }, [privateAddress]);
 
-  const value = {
-    buildHistoryEvent: buildHistoryEvent
-  };
 
   return (
-    <PrivateTxHistoryContext.Provider value={value}>
+    <PrivateTxHistoryContext.Provider value={{}}>
       {props.children}
     </PrivateTxHistoryContext.Provider>
   );

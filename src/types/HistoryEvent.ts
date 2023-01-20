@@ -1,3 +1,5 @@
+import Balance, { JsonBalance } from './Balance';
+
 export enum HISTORY_EVENT_STATUS {
   FAILED = 'Failed',
   SUCCESS = 'Success',
@@ -18,32 +20,30 @@ export enum TransactionMsgAction {
 export default class HistoryEvent {
   transactionType: PRIVATE_TX_TYPE;
   transactionMsg: TransactionMsgAction;
-  assetBaseType: any;
-  amount: number;
+  jsonBalance: JsonBalance;
   date: string;
   status: HISTORY_EVENT_STATUS;
   extrinsicHash: string;
   subscanUrl: string;
   network: string;
   constructor(
-    transactionType: PRIVATE_TX_TYPE,
-    transactionMsg: TransactionMsgAction,
-    assetBaseType: any,
-    amount: number,
-    date: string,
-    status: HISTORY_EVENT_STATUS,
+    config: any,
+    balance: Balance,
     extrinsicHash: string,
-    subscanUrl: string,
-    network: string
+    transactionType: PRIVATE_TX_TYPE
   ) {
+    const transactionMsg =
+      transactionType === PRIVATE_TX_TYPE.PRIVATE_TRANSFER
+        ? TransactionMsgAction.Transact
+        : TransactionMsgAction.Send;
+    const subscanUrl = `${config.SUBSCAN_URL}/extrinsic/${extrinsicHash}`;
     this.transactionType = transactionType;
     this.transactionMsg = transactionMsg;
-    this.assetBaseType = assetBaseType;
-    this.amount = amount;
-    this.date = date;
-    this.status = status;
+    this.jsonBalance = balance.toJson();
+    this.date = new Date().toUTCString();
+    this.status = HISTORY_EVENT_STATUS.PENDING;
     this.extrinsicHash = extrinsicHash;
     this.subscanUrl = subscanUrl;
-    this.network = network;
+    this.network = config.network;
   }
 }

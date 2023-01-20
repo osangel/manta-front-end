@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
 import { getPrivateTransactionHistory } from 'utils/persistence/privateTransactionHistory';
 import { PRIVATE_TX_TYPE, HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
+import Balance from 'types/Balance';
 
 const PrivateActivityTableContent = () => {
   const config = useConfig();
@@ -36,13 +37,15 @@ const PrivateActivityItem = ({ historyEvent }) => {
   const {
     transactionType,
     transactionMsg,
-    assetBaseType,
-    amount,
+    jsonBalance,
     date,
     status,
     subscanUrl
   } = historyEvent;
 
+  const balance = Balance.fromJson(jsonBalance);
+  const amount = balance.toString();
+  const assetBaseType = balance.assetType.baseTicker;
   const dateString = `${date.split(' ')[2]} ${date.split(' ')[1]}`;
   const onCLickHandler = (subscanUrl) => () => {
     if (subscanUrl) {
