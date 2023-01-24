@@ -1,7 +1,7 @@
 //@ts-nocheck
 import React, { useEffect, createContext, useContext } from 'react';
 import * as axios from 'axios';
-import { usePrivateWallet } from './privateWalletContext';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import {
   appendHistoryEvent,
   removePendingHistoryEvent,
@@ -19,10 +19,11 @@ import HistoryEvent, {
 } from 'types/HistoryEvent';
 
 import PropTypes from 'prop-types';
-import { useTxStatus } from './txStatusContext';
-import { useConfig } from './configContext';
-import { useSend } from 'pages/SendPage/SendContext';
+import { useTxStatus } from 'contexts/txStatusContext';
+import { useConfig } from  'contexts/configContext';
+import { useSend } from '../SendContext';
 
+const PENDING_TX_MAX_WAIT_MS = 200000;
 const PrivateTxHistoryContext = createContext();
 
 export const PrivateTxHistoryContextProvider = (props) => {
@@ -36,25 +37,29 @@ export const PrivateTxHistoryContextProvider = (props) => {
     senderAssetTargetBalance
   } = useSend();
 
+  const getTransactionType = () => {
+    let transactionType;
+    if (isPrivateTransfer()) {
+      transactionType = PRIVATE_TX_TYPE.PRIVATE_TRANSFER;
+    } else if (isToPrivate()) {
+      transactionType = PRIVATE_TX_TYPE.TO_PRIVATE;
+    } else if (isToPublic()) {
+      transactionType = PRIVATE_TX_TYPE.TO_PUBLIC;
+    }
+    return transactionType;
+  };
+
   useEffect(() => {
     if (
       (isPrivateTransfer() || isToPrivate() || isToPublic()) &&
       txStatus?.isProcessing() &&
       txStatus?.extrinsic
     ) {
-      let transactionType;
-      if (isPrivateTransfer()) {
-        transactionType = PRIVATE_TX_TYPE.PRIVATE_TRANSFER;
-      } else if (isToPrivate()) {
-        transactionType = PRIVATE_TX_TYPE.TO_PRIVATE;
-      } else if (isToPublic()) {
-        transactionType = PRIVATE_TX_TYPE.TO_PUBLIC;
-      }
       const historyEvent = new HistoryEvent(
         config,
         senderAssetTargetBalance,
         txStatus.extrinsic,
-        transactionType
+        getTransactionType()
       );
       appendHistoryEvent(historyEvent);
     }
@@ -64,16 +69,16 @@ export const PrivateTxHistoryContextProvider = (props) => {
    * Update history event status When page loads
    */
 
-  const getPendingPrivateTransaction = () => {
+  const getPendingHistoryEvents = () => {
     return getPrivateTransactionHistory().filter(
       (tx) => tx.status === HISTORY_EVENT_STATUS.PENDING
     );
   };
 
-  const syncPendingPrivateTransactionHistory = async () => {
-    const pendingPrivateTransactions = getPendingPrivateTransaction();
+  const syncPendingHistoryEvents = async () => {
+    const pendingHistoryEvents = getPendingHistoryEvents();
 
-    await pendingPrivateTransactions.forEach(async (tx) => {
+    await pendingHistoryEvents.forEach(async (tx) => {
       if (tx.extrinsicHash) {
         const response = await axios
           .post(`${config.SUBSCAN_API_ENDPOINT}/extrinsic`, {
@@ -91,7 +96,7 @@ export const PrivateTxHistoryContextProvider = (props) => {
         } else {
           const createdTime = new Date(tx.date).getTime();
           const currentTime = new Date().getTime();
-          if (currentTime - createdTime > 200000) {
+          if (currentTime - createdTime > PENDING_TX_MAX_WAIT_MS) {
             removePendingHistoryEvent(tx.extrinsicHash);
           }
         }
@@ -101,11 +106,8 @@ export const PrivateTxHistoryContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (
-        getPendingPrivateTransaction().length !== 0 &&
-        !txStatus?.isProcessing()
-      ) {
-        syncPendingPrivateTransactionHistory();
+      if (getPendingHistoryEvents().length !== 0 && !txStatus?.isProcessing()) {
+        syncPendingHistoryEvents();
       }
     }, 3000);
     return () => clearInterval(interval);
@@ -116,7 +118,7 @@ export const PrivateTxHistoryContextProvider = (props) => {
    */
 
   useEffect(() => {
-    const resetPrivateTransactionHistory = () => {
+    const resetHistoryEvents = () => {
       if (privateAddress && privateAddress !== getLastSeenPrivateAddress()) {
         setLastSeenPrivateAddress(privateAddress);
         if (getPrivateTransactionHistory().length > 0) {
@@ -124,7 +126,7 @@ export const PrivateTxHistoryContextProvider = (props) => {
         }
       }
     };
-    resetPrivateTransactionHistory();
+    resetHistoryEvents();
   }, [privateAddress]);
 
   return (

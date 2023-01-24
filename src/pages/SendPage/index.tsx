@@ -3,7 +3,7 @@ import React from 'react';
 import PageContent from 'components/PageContent';
 import Navbar from 'components/Navbar';
 import { SendContextProvider } from './SendContext';
-import { PrivateTxHistoryContextProvider } from 'contexts/privateTxHistoryContext';
+import { PrivateTxHistoryContextProvider } from './privateTxHistoryContext';
 import SendForm from './SendForm';
 
 const SendPage = () => {

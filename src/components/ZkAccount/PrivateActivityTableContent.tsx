@@ -1,22 +1,24 @@
-//@ts-nocheck
 import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
 import { getPrivateTransactionHistory } from 'utils/persistence/privateTransactionHistory';
-import { PRIVATE_TX_TYPE, HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
+import HistoryEvent, { PRIVATE_TX_TYPE, HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
 import Icon from 'components/Icon';
 import Balance from 'types/Balance';
+import { IconName } from 'components/Icon';
 
 const PrivateActivityTableContent = () => {
   const config = useConfig();
   const allPrivateTransactionHistory = getPrivateTransactionHistory().reverse();
-  const privateTransactionHistory = allPrivateTransactionHistory.filter((historyEvent) => {
-    return historyEvent.network === config.network;
-  });
+  const currentNetworkTransactionHistory = allPrivateTransactionHistory.filter(
+    (historyEvent: HistoryEvent) => {
+      return historyEvent.network === config.network;
+    }
+  );
 
-  if (privateTransactionHistory.length > 0) {
+  if (currentNetworkTransactionHistory.length > 0) {
     return (
       <div className="divide-y divide-dashed divide-manta-gray-secondary">
-        {privateTransactionHistory.map((historyEvent, _) => (
+        {currentNetworkTransactionHistory.map((historyEvent: HistoryEvent) => (
           <PrivateActivityItem
             historyEvent={historyEvent}
             key={historyEvent.extrinsicHash}
@@ -33,7 +35,11 @@ const PrivateActivityTableContent = () => {
   }
 };
 
-const PrivateActivityItem = ({ historyEvent }) => {
+type PrivateActivityItemProps = {
+  historyEvent: HistoryEvent;
+};
+
+const PrivateActivityItem = ({ historyEvent }: PrivateActivityItemProps) => {
   const {
     transactionType,
     transactionMsg,
@@ -47,7 +53,7 @@ const PrivateActivityItem = ({ historyEvent }) => {
   const amount = balance.toString();
   const assetBaseType = balance.assetType.baseTicker;
   const dateString = `${date.split(' ')[2]} ${date.split(' ')[1]}`;
-  const onCLickHandler = (subscanUrl) => () => {
+  const onCLickHandler = (subscanUrl: string) => () => {
     if (subscanUrl) {
       window.open(subscanUrl, '_blank', 'noopener');
     }
@@ -73,7 +79,17 @@ const PrivateActivityItem = ({ historyEvent }) => {
   );
 };
 
-const ActivityMessage = ({ transactionType, amount, assetBaseType }) => {
+type ActivityMessageProps = {
+  transactionType: PRIVATE_TX_TYPE;
+  amount: string;
+  assetBaseType: string;
+};
+
+const ActivityMessage = ({
+  transactionType,
+  amount,
+  assetBaseType
+}: ActivityMessageProps) => {
   if (transactionType === PRIVATE_TX_TYPE.TO_PRIVATE) {
     return (
       <div className="text-secondary text-xss flex flex-row items-center gap-2">
@@ -101,8 +117,12 @@ const ActivityMessage = ({ transactionType, amount, assetBaseType }) => {
   }
 };
 
-const StatusMessage = ({ status }) => {
-  let textColor;
+type StatusMessageProps = {
+  status: HISTORY_EVENT_STATUS;
+};
+
+const StatusMessage = ({ status }: StatusMessageProps) => {
+  let textColor : string;
   if (status === HISTORY_EVENT_STATUS.FAILED) {
     textColor = 'text-red-500';
   } else if (status === HISTORY_EVENT_STATUS.PENDING) {
@@ -110,7 +130,16 @@ const StatusMessage = ({ status }) => {
   } else if (status === HISTORY_EVENT_STATUS.SUCCESS) {
     textColor = 'text-green-300';
   }
-  const StatusMessageTemplate = ({ iconName, message }) => {
+
+  type StatusMessageTemplateProps = {
+    iconName: IconName;
+    message: string;
+  };
+
+  const StatusMessageTemplate = ({
+    iconName,
+    message
+  }: StatusMessageTemplateProps) => {
     return (
       <div
         className={classNames(
