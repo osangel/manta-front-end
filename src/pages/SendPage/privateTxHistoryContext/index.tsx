@@ -20,7 +20,7 @@ import TxHistoryEvent, {
 
 import PropTypes from 'prop-types';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { useConfig } from  'contexts/configContext';
+import { useConfig } from 'contexts/configContext';
 import { useSend } from '../SendContext';
 
 const PENDING_TX_MAX_WAIT_MS = 200000;
@@ -89,9 +89,9 @@ export const PrivateTxHistoryContextProvider = (props) => {
           });
         const data = response?.data.data;
         if (data) {
-          const status = data?.success
-            ? HISTORY_EVENT_STATUS.SUCCESS
-            : HISTORY_EVENT_STATUS.FAILURE;
+          const status = !!data?.error
+            ? HISTORY_EVENT_STATUS.FAILED
+            : HISTORY_EVENT_STATUS.SUCCESS;
           updateTxHistoryEventStatus(status, tx.extrinsicHash);
         } else {
           const createdTime = new Date(tx.date).getTime();

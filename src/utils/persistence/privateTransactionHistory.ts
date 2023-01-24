@@ -22,7 +22,7 @@ export const setPrivateTransactionHistory = (privateTransactionHistory) => {
 
 // add pending private transaction to the history
 export const appendTxHistoryEvent = (txHistoryEvent) => {
-  const privateTransactionHistory = [...getPrivateTransactionHistory()];
+  const privateTransactionHistory = [...getPrivateTransactionHistory(false)];
   txHistoryEvent.toJson();
   privateTransactionHistory.push(txHistoryEvent);
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
@@ -44,7 +44,7 @@ export const updateTxHistoryEventStatus = (status, extrinsicHash) => {
 
 // remove pending history event (usually the last one) from the history
 export const removePendingTxHistoryEvent = (extrinsicHash) => {
-  const privateTransactionHistory = [...getPrivateTransactionHistory()];
+  const privateTransactionHistory = [...getPrivateTransactionHistory(false)];
   if (privateTransactionHistory.length === 0) {
     return;
   }

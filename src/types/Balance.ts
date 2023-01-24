@@ -2,11 +2,6 @@ import Decimal from 'decimal.js';
 import BN from 'bn.js';
 import AssetType from './AssetType';
 import Usd from './Usd';
-
-export type JsonBalance = {
-  assetType: AssetType;
-  valueAtomicUnits: string;
-};
 export default class Balance {
   assetType: AssetType;
   valueAtomicUnits: BN;
@@ -54,20 +49,6 @@ export default class Balance {
       new Decimal(atomicUnitsPerBaseUnit)
     );
     return valueBaseUnits;
-  }
-
-  static fromJson(jsonBalance: JsonBalance) {
-    return new Balance(
-      jsonBalance.assetType,
-      new BN(jsonBalance.valueAtomicUnits)
-    );
-  }
-
-  toJson(): JsonBalance {
-    return {
-      assetType: this.assetType,
-      valueAtomicUnits: this.valueAtomicUnits.toString()
-    };
   }
 
   toString(decimals = 3) {
