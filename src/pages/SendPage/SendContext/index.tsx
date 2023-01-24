@@ -11,7 +11,7 @@ import TxStatus from 'types/TxStatus';
 import AssetType from 'types/AssetType';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import { useConfig } from 'contexts/configContext';
-import { MantaPrivateWallet, MantaUtilities } from 'manta.js-kg-dev';
+import { MantaPrivateWallet, MantaUtilities } from 'manta.js';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
 
