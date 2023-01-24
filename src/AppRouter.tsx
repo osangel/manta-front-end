@@ -10,7 +10,7 @@ const DolphinRoutes = () => {
     <DolphinBasePage>
       <Routes>
         <Route path="dolphin">
-          <Route index element={<Navigate to="bridge" />} />
+          <Route index element={<Navigate to="transact" />} />
           <Route path="bridge" element={<BridgePage />} exact />
           <Route path="transact" element={<SendPage />} exact />
         </ Route >
