@@ -1,15 +1,17 @@
 // @ts-nocheck
 import store from 'store';
-import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
+import TxHistoryEvent, { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
 
 const PRIVATE_TRANSACTION_STORAGE_KEY = 'privateTransactionHistory';
 
-export const getPrivateTransactionHistory = () => {
+export const getPrivateTransactionHistory = (fromJson = true) => {
   const privateTransactionHistory = [
     ...store.get(PRIVATE_TRANSACTION_STORAGE_KEY, [])
   ];
   privateTransactionHistory.forEach((txHistoryEvent) => {
-    txHistoryEvent.date = new Date(txHistoryEvent.date);
+    if (fromJson) {
+      TxHistoryEvent.fromJson(txHistoryEvent);
+    }
   });
   return privateTransactionHistory;
 };
@@ -21,13 +23,14 @@ export const setPrivateTransactionHistory = (privateTransactionHistory) => {
 // add pending private transaction to the history
 export const appendTxHistoryEvent = (txHistoryEvent) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
+  txHistoryEvent.toJson();
   privateTransactionHistory.push(txHistoryEvent);
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };
 
 // update pending transaction to finalized transaction status
 export const updateTxHistoryEventStatus = (status, extrinsicHash) => {
-  const privateTransactionHistory = [...getPrivateTransactionHistory()];
+  const privateTransactionHistory = [...getPrivateTransactionHistory(false)];
   privateTransactionHistory.forEach((txHistoryEvent) => {
     if (
       txHistoryEvent.extrinsicHash === extrinsicHash &&

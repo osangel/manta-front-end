@@ -7,7 +7,6 @@ import TxHistoryEvent, {
   TransactionMsgAction
 } from 'types/TxHistoryEvent';
 import Icon from 'components/Icon';
-import Balance from 'types/Balance';
 import { IconName } from 'components/Icon';
 
 const PrivateActivityTableContent = () => {
@@ -48,13 +47,12 @@ type PrivateActivityItemProps = {
 const PrivateActivityItem = ({ txHistoryEvent }: PrivateActivityItemProps) => {
   const {
     transactionType,
-    jsonBalance,
+    balance,
     date,
     status,
     subscanUrl
   } = txHistoryEvent;
 
-  const balance = Balance.fromJson(jsonBalance);
   const amount = balance.toString();
   const assetBaseType = balance.assetType.baseTicker;
   const dateString = `${date.toUTCString().split(' ')[2]} ${
