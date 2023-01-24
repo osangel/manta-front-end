@@ -17,7 +17,7 @@ export enum TransactionMsgAction {
   Transact = 'Transact'
 }
 
-export default class HistoryEvent {
+export default class TxHistoryEvent {
   transactionType: PRIVATE_TX_TYPE;
   transactionMsg: TransactionMsgAction;
   jsonBalance: JsonBalance;

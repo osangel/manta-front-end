@@ -1,6 +1,6 @@
 // @ts-nocheck
 import store from 'store';
-import { HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
+import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
 
 const PRIVATE_TRANSACTION_STORAGE_KEY = 'privateTransactionHistory';
 
@@ -13,45 +13,44 @@ export const setPrivateTransactionHistory = (privateTransactionHistory) => {
 };
 
 // add pending private transaction to the history
-export const appendHistoryEvent = (historyEvent) => {
+export const appendTxHistoryEvent = (txHistoryEvent) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
-  privateTransactionHistory.push(historyEvent);
+  privateTransactionHistory.push(txHistoryEvent);
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };
 
 // update pending transaction to finalized transaction status
-export const updateHistoryEventStatus = (status, extrinsicHash) => {
+export const updateTxHistoryEventStatus = (status, extrinsicHash) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
-  if (privateTransactionHistory.length === 0) {
-    return;
-  }
-
-  privateTransactionHistory.forEach((historyEvent) => {
+  privateTransactionHistory.forEach((txHistoryEvent) => {
     if (
-      historyEvent.extrinsicHash === extrinsicHash &&
-      historyEvent.status === HISTORY_EVENT_STATUS.PENDING
+      txHistoryEvent.extrinsicHash === extrinsicHash &&
+      txHistoryEvent.status === HISTORY_EVENT_STATUS.PENDING
     ) {
-      historyEvent.status = status;
+      txHistoryEvent.status = status;
     }
   });
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };
 
 // remove pending history event (usually the last one) from the history
-export const removePendingHistoryEvent = (extrinsicHash) => {
+export const removePendingTxHistoryEvent = (extrinsicHash) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory()];
   if (privateTransactionHistory.length === 0) {
     return;
   }
 
   if (extrinsicHash) {
-    const historyEvent = privateTransactionHistory.find(
-      (historyEvent) => historyEvent.extrinsicHash === extrinsicHash
+    const txHistoryEvent = privateTransactionHistory.find(
+      (txHistoryEvent) => txHistoryEvent.extrinsicHash === extrinsicHash
     );
 
-    if (historyEvent && historyEvent.status === HISTORY_EVENT_STATUS.PENDING) {
+    if (
+      txHistoryEvent &&
+      txHistoryEvent.status === HISTORY_EVENT_STATUS.PENDING
+    ) {
       privateTransactionHistory.splice(
-        privateTransactionHistory.indexOf(historyEvent),
+        privateTransactionHistory.indexOf(txHistoryEvent),
         1
       );
     }

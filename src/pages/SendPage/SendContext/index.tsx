@@ -14,10 +14,8 @@ import { useConfig } from 'contexts/configContext';
 import { MantaPrivateWallet, MantaUtilities } from 'manta.js-kg-dev';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
-import {
-  updateHistoryEventStatus
-} from 'utils/persistence/privateTransactionHistory';
-import { HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
+import { updateTxHistoryEventStatus } from 'utils/persistence/privateTransactionHistory';
+import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
 
 const SendContext = React.createContext();
 
@@ -425,7 +423,7 @@ export const SendContextProvider = (props) => {
 
   const handleTxFailure = (extrinsic) => {
     setTxStatus(TxStatus.failed());
-    updateHistoryEventStatus(
+    updateTxHistoryEventStatus(
       HISTORY_EVENT_STATUS.FAILED,
       extrinsic.hash.toString()
     );
@@ -441,7 +439,7 @@ export const SendContextProvider = (props) => {
       );
       const extrinsicHash = extrinsic.hash.toHex();
       setTxStatus(TxStatus.finalized(extrinsicHash));
-      updateHistoryEventStatus(
+      updateTxHistoryEventStatus(
         HISTORY_EVENT_STATUS.SUCCESS,
         extrinsic.hash.toString()
       );

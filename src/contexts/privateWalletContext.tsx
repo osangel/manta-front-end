@@ -23,7 +23,7 @@ import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import { useConfig } from './configContext';
 import {
-  removePendingHistoryEvent,
+  removePendingTxHistoryEvent,
 } from 'utils/persistence/privateTransactionHistory';
 
 const PrivateWalletContext = createContext();
@@ -185,7 +185,7 @@ export const PrivateWalletContextProvider = (props) => {
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
         setTxStatus(TxStatus.failed('Transaction declined'));
-        removePendingHistoryEvent();
+        removePendingTxHistoryEvent();
         txQueue.current = [];
       }
     };

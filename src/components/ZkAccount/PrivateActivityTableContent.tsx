@@ -1,7 +1,10 @@
 import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
 import { getPrivateTransactionHistory } from 'utils/persistence/privateTransactionHistory';
-import HistoryEvent, { PRIVATE_TX_TYPE, HISTORY_EVENT_STATUS } from 'types/HistoryEvent';
+import TxHistoryEvent, {
+  PRIVATE_TX_TYPE,
+  HISTORY_EVENT_STATUS
+} from 'types/TxHistoryEvent';
 import Icon from 'components/Icon';
 import Balance from 'types/Balance';
 import { IconName } from 'components/Icon';
@@ -10,20 +13,22 @@ const PrivateActivityTableContent = () => {
   const config = useConfig();
   const allPrivateTransactionHistory = getPrivateTransactionHistory().reverse();
   const currentNetworkTransactionHistory = allPrivateTransactionHistory.filter(
-    (historyEvent: HistoryEvent) => {
-      return historyEvent.network === config.network;
+    (txHistoryEvent: TxHistoryEvent) => {
+      return txHistoryEvent.network === config.network;
     }
   );
 
   if (currentNetworkTransactionHistory.length > 0) {
     return (
       <div className="divide-y divide-dashed divide-manta-gray-secondary">
-        {currentNetworkTransactionHistory.map((historyEvent: HistoryEvent) => (
-          <PrivateActivityItem
-            historyEvent={historyEvent}
-            key={historyEvent.extrinsicHash}
-          />
-        ))}
+        {currentNetworkTransactionHistory.map(
+          (txHistoryEvent: TxHistoryEvent) => (
+            <PrivateActivityItem
+              txHistoryEvent={txHistoryEvent}
+              key={txHistoryEvent.extrinsicHash}
+            />
+          )
+        )}
       </div>
     );
   } else {
@@ -36,10 +41,10 @@ const PrivateActivityTableContent = () => {
 };
 
 type PrivateActivityItemProps = {
-  historyEvent: HistoryEvent;
+  txHistoryEvent: TxHistoryEvent;
 };
 
-const PrivateActivityItem = ({ historyEvent }: PrivateActivityItemProps) => {
+const PrivateActivityItem = ({ txHistoryEvent }: PrivateActivityItemProps) => {
   const {
     transactionType,
     transactionMsg,
@@ -47,7 +52,7 @@ const PrivateActivityItem = ({ historyEvent }: PrivateActivityItemProps) => {
     date,
     status,
     subscanUrl
-  } = historyEvent;
+  } = txHistoryEvent;
 
   const balance = Balance.fromJson(jsonBalance);
   const amount = balance.toString();

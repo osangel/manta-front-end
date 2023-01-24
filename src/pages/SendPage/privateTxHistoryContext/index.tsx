@@ -3,20 +3,20 @@ import React, { useEffect, createContext, useContext } from 'react';
 import * as axios from 'axios';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import {
-  appendHistoryEvent,
-  removePendingHistoryEvent,
+  appendTxHistoryEvent,
+  removePendingTxHistoryEvent,
   setPrivateTransactionHistory,
   getPrivateTransactionHistory,
-  updateHistoryEventStatus
+  updateTxHistoryEventStatus
 } from 'utils/persistence/privateTransactionHistory';
 import {
   getLastSeenPrivateAddress,
   setLastSeenPrivateAddress
 } from 'utils/persistence/privateAddressHistory';
-import HistoryEvent, {
+import TxHistoryEvent, {
   HISTORY_EVENT_STATUS,
   PRIVATE_TX_TYPE
-} from 'types/HistoryEvent';
+} from 'types/TxHistoryEvent';
 
 import PropTypes from 'prop-types';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -55,13 +55,13 @@ export const PrivateTxHistoryContextProvider = (props) => {
       txStatus?.isProcessing() &&
       txStatus?.extrinsic
     ) {
-      const historyEvent = new HistoryEvent(
+      const txHistoryEvent = new TxHistoryEvent(
         config,
         senderAssetTargetBalance,
         txStatus.extrinsic,
         getTransactionType()
       );
-      appendHistoryEvent(historyEvent);
+      appendTxHistoryEvent(txHistoryEvent);
     }
   }, [txStatus]);
 
@@ -92,12 +92,12 @@ export const PrivateTxHistoryContextProvider = (props) => {
           const status = data?.success
             ? HISTORY_EVENT_STATUS.SUCCESS
             : HISTORY_EVENT_STATUS.FAILURE;
-          updateHistoryEventStatus(status, tx.extrinsicHash);
+          updateTxHistoryEventStatus(status, tx.extrinsicHash);
         } else {
           const createdTime = new Date(tx.date).getTime();
           const currentTime = new Date().getTime();
           if (currentTime - createdTime > PENDING_TX_MAX_WAIT_MS) {
-            removePendingHistoryEvent(tx.extrinsicHash);
+            removePendingTxHistoryEvent(tx.extrinsicHash);
           }
         }
       }
