@@ -5,7 +5,13 @@ import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
 const PRIVATE_TRANSACTION_STORAGE_KEY = 'privateTransactionHistory';
 
 export const getPrivateTransactionHistory = () => {
-  return store.get(PRIVATE_TRANSACTION_STORAGE_KEY, []);
+  const privateTransactionHistory = [
+    ...store.get(PRIVATE_TRANSACTION_STORAGE_KEY, [])
+  ];
+  privateTransactionHistory.forEach((txHistoryEvent) => {
+    txHistoryEvent.date = new Date(txHistoryEvent.date);
+  });
+  return privateTransactionHistory;
 };
 
 export const setPrivateTransactionHistory = (privateTransactionHistory) => {

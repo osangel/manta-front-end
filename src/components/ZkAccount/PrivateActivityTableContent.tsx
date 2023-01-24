@@ -3,7 +3,8 @@ import { useConfig } from 'contexts/configContext';
 import { getPrivateTransactionHistory } from 'utils/persistence/privateTransactionHistory';
 import TxHistoryEvent, {
   PRIVATE_TX_TYPE,
-  HISTORY_EVENT_STATUS
+  HISTORY_EVENT_STATUS,
+  TransactionMsgAction
 } from 'types/TxHistoryEvent';
 import Icon from 'components/Icon';
 import Balance from 'types/Balance';
@@ -47,7 +48,6 @@ type PrivateActivityItemProps = {
 const PrivateActivityItem = ({ txHistoryEvent }: PrivateActivityItemProps) => {
   const {
     transactionType,
-    transactionMsg,
     jsonBalance,
     date,
     status,
@@ -57,12 +57,18 @@ const PrivateActivityItem = ({ txHistoryEvent }: PrivateActivityItemProps) => {
   const balance = Balance.fromJson(jsonBalance);
   const amount = balance.toString();
   const assetBaseType = balance.assetType.baseTicker;
-  const dateString = `${date.split(' ')[2]} ${date.split(' ')[1]}`;
+  const dateString = `${date.toUTCString().split(' ')[2]} ${
+    date.toUTCString().split(' ')[1]
+  }`;
   const onCLickHandler = (subscanUrl: string) => () => {
     if (subscanUrl) {
       window.open(subscanUrl, '_blank', 'noopener');
     }
   };
+  const transactionMsg =
+    transactionType === PRIVATE_TX_TYPE.PRIVATE_TRANSFER
+      ? TransactionMsgAction.Transact
+      : TransactionMsgAction.Send;
 
   return (
     <div

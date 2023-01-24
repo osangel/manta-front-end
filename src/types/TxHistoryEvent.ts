@@ -19,9 +19,8 @@ export enum TransactionMsgAction {
 
 export default class TxHistoryEvent {
   transactionType: PRIVATE_TX_TYPE;
-  transactionMsg: TransactionMsgAction;
   jsonBalance: JsonBalance;
-  date: string;
+  date: Date;
   status: HISTORY_EVENT_STATUS;
   extrinsicHash: string;
   subscanUrl: string;
@@ -32,15 +31,10 @@ export default class TxHistoryEvent {
     extrinsicHash: string,
     transactionType: PRIVATE_TX_TYPE
   ) {
-    const transactionMsg =
-      transactionType === PRIVATE_TX_TYPE.PRIVATE_TRANSFER
-        ? TransactionMsgAction.Transact
-        : TransactionMsgAction.Send;
     const subscanUrl = `${config.SUBSCAN_URL}/extrinsic/${extrinsicHash}`;
     this.transactionType = transactionType;
-    this.transactionMsg = transactionMsg;
     this.jsonBalance = balance.toJson();
-    this.date = new Date().toUTCString();
+    this.date = new Date();
     this.status = HISTORY_EVENT_STATUS.PENDING;
     this.extrinsicHash = extrinsicHash;
     this.subscanUrl = subscanUrl;
