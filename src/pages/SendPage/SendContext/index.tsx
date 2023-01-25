@@ -408,7 +408,7 @@ export const SendContextProvider = (props) => {
           extrinsicWasSentByUser(extrinsic, externalAccount, api)
         );
         const extrinsicHash = extrinsic.hash.toHex();
-        setTxStatus(TxStatus.finalized(extrinsicHash));
+        setTxStatus(TxStatus.finalized(extrinsicHash, config.SUBSCAN_URL));
         // Correct private balances will only appear after a sync has completed
         // Until then, do not display stale balances
         privateWallet.setBalancesAreStale(true);

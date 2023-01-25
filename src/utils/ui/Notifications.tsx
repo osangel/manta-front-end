@@ -2,7 +2,7 @@
 import React from 'react';
 import { Notification } from 'element-react';
 
-import NotificationContent, { TxSuccessNotificationContent } from 'components/NotificationContent';
+import { NotificationContent, TxSuccessNotificationContent } from 'components/NotificationContent';
 
 export const showError = (msg) => {
   Notification.error({
@@ -25,12 +25,15 @@ export const showWarning = (msg) => {
   });
 };
 
-export const showSuccess = (subscanBaseUrl, msg, extrinsic = '') => {
+export const showSuccess = (subscanBaseUrl = null, extrinsic = '') => {
   Notification({
     title: 'Success',
-    message: <TxSuccessNotificationContent
-        subscanBaseUrl={subscanBaseUrl} msg={msg} extrinsic={extrinsic}
-      />,
+    message: (
+      <TxSuccessNotificationContent
+        subscanBaseUrl={subscanBaseUrl}
+        extrinsic={extrinsic}
+      />
+    ),
     type: 'success',
     duration: 15000,
     pauseOnHover: true,
