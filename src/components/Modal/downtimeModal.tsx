@@ -23,9 +23,21 @@ function DowntimeModal() {
         Scheduled Downtime
       </Header>
       <Modal.Content>
-        <p className="pl-16">
+        <p className="pl-20 text-sm">
           A network update is currently in progress. {config.PAGE_TITLE} will be
           back online shortly.
+        </p>
+        <p className="pl-20 pt-4 text-sm">
+          Please join the Manta Network{' '}
+          <a
+            className="cursor-pointer text-link hover:underline"
+            href="www.discord.gg/mantanetwork"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            discord channel
+          </a>
+          {' '}for the latest updates.
         </p>
       </Modal.Content>
     </Modal>
