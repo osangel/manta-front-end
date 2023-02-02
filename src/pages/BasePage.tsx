@@ -16,13 +16,11 @@ import { PrivateWalletContextProvider } from 'contexts/privateWalletContext';
 import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesContext';
 
 const TxStatusHandler = () => {
-  const config = useConfig();
   const { txStatus, setTxStatus } = useTxStatus();
-  const subscanUrl = txStatus?.subscanUrl || config.SUBSCAN_URL;
 
   useEffect(() => {
     if (txStatus?.isFinalized()) {
-      showSuccess(subscanUrl, 'Transaction succeeded', txStatus?.extrinsic);
+      showSuccess(txStatus.subscanUrl, txStatus?.extrinsic);
       setTxStatus(null);
     } else if (txStatus?.isFailed()) {
       showError(txStatus.message || 'Transaction failed');

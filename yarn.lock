@@ -11391,15 +11391,10 @@ manta-polkawallet-bridge@0.0.0:
     axios "^0.27.2"
     lodash "^4.17.20"
 
-manta-wasm-wallet-api@^1.5.1-dev-2:
-  version "1.5.1-dev-2"
-  resolved "https://registry.yarnpkg.com/manta-wasm-wallet-api/-/manta-wasm-wallet-api-1.5.1-dev-2.tgz#c9371f564178e3d29fb8353f949d0b91a234610f"
-  integrity sha512-hk7L0BJHggsPU6dwplX2a0UTYlJuZNLuNU3XvxYwvBNkwKWQcCyFeW72gzSMkKdYuurJs2PyZLCxJsDuP+hULQ==
-
-manta.js-kg-dev@^2.0.16:
-  version "2.0.16"
-  resolved "https://registry.yarnpkg.com/manta.js-kg-dev/-/manta.js-kg-dev-2.0.16.tgz#8d67ab14b024e8685f2c41d0902ffa295a42ecd0"
-  integrity sha512-ek9FSWL6pCB24W7yBrG3lPe9OpYU3nYeku+XPgRDusceBj8gbK7i4crtjoLzHoyIKIGp3A520lfjxwwQXSzDxQ==
+manta.js@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/manta.js/-/manta.js-0.0.0.tgz#b7ca16086afbc12e05733feedd3704f895d5d156"
+  integrity sha512-LViDyNvi4nP32LeRNrQzKtbOMgBw3yhuJ6buQH8EHJJTWpRMK5R70K4dM+Ildz7GHDE8VzAA3SvlfkbBvpnl7Q==
   dependencies:
     "@polkadot/api" "6.8.1"
     "@polkadot/extension-dapp" "0.39.3"

@@ -9,6 +9,7 @@ import { useMetamask } from 'contexts/metamaskContext';
 import { Bridge } from 'manta-polkawallet-bridge/build';
 import { useConfig } from 'contexts/configContext';
 import { firstValueFrom } from 'rxjs';
+import { useTxStatus } from 'contexts/txStatusContext';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
 
@@ -18,6 +19,7 @@ export const BridgeDataContextProvider = (props) => {
   const { ethAddress } = useMetamask();
   const config = useConfig();
   const { externalAccount } = useExternalAccount();
+  const { txStatus } = useTxStatus();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
 
@@ -154,53 +156,55 @@ export const BridgeDataContextProvider = (props) => {
    *
    */
 
-  const subscribeBalanceChanges = (assetType, handler) => {
-    if (!assetType || !originAddress || !isApiInitialized) {
-      return;
-    }
+  const fetchBalance = async (assetType, address) => {
     const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
-      assetType.logicalTicker, originAddress
+      assetType.logicalTicker, address
     );
-    return balanceObserveable.subscribe(handler);
+    const balance = await firstValueFrom(balanceObserveable);
+    return Balance.fromBaseUnits(assetType, balance.free);
+  };
+
+  const fetchSenderNativeTokenBalance = async () => {
+    const senderNativeAssetCurrentBalance = await fetchBalance(
+      originChain.nativeAsset,
+      originAddress
+    );
+    dispatch({
+      type: BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE,
+      senderNativeAssetCurrentBalance
+    });
+  };
+
+  const fetchSenderBalance = async () => {
+    const senderAssetCurrentBalance = await fetchBalance(
+      senderAssetType,
+      originAddress
+    );
+    dispatch({
+      type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
+      senderAssetCurrentBalance
+    });
   };
 
   useEffect(() => {
-    const handleSenderNativeAssetBalanceChange = (balanceData) => {
-      if (!isApiInitialized) {
+    const interval = setInterval(() => {
+      if (txStatus?.isProcessing() || !isApiInitialized) {
         return;
       }
-      const senderNativeAssetCurrentBalance = Balance.fromBaseUnits(
-        originChain.nativeAsset,
-        balanceData.free
-      );
-      dispatch({
-        type: BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE,
-        senderNativeAssetCurrentBalance
-      });
-    };
-    const subscription = subscribeBalanceChanges(
-      originChain.nativeAsset, handleSenderNativeAssetBalanceChange
-    );
-    return () => subscription?.unsubscribe();
-  }, [senderAssetType, originAddress, originChain, isApiInitialized]);
-
-  useEffect(() => {
-    const handleBalanceChange = (balanceData) => {
-      if (!isApiInitialized) {
-        return;
-      }
-      const senderAssetCurrentBalance = Balance.fromBaseUnits(
-        senderAssetType,
-        balanceData.free
-      );
-      dispatch({
-        type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
-        senderAssetCurrentBalance
-      });
-    };
-    const subscription = subscribeBalanceChanges(senderAssetType, handleBalanceChange);
-    return () => subscription?.unsubscribe();
-  }, [senderAssetType, originAddress, originChain, isApiInitialized]);
+      fetchSenderBalance();
+      fetchSenderNativeTokenBalance();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [
+    senderAssetType,
+    externalAccount,
+    originAddress,
+    originApi,
+    originChain,
+    destinationAddress,
+    destinationChain,
+    txStatus
+  ]);
 
 
   useEffect(() => {
