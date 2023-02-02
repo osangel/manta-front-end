@@ -12,19 +12,14 @@ import Balance from 'types/Balance';
 import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
+import { MantaPrivateWallet, MantaUtilities, Environment, Network } from 'manta.js';
 import {
-  MantaPrivateWallet,
-  MantaUtilities,
-  Environment,
-  Network
-} from 'manta.js-kg-dev';
+  removePendingTxHistoryEvent,
+} from 'utils/persistence/privateTransactionHistory';
 import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import { useConfig } from './configContext';
-import {
-  removePendingTxHistoryEvent,
-} from 'utils/persistence/privateTransactionHistory';
 
 const PrivateWalletContext = createContext();
 
