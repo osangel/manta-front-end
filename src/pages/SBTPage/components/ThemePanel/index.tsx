@@ -81,6 +81,7 @@ const ThemePanel = () => {
   };
 
   const buttonTxt = externalAccount ? 'Generate' : 'Connect Wallet to Generate';
+  const disabledStyle = btnDisabled ? 'brightness-50 cursor-not-allowed' : '';
 
   return (
     <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative mt-6">
@@ -109,9 +110,8 @@ const ThemePanel = () => {
       </div>
       <button
         onClick={handleGenerate}
-        className={`absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform ${
-          btnDisabled ? 'brightness-50 cursor-not-allowed' : ''
-        }`}>
+        disabled={btnDisabled}
+        className={`absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform ${disabledStyle}`}>
         {buttonTxt}
       </button>
       <ModalWrapper>

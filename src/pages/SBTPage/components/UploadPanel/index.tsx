@@ -1,52 +1,63 @@
-import { ChangeEvent, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import Icon from 'components/Icon';
-import { Step, UploadFile, useSBT } from 'pages/SBTPage/SBTContext';
+import { Step, useSBT } from 'pages/SBTPage/SBTContext';
+import { useFaceRecognition } from 'pages/SBTPage/SBTContext/faceRecognitionContext';
+import UploadImg from '../UploadImg';
 
-const MAX_UPLOAD_LEN = 20;
+export const MAX_UPLOAD_LEN = 20;
 const MIN_UPLOAD_LEN = 5;
 
-const Upload = () => {
-  const { imgList, setImgList } = useSBT();
-  const onImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e?.target?.files?.length) {
-      const addedImgList: UploadFile[] = [...e.target.files].map((file) => ({
-        file,
-        metadata: ''
-      }));
-      const newImgList = [...imgList, ...addedImgList].slice(0, MAX_UPLOAD_LEN);
-      setImgList(newImgList);
-    }
-  };
+const UploadItem = ({ file, index }: { file: File; index: number }) => {
+  const { handleRemove, checkInvalid } = useFaceRecognition();
+
+  const invalid = checkInvalid(index);
+  const inValidStyle = invalid ? '' : 'hidden group-hover:block';
   return (
-    <div className="relative w-max">
-      <div className="border border-dashed bg-primary rounded-lg w-48 h-48 flex justify-center items-center">
-        <Icon name="defaultImg" />
-      </div>
-      <input
-        className="opacity-0 absolute top-0 left-0 right-0 bottom-0 cursor-pointer"
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={onImageChange}
+    <div className="relative w-max group" key={index}>
+      <img src={URL.createObjectURL(file)} className="rounded-lg w-48 h-48" />
+      <Icon
+        onClick={() => handleRemove(index)}
+        name="close"
+        className={`absolute ${inValidStyle} -right-3 -top-3  cursor-pointer`}
       />
+      {invalid && (
+        <Icon
+          name="invalid"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        />
+      )}
     </div>
   );
 };
 
 const UploadPanel = () => {
-  const { setCurrentStep, imgList, setImgList } = useSBT();
-  const toThemePage = () => {
+  const imgContainer = useRef<HTMLDivElement>(null);
+
+  const { setCurrentStep, imgList } = useSBT();
+  const { modelsLoaded, detectFaces, errorMsg } = useFaceRecognition();
+
+  useEffect(() => {
+    if (!imgList.length || !imgContainer?.current || !modelsLoaded) {
+      return;
+    }
+
+    detectFaces(imgContainer);
+  }, [detectFaces, imgList, modelsLoaded]);
+
+  const toThemePage = async () => {
     setCurrentStep(Step.Theme);
   };
-  const handleRemove = (index: number) => {
-    const newArr = [...imgList];
-    newArr.splice(index, 1);
-    setImgList(newArr);
-  };
+
   const btnDisabled = useMemo(() => {
-    return imgList.length < MIN_UPLOAD_LEN || imgList.length > MAX_UPLOAD_LEN;
-  }, [imgList]);
+    return (
+      imgList.length < MIN_UPLOAD_LEN ||
+      imgList.length > MAX_UPLOAD_LEN ||
+      !!errorMsg
+    );
+  }, [imgList, errorMsg]);
+
+  const disabledStyle = btnDisabled ? 'brightness-50 cursor-not-allowed' : '';
 
   return (
     <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative">
@@ -62,28 +73,24 @@ const UploadPanel = () => {
         sure the background is clean. This will ensure the best generation of
         your zkSBT.
       </p>
-      <div className="grid w-full gap-6 grid-cols-5 pb-24 mt-6">
+      {errorMsg && (
+        <p className="absolute flex top-48 text-error">
+          <Icon name="information" className="mr-2" />
+          {errorMsg}
+        </p>
+      )}
+      <div
+        className="grid w-full gap-6 grid-cols-5 pb-16 pt-4 mt-9 max-h-120 overflow-y-auto"
+        ref={imgContainer}>
         {imgList?.map(({ file }, index) => {
-          return (
-            <div className="relative w-max group" key={index}>
-              <img
-                src={URL.createObjectURL(file)}
-                className="rounded-lg w-48 h-48"
-              />
-              <Icon
-                onClick={() => handleRemove(index)}
-                name="close"
-                className="absolute hidden -right-3 -top-3 group-hover:block cursor-pointer"
-              />
-            </div>
-          );
+          return <UploadItem file={file} index={index} key={index} />;
         })}
-        <Upload />
+        <UploadImg />
       </div>
       <button
         onClick={toThemePage}
         disabled={btnDisabled}
-        className="absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform">
+        className={`absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-4 left-1/2 -translate-x-1/2 transform ${disabledStyle}`}>
         Confirm
       </button>
     </div>

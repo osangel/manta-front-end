@@ -70,7 +70,8 @@ module.exports = {
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue': 'var(--color-manta-blue)',
         warning: '#FF8A00',
-        check: '#29CCB9'
+        check: '#29CCB9',
+        error: '#FF472E'
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -89,6 +90,9 @@ module.exports = {
       },
       scale: {
         200: '2'
+      },
+      maxHeight: {
+        120: '30rem'
       }
     }
   },

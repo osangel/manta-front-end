@@ -43,6 +43,7 @@
     "element-theme-default": "^1.4.13",
     "ethereum-blockies-base64": "^1.0.2",
     "ethers": "^5.6.9",
+    "face-api.js": "^0.22.2",
     "husky": "^7.0.1",
     "manta-polkawallet-bridge": "0.0.0",
     "manta-wasm-wallet-api": "^1.5.1-dev-2",

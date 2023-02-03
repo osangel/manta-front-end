@@ -1,10 +1,17 @@
+import axios from 'axios';
+import { useConfig } from 'contexts/configContext';
+import { useExternalAccount } from 'contexts/externalAccountContext';
+import { Gender } from 'face-api.js';
 import {
   createContext,
   ReactElement,
   useContext,
   useMemo,
-  useState
+  useState,
+  useCallback,
+  useEffect
 } from 'react';
+import { MAX_UPLOAD_LEN } from '../components/UploadPanel';
 
 export enum Step {
   Home,
@@ -22,8 +29,16 @@ export type ThemeItem = {
 
 export type UploadFile = {
   file: File;
-  metadata: string;
+  metadata?: string;
   proofId?: string;
+  name: string;
+  url?: string;
+  success?: boolean;
+};
+
+export type OnGoingTaskResult = {
+  status: boolean;
+  urls: string[];
 };
 
 type SBTContextValue = {
@@ -33,6 +48,11 @@ type SBTContextValue = {
   setImgList: (imgList: Array<UploadFile>) => void;
   checkedThemeItems: Map<string, ThemeItem>;
   toggleCheckedThemeItem: (map: Map<string, ThemeItem>) => void;
+  themeGender: Gender;
+  setThemeGender: (themeGerder: Gender) => void;
+  uploadImgs: (files: File[]) => void;
+  onGoingTask: OnGoingTaskResult | null;
+  showOnGoingTask: boolean;
 };
 
 const SBTContext = createContext<SBTContextValue | null>(null);
@@ -43,7 +63,77 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
   const [checkedThemeItems, toggleCheckedThemeItem] = useState<
     Map<string, ThemeItem>
   >(new Map<string, ThemeItem>());
+  const [themeGender, setThemeGender] = useState<Gender>(Gender.MALE);
+  const [onGoingTask, setOnGoingTask] = useState<OnGoingTaskResult | null>(
+    null
+  );
 
+  const { externalAccount } = useExternalAccount();
+  const config = useConfig();
+
+  const uploadImgs = useCallback(
+    async (files: File[]) => {
+      const formData = new FormData();
+      formData.append('address', externalAccount.address);
+      files.forEach((file) => {
+        formData.append('files', file);
+      });
+      const fileUploadUrl = `${config.SBT_NODE_SERVICE}/npo/files`;
+      try {
+        const ret = await axios.post<UploadFile[]>(fileUploadUrl, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        if (ret.status === 200 || ret.status === 201) {
+          const addedImgList = ret?.data?.map((data, index) => ({
+            ...data,
+            file: files[index]
+          }));
+          const newImgList = [...imgList, ...addedImgList].slice(
+            0,
+            MAX_UPLOAD_LEN
+          );
+          setImgList(newImgList);
+        }
+      } catch (e: any) {
+        const addedImgList = files.map((file) => ({
+          file,
+          success: false,
+          name: file.name,
+          metadata: ''
+        }));
+        const newImgList = [...imgList, ...addedImgList].slice(
+          0,
+          MAX_UPLOAD_LEN
+        );
+        setImgList(newImgList);
+      }
+    },
+    [config?.SBT_NODE_SERVICE, externalAccount?.address, imgList]
+  );
+
+  useEffect(() => {
+    const getOnGoingTask = async () => {
+      if (externalAccount?.address) {
+        const url = `${config.SBT_NODE_SERVICE}/npo/ongoing`;
+
+        const ret = await axios.post<OnGoingTaskResult>(url, {
+          address: externalAccount.address
+        });
+        if (ret.status === 200 || ret.status === 201) {
+          setOnGoingTask(ret?.data);
+        }
+      }
+    };
+    getOnGoingTask();
+  }, [config.SBT_NODE_SERVICE, externalAccount]);
+  const showOnGoingTask = useMemo(() => {
+    return (
+      (currentStep === Step.Home || currentStep === Step.Upload) &&
+      !!onGoingTask
+    );
+  }, [currentStep, onGoingTask]);
   const value: SBTContextValue = useMemo(() => {
     return {
       currentStep,
@@ -51,9 +141,22 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       imgList,
       setImgList,
       checkedThemeItems,
-      toggleCheckedThemeItem
+      toggleCheckedThemeItem,
+      themeGender,
+      setThemeGender,
+      uploadImgs,
+      onGoingTask,
+      showOnGoingTask
     };
-  }, [checkedThemeItems, currentStep, imgList]);
+  }, [
+    checkedThemeItems,
+    currentStep,
+    imgList,
+    themeGender,
+    uploadImgs,
+    onGoingTask,
+    showOnGoingTask
+  ]);
 
   return (
     <SBTContext.Provider value={value}>{props.children}</SBTContext.Provider>
