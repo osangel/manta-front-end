@@ -1,4 +1,3 @@
-//@ts-nocheck
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import PrivateActivityTableContent from './PrivateActivityTableContent';
@@ -7,12 +6,19 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import CopyPasteIcon from 'components/CopyPasteIcon';
 import Icon from 'components/Icon';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
+import getAbbreviatedName from 'utils/display/getAbbreviatedName';
+
+type TableContentSelectorProp = {
+  displayAssets: boolean;
+  displayAssetsHandler: () => void;
+  displayActivityHandler: () => void;
+};
 
 const TableContentSelector = ({
   displayAssets,
   displayAssetsHandler,
   displayActivityHandler
-}) => {
+}: TableContentSelectorProp) => {
   return (
     <div className="flex items-center text-white-60">
       <div
@@ -43,10 +49,11 @@ const TableContentSelector = ({
 
 const ZkAddressDisplay = () => {
   const { privateAddress } = usePrivateWallet();
-  const privateAddressDisplayString = `zkAddress ${privateAddress.slice(
-    0,
-    6
-  )}..${privateAddress.slice(-4)}`;
+  const privateAddressDisplayString = `zkAddress ${getAbbreviatedName(
+    privateAddress,
+    6,
+    4
+  )}`;
   return (
     <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-2 text-secondary flex items-center justify-center gap-4">
       <div className="flex items-center gap-2">
@@ -94,6 +101,21 @@ const TableContentDisplay = () => {
         )}
       </div>
     </>
+  );
+};
+
+const NetworkDisconnectedDisplay = () => {
+  return (
+    <div className="border border-secondary rounded-lg px-6 py-6 text-secondary overflow-y-auto bg-white bg-opacity-5">
+      <div className="flex flex-col items-center justify-center gap-3">
+        <div className="text-white text-center">
+          Cannot connect to the network
+        </div>
+        <div className="text-secondary text-xss">
+          Please check your internet connection and wait to reconnect.
+        </div>
+      </div>
+    </div>
   );
 };
 

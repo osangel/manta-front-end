@@ -1,6 +1,5 @@
-//@ts-nocheck
 import React, { ReactNode, useEffect, createContext, useContext } from 'react';
-import * as axios from 'axios';
+import { default as axios, AxiosResponse, AxiosError } from 'axios';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import {
   appendTxHistoryEvent,
@@ -26,7 +25,7 @@ type PrivateTxHistoryContextProps = {
 };
 
 const PENDING_TX_MAX_WAIT_MS = 200000;
-const PrivateTxHistoryContext = createContext();
+const PrivateTxHistoryContext = createContext({});
 
 export const PrivateTxHistoryContextProvider = (
   props: PrivateTxHistoryContextProps
@@ -42,15 +41,12 @@ export const PrivateTxHistoryContextProvider = (
   } = useSend();
 
   const getTransactionType = () => {
-    let transactionType;
     if (isPrivateTransfer()) {
-      transactionType = PRIVATE_TX_TYPE.PRIVATE_TRANSFER;
+      return PRIVATE_TX_TYPE.PRIVATE_TRANSFER;
     } else if (isToPrivate()) {
-      transactionType = PRIVATE_TX_TYPE.TO_PRIVATE;
-    } else if (isToPublic()) {
-      transactionType = PRIVATE_TX_TYPE.TO_PUBLIC;
+      return PRIVATE_TX_TYPE.TO_PRIVATE;
     }
-    return transactionType;
+    return PRIVATE_TX_TYPE.TO_PUBLIC;
   };
 
   useEffect(() => {
@@ -86,11 +82,11 @@ export const PrivateTxHistoryContextProvider = (
     const pendingHistoryEvents = getPendingHistoryEvents();
 
     await pendingHistoryEvents.forEach(async (tx) => {
-      const response = await axios
+      const response: void | AxiosResponse = await axios
         .post(`${config.SUBSCAN_API_ENDPOINT}/extrinsic`, {
           hash: tx.extrinsicHash
         })
-        .catch((error) => {
+        .catch((error: AxiosError) => {
           console.log(error);
         });
       const data = response?.data.data;
@@ -142,10 +138,6 @@ export const PrivateTxHistoryContextProvider = (
       {props.children}
     </PrivateTxHistoryContext.Provider>
   );
-};
-
-PrivateTxHistoryContextProvider.propTypes = {
-  children: PropTypes.any
 };
 
 export const usePrivateTxHistory = () => ({

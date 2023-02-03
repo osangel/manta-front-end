@@ -3,6 +3,7 @@ import React from 'react';
 import Select, { components } from 'react-select';
 import { useTxStatus } from 'contexts/txStatusContext';
 import CopyPasteIcon from 'components/CopyPasteIcon';
+import getAbbreviatedName from 'utils/display/getAbbreviatedName';
 import classNames from 'classnames';
 
 export const substrateAccountToReactSelectOption = (account) => {
@@ -53,11 +54,12 @@ const AccountSelect = ({
 };
 
 const AccountSelectSingleValue = ({ data }) => {
+  const succinctAddress = getAbbreviatedName(data.value.address, 10, 10);
   return (
     <div className="pl-4 pr-6 border-0 flex flex-grow items-end gap-2 relative">
       <div className="text-black dark:text-white">{data.label}</div>
       <div className="text-xs text-white text-opacity-60">
-        {data.value.address.slice(0, 10)}...{data.value.address.slice(-10)}
+        {succinctAddress}
       </div>
       <data id="clipBoardCopy" value={data.value.address} />
       <CopyPasteIcon
@@ -73,14 +75,13 @@ const AccountSelectOption = (props) => {
   const onClick = () => {
     return;
   };
+  const succinctAddress = getAbbreviatedName(value.address, 10, 10);
   return (
     <div {...innerProps}>
       <div className="flex items-center hover:bg-blue-100">
         <div onClick={onClick} className="w-full pl-4 p-2 text-black">
           <components.Option {...props}>{label}</components.Option>
-          <div className="text-xs block manta-gray">
-            {value.address.slice(0, 10)}...{value.address.slice(-10)}
-          </div>
+          <div className="text-xs block manta-gray">{succinctAddress}</div>
         </div>
       </div>
     </div>

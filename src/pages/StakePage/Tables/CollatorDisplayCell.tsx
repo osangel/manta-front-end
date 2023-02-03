@@ -3,10 +3,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Identicon from '@polkadot/react-identicon';
 import Collator from 'types/Collator';
+import getAbbreviatedName from 'utils/display/getAbbreviatedName';
 
 const CollatorDisplayCell = ({collator}) => {
   const address = collator.address;
-  const addressDisplayString = `${address.slice(0, 6)}...${address.slice(-6)}`;
+  const addressDisplayString = getAbbreviatedName(address, 6, 6);
   return (
     <div className="flex items-center text-secondary gap-2">
       <Identicon
