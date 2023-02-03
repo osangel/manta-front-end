@@ -1,5 +1,5 @@
 //@ts-nocheck
-import React, { useEffect, createContext, useContext } from 'react';
+import React, { ReactNode, useEffect, createContext, useContext } from 'react';
 import * as axios from 'axios';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import {
@@ -17,16 +17,20 @@ import TxHistoryEvent, {
   HISTORY_EVENT_STATUS,
   PRIVATE_TX_TYPE
 } from 'types/TxHistoryEvent';
-
-import PropTypes from 'prop-types';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
 import { useSend } from '../SendContext';
 
+type PrivateTxHistoryContextProps = {
+  children: ReactNode;
+};
+
 const PENDING_TX_MAX_WAIT_MS = 200000;
 const PrivateTxHistoryContext = createContext();
 
-export const PrivateTxHistoryContextProvider = (props) => {
+export const PrivateTxHistoryContextProvider = (
+  props: PrivateTxHistoryContextProps
+) => {
   const config = useConfig();
   const { txStatus, txStatusRef } = useTxStatus();
   const { privateAddress } = usePrivateWallet();

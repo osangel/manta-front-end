@@ -1,13 +1,18 @@
-//@ts-nocheck
-import { useZkAccountBalances } from "contexts/zkAccountBalancesContext";
+import {
+  useZkAccountBalances,
+  ZkAccountBalance
+} from 'contexts/zkAccountBalancesContext';
 import { usePrivateWallet } from "contexts/privateWalletContext";
-import Icon from "components/Icon";
+import Icon, { IconName } from "components/Icon";
 
-const PrivateAssetItem = ({ balance }) => {
+type PrivateAssetItemProps = {
+  balance: ZkAccountBalance;
+};
+const PrivateAssetItem = ({ balance }: PrivateAssetItemProps) => {
   return (
     <div className="flex items-center justify-between pl-2.5 pr-3.5 py-2 text-sm hover:bg-thirdry">
       <div className="flex gap-3 items-center">
-        <Icon className="w-8 h-8 rounded-full" name={balance.assetType.icon} />
+        <Icon className="w-8 h-8 rounded-full" name={balance.assetType.icon as IconName} />
         <div>
           <div className="text-white">{balance.assetType.ticker}</div>
           <div className="text-secondary">
@@ -21,12 +26,12 @@ const PrivateAssetItem = ({ balance }) => {
 };
 
 const PrivateAssetTableContent = () => {
-    const { balances } = useZkAccountBalances();
+  const { balances } = useZkAccountBalances();
   const privateWallet = usePrivateWallet();
-  if (balances && balances.length > 0) {
+  if (balances?.length) {
     return (
       <div className="divide-y divide-dashed divide-manta-gray-secondary">
-        {balances.map((balance, _) => (
+        {balances.map((balance: ZkAccountBalance) => (
           <PrivateAssetItem balance={balance} key={balance.assetType.assetId} />
         ))}
       </div>

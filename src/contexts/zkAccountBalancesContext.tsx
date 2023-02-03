@@ -14,6 +14,13 @@ import { useConfig } from './configContext';
 
 const ZkAccountBalancesContext = createContext();
 
+export type ZkAccountBalance = {
+  assetType: AssetType;
+  usdBalance: Usd;
+  usdBalanceString: string;
+  privateBalance: Balance;
+}
+
 export const ZkAccountBalancesContextProvider = (props) => {
   const config = useConfig();
   const { txStatus } = useTxStatus();

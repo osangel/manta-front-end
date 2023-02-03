@@ -31,13 +31,12 @@ const PrivateActivityTableContent = () => {
         )}
       </div>
     );
-  } else {
-    return (
-      <div className="whitespace-nowrap text-center mt-6">
-        You have no activity yet.
-      </div>
-    );
   }
+  return (
+    <div className="whitespace-nowrap text-center mt-6">
+      You have no activity yet.
+    </div>
+  );
 };
 
 type PrivateActivityItemProps = {
@@ -45,13 +44,7 @@ type PrivateActivityItemProps = {
 };
 
 const PrivateActivityItem = ({ txHistoryEvent }: PrivateActivityItemProps) => {
-  const {
-    transactionType,
-    balance,
-    date,
-    status,
-    subscanUrl
-  } = txHistoryEvent;
+  const { transactionType, balance, date, status, subscanUrl } = txHistoryEvent;
 
   const amount = balance.toString();
   const assetBaseType = balance.assetType.baseTicker;
@@ -121,9 +114,47 @@ const ActivityMessage = ({
         {`${amount} zk${assetBaseType}`}
       </div>
     );
-  } else {
-    return null;
   }
+  return null;
+};
+
+const STATUS_MESSAGE_MAP = {
+  [HISTORY_EVENT_STATUS.SUCCESS]: {
+    iconName: 'txSuccess' as IconName,
+    message: HISTORY_EVENT_STATUS.SUCCESS,
+    textColor: 'text-green-300'
+  },
+  [HISTORY_EVENT_STATUS.FAILED]: {
+    iconName: 'txFailed' as IconName,
+    message: HISTORY_EVENT_STATUS.FAILED,
+    textColor: 'text-red-500'
+  },
+  [HISTORY_EVENT_STATUS.PENDING]: {
+    iconName: 'txPending' as IconName,
+    message: HISTORY_EVENT_STATUS.PENDING,
+    textColor: 'text-yellow-500'
+  }
+};
+type StatusMessageTemplateProps = {
+  iconName: IconName;
+  message: string;
+  textColor: string;
+};
+const StatusMessageTemplate = ({
+  iconName,
+  message,
+  textColor
+}: StatusMessageTemplateProps) => {
+  return (
+    <div
+      className={classNames(
+        'text-xss flex flex-row items-center gap-1',
+        textColor
+      )}>
+      <Icon name={iconName} />
+      {message}
+    </div>
+  );
 };
 
 type StatusMessageProps = {
@@ -131,59 +162,10 @@ type StatusMessageProps = {
 };
 
 const StatusMessage = ({ status }: StatusMessageProps) => {
-  let textColor : string;
-  if (status === HISTORY_EVENT_STATUS.FAILED) {
-    textColor = 'text-red-500';
-  } else if (status === HISTORY_EVENT_STATUS.PENDING) {
-    textColor = 'text-yellow-500';
-  } else if (status === HISTORY_EVENT_STATUS.SUCCESS) {
-    textColor = 'text-green-300';
-  }
-
-  type StatusMessageTemplateProps = {
-    iconName: IconName;
-    message: string;
-  };
-
-  const StatusMessageTemplate = ({
-    iconName,
-    message
-  }: StatusMessageTemplateProps) => {
-    return (
-      <div
-        className={classNames(
-          'text-xss flex flex-row items-center gap-1',
-          textColor
-        )}>
-        <Icon name={iconName} />
-        {message}
-      </div>
-    );
-  };
-  if (status === HISTORY_EVENT_STATUS.SUCCESS) {
-    return (
-      <StatusMessageTemplate
-        iconName={'txSuccess'}
-        message={HISTORY_EVENT_STATUS.SUCCESS}
-      />
-    );
-  } else if (status === HISTORY_EVENT_STATUS.FAILED) {
-    return (
-      <StatusMessageTemplate
-        iconName={'txFailed'}
-        message={HISTORY_EVENT_STATUS.FAILED}
-      />
-    );
-  } else if (status === HISTORY_EVENT_STATUS.PENDING) {
-    return (
-      <StatusMessageTemplate
-        iconName={'txPending'}
-        message={HISTORY_EVENT_STATUS.PENDING}
-      />
-    );
-  } else {
+  if (!STATUS_MESSAGE_MAP[status]) {
     return null;
   }
+  return <StatusMessageTemplate {...STATUS_MESSAGE_MAP[status]} />;
 };
 
 export default PrivateActivityTableContent;
