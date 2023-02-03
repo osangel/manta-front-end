@@ -1,4 +1,3 @@
-// @ts-nocheck
 import store from 'store';
 
 const LAST_SEEN_PRIVATE_ADDRESS_STORAGE_KEY = 'lastSeenPrivateAddressHistory';

@@ -28,7 +28,7 @@ const PrivateTxHistoryContext = createContext();
 
 export const PrivateTxHistoryContextProvider = (props) => {
   const config = useConfig();
-  const { txStatus } = useTxStatus();
+  const { txStatus, txStatusRef } = useTxStatus();
   const { privateAddress } = usePrivateWallet();
   const {
     isToPublic,
@@ -50,19 +50,22 @@ export const PrivateTxHistoryContextProvider = (props) => {
   };
 
   useEffect(() => {
-    if (
-      (isPrivateTransfer() || isToPrivate() || isToPublic()) &&
-      txStatus?.isProcessing() &&
-      txStatus?.extrinsic
-    ) {
-      const txHistoryEvent = new TxHistoryEvent(
-        config,
-        senderAssetTargetBalance,
-        txStatus.extrinsic,
-        getTransactionType()
-      );
-      appendTxHistoryEvent(txHistoryEvent);
-    }
+    const updateTxHistoryOnNewTransaction = () => {
+      if (
+        (isPrivateTransfer() || isToPrivate() || isToPublic()) &&
+        txStatus?.isProcessing() &&
+        txStatus?.extrinsic
+      ) {
+        const txHistoryEvent = new TxHistoryEvent(
+          config,
+          senderAssetTargetBalance,
+          txStatus.extrinsic,
+          getTransactionType()
+        );
+        appendTxHistoryEvent(txHistoryEvent);
+      }
+    };
+    updateTxHistoryOnNewTransaction();
   }, [txStatus]);
 
   /**
@@ -79,26 +82,24 @@ export const PrivateTxHistoryContextProvider = (props) => {
     const pendingHistoryEvents = getPendingHistoryEvents();
 
     await pendingHistoryEvents.forEach(async (tx) => {
-      if (tx.extrinsicHash) {
-        const response = await axios
-          .post(`${config.SUBSCAN_API_ENDPOINT}/extrinsic`, {
-            hash: tx.extrinsicHash
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        const data = response?.data.data;
-        if (data) {
-          const status = !!data?.error
-            ? HISTORY_EVENT_STATUS.FAILED
-            : HISTORY_EVENT_STATUS.SUCCESS;
-          updateTxHistoryEventStatus(status, tx.extrinsicHash);
-        } else {
-          const createdTime = new Date(tx.date).getTime();
-          const currentTime = new Date().getTime();
-          if (currentTime - createdTime > PENDING_TX_MAX_WAIT_MS) {
-            removePendingTxHistoryEvent(tx.extrinsicHash);
-          }
+      const response = await axios
+        .post(`${config.SUBSCAN_API_ENDPOINT}/extrinsic`, {
+          hash: tx.extrinsicHash
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      const data = response?.data.data;
+      if (data) {
+        const status = !!data?.error
+          ? HISTORY_EVENT_STATUS.FAILED
+          : HISTORY_EVENT_STATUS.SUCCESS;
+        updateTxHistoryEventStatus(status, tx.extrinsicHash);
+      } else {
+        const createdTime = new Date(tx.date).getTime();
+        const currentTime = new Date().getTime();
+        if (currentTime - createdTime > PENDING_TX_MAX_WAIT_MS) {
+          removePendingTxHistoryEvent(tx.extrinsicHash);
         }
       }
     });
@@ -106,10 +107,13 @@ export const PrivateTxHistoryContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (getPendingHistoryEvents().length !== 0 && !txStatus?.isProcessing()) {
+      if (
+        getPendingHistoryEvents().length !== 0 &&
+        !txStatusRef.current?.isProcessing()
+      ) {
         syncPendingHistoryEvents();
       }
-    }, 3000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 

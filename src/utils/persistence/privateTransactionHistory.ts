@@ -1,6 +1,6 @@
-// @ts-nocheck
 import store from 'store';
 import TxHistoryEvent, { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
+import { ExtrinsicOrHash } from '@polkadot/types/interfaces';
 
 const PRIVATE_TRANSACTION_STORAGE_KEY = 'privateTransactionHistory';
 
@@ -16,12 +16,12 @@ export const getPrivateTransactionHistory = (fromJson = true) => {
   return privateTransactionHistory;
 };
 
-export const setPrivateTransactionHistory = (privateTransactionHistory) => {
+export const setPrivateTransactionHistory = (privateTransactionHistory: TxHistoryEvent[]) => {
   store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };
 
 // add pending private transaction to the history
-export const appendTxHistoryEvent = (txHistoryEvent) => {
+export const appendTxHistoryEvent = (txHistoryEvent: TxHistoryEvent) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory(false)];
   txHistoryEvent.toJson();
   privateTransactionHistory.push(txHistoryEvent);
@@ -29,7 +29,10 @@ export const appendTxHistoryEvent = (txHistoryEvent) => {
 };
 
 // update pending transaction to finalized transaction status
-export const updateTxHistoryEventStatus = (status, extrinsicHash) => {
+export const updateTxHistoryEventStatus = (
+  status: HISTORY_EVENT_STATUS,
+  extrinsicHash: ExtrinsicOrHash
+) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory(false)];
   privateTransactionHistory.forEach((txHistoryEvent) => {
     if (
@@ -43,7 +46,7 @@ export const updateTxHistoryEventStatus = (status, extrinsicHash) => {
 };
 
 // remove pending history event (usually the last one) from the history
-export const removePendingTxHistoryEvent = (extrinsicHash) => {
+export const removePendingTxHistoryEvent = (extrinsicHash: ExtrinsicOrHash) => {
   const privateTransactionHistory = [...getPrivateTransactionHistory(false)];
   if (privateTransactionHistory.length === 0) {
     return;
