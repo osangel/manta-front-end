@@ -77,7 +77,7 @@ const BridgeDestinationInput = () => {
 
   const getAccountName = () => {
     if (destinationChainIsEvm) {
-      return 'Metamask';
+      return 'MetaMask';
     } else {
       return externalAccount?.meta.name;
     }
