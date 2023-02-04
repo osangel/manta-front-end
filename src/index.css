@@ -56,6 +56,8 @@ svg {
     #0091ff 49%,
     #ff66b7 100%
   );
+  --swiper-navigation-size: 16px;
+  --swiper-navigation-color: white;
 }
 
 .light {
@@ -95,6 +97,8 @@ svg {
     #0091ff 49%,
     #ff66b7 100%
   );
+  --swiper-navigation-size: 16px;
+  --swiper-navigation-color: white;
 }
 
 .custom-colors {

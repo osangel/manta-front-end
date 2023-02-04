@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { useConfig } from 'contexts/configContext';
-import { useExternalAccount } from 'contexts/externalAccountContext';
 import { Gender } from 'face-api.js';
 import {
   createContext,
@@ -11,6 +9,15 @@ import {
   useCallback,
   useEffect
 } from 'react';
+import BN from 'bn.js';
+// @ts-ignore:next-line
+import { MantaUtilities } from 'manta.js-kg-dev';
+
+import Balance from 'types/Balance';
+import { useSubstrate } from 'contexts/substrateContext';
+import AssetType from 'types/AssetType';
+import { useExternalAccount } from 'contexts/externalAccountContext';
+import { useConfig } from 'contexts/configContext';
 import { MAX_UPLOAD_LEN } from '../components/UploadPanel';
 
 export enum Step {
@@ -53,6 +60,11 @@ type SBTContextValue = {
   uploadImgs: (files: File[]) => void;
   onGoingTask: OnGoingTaskResult | null;
   showOnGoingTask: boolean;
+  getPublicBalance: (
+    address: string,
+    assetType: AssetType
+  ) => Promise<Balance | null>;
+  nativeTokenBalance: Balance | null;
 };
 
 const SBTContext = createContext<SBTContextValue | null>(null);
@@ -67,9 +79,13 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
   const [onGoingTask, setOnGoingTask] = useState<OnGoingTaskResult | null>(
     null
   );
+  const [nativeTokenBalance, setNativeTokenBalance] = useState<Balance | null>(
+    null
+  );
 
   const { externalAccount } = useExternalAccount();
   const config = useConfig();
+  const { api } = useSubstrate();
 
   const uploadImgs = useCallback(
     async (files: File[]) => {
@@ -128,12 +144,45 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
     };
     getOnGoingTask();
   }, [config.SBT_NODE_SERVICE, externalAccount]);
+
   const showOnGoingTask = useMemo(() => {
     return (
       (currentStep === Step.Home || currentStep === Step.Upload) &&
       !!onGoingTask
     );
   }, [currentStep, onGoingTask]);
+
+  const nativeAsset = AssetType.Native(config);
+
+  const getPublicBalance = useCallback(
+    async (address: string, assetType: AssetType) => {
+      if (!api?.isConnected || !address) {
+        return null;
+      }
+
+      const balanceRaw = await MantaUtilities.getPublicBalance(
+        api,
+        new BN(assetType.assetId),
+        address
+      );
+
+      const balance = balanceRaw ? new Balance(assetType, balanceRaw) : null;
+      return balance;
+    },
+    [api]
+  );
+
+  useEffect(() => {
+    const fetchPublicBalance = async () => {
+      const balance = await getPublicBalance(
+        externalAccount?.address,
+        nativeAsset
+      );
+      setNativeTokenBalance(balance);
+    };
+    fetchPublicBalance();
+  }, [externalAccount, getPublicBalance, nativeAsset]);
+
   const value: SBTContextValue = useMemo(() => {
     return {
       currentStep,
@@ -146,16 +195,20 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       setThemeGender,
       uploadImgs,
       onGoingTask,
-      showOnGoingTask
+      showOnGoingTask,
+      getPublicBalance,
+      nativeTokenBalance
     };
   }, [
-    checkedThemeItems,
     currentStep,
     imgList,
+    checkedThemeItems,
     themeGender,
     uploadImgs,
     onGoingTask,
-    showOnGoingTask
+    showOnGoingTask,
+    getPublicBalance,
+    nativeTokenBalance
   ]);
 
   return (

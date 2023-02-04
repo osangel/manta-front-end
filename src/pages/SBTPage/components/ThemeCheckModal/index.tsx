@@ -6,14 +6,17 @@ import { useExternalAccount } from 'contexts/externalAccountContext';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 import { useSBTPrivateWallet } from 'pages/SBTPage/SBTContext/sbtPrivateWalletContext';
 import { useConfig } from 'contexts/configContext';
+import AssetType from 'types/AssetType';
 
 const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
   const [loading, toggleLoading] = useState(false);
 
-  const { setCurrentStep, imgList, setImgList } = useSBT();
+  const { setCurrentStep, imgList, setImgList, nativeTokenBalance } = useSBT();
   const { externalAccount } = useExternalAccount();
   const { reserveSBT } = useSBTPrivateWallet();
   const config = useConfig();
+
+  const nativeAsset = AssetType.Native(config);
 
   const uploadImgs = async () => {
     const fileUploadUrl = `${config.SBT_NODE_SERVICE}/uploader/ipfs-files`;
@@ -63,7 +66,7 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
         <div className="flex justify-between p-4">
           <p>10 Avatars + ONE Free Mint zkSBT PLAN</p>
           <div className="flex flex-col">
-            <span className="text-check">179.48 MANTA</span>
+            <span className="text-check">179.48 {nativeAsset?.baseTicker}</span>
             <span className="text-white text-opacity-60">$30.9 USD</span>
           </div>
         </div>
@@ -72,17 +75,20 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
           <span className="ml-auto text-opacity-60 text-white mr-2">
             + approximately
           </span>
-          <span className="text-white">1.88 MANTA</span>
+          <span className="text-white">1.88 {nativeAsset?.baseTicker}</span>
         </div>
         <div className="flex justify-between p-4">
           <p>Total</p>
           <div className="flex flex-col">
-            <span className="text-check">179.84 MANTA</span>
+            <span className="text-check">179.84 {nativeAsset?.baseTicker}</span>
             <span className="text-white text-opacity-60">$30.9 USD</span>
           </div>
         </div>
       </div>
-      <p className="text-sm text-left">Balance: $8098.88 Manta</p>
+      <p className="text-sm text-left">
+        Balance: {nativeTokenBalance?.toString() ?? '-'}{' '}
+        {nativeAsset?.baseTicker}
+      </p>
       <button
         onClick={toGeneratingPage}
         disabled={loading}

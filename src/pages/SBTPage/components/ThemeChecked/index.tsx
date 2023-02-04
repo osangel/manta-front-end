@@ -1,5 +1,11 @@
-// @ts-nocheck
-import { Carousel } from 'element-react';
+import { Navigation, type Swiper as SwiperRefType } from 'swiper';
+
+import { MutableRefObject } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper.scss'; // core Swiper
+import 'swiper/modules/navigation/navigation.scss'; // Navigation module
+import 'swiper/modules/pagination/pagination.scss'; // Pagination module
+
 import { ThemeItem, useSBT } from 'pages/SBTPage/SBTContext';
 import themeMap from 'resources/images/sbt/theme';
 
@@ -7,35 +13,39 @@ const Item = ({ item }: { item: ThemeItem }) => {
   return (
     <div className="relative">
       <img src={item.img} className="w-96 h-96" />
-      <span className="absolute top-4 right-4 bg-gradient rounded-lg text-sm px-2">
+      <span className="absolute bottom-4 left-1/2 transform -translate-x-1/2 trans bg-gradient rounded-lg text-sm px-2">
         {item.name}
       </span>
-      <div className="absolute bottom-4 left-4">
-        <h2 className="text-xl">Pico.zk</h2>
-        <p className="text-sm">Product Manager @ Manta</p>
-      </div>
     </div>
   );
 };
-const ThemeChecked = () => {
+const ThemeChecked = ({
+  swiperRef
+}: {
+  swiperRef: MutableRefObject<SwiperRefType | null>;
+}) => {
   const { checkedThemeItems } = useSBT();
   if (checkedThemeItems.size === 0) {
     return <Item item={{ name: 'Anime', img: themeMap.Anime }}></Item>;
   }
+
   return (
-    <Carousel
-      height="24rem"
-      className="w-96"
+    <Swiper
+      className="w-96 m-0"
       autoplay={false}
-      indicatorPosition={'none'}>
+      navigation={true}
+      modules={[Navigation]}
+      onSwiper={(swiper) => {
+        swiperRef && (swiperRef.current = swiper);
+      }}>
       {[...checkedThemeItems.values()].map((item) => {
         return (
-          <Carousel.Item key={item.name}>
+          <SwiperSlide key={item.name}>
             <Item item={item} />
-          </Carousel.Item>
+          </SwiperSlide>
         );
       })}
-    </Carousel>
+    </Swiper>
   );
 };
 export default ThemeChecked;

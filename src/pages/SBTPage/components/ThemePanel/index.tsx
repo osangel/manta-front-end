@@ -1,9 +1,11 @@
+import { type Swiper as SwiperRef } from 'swiper';
+
 import Icon from 'components/Icon';
 import ConnectWalletModal from 'components/Modal/connectWalletModal';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useModal } from 'hooks';
 import { useSBT } from 'pages/SBTPage/SBTContext';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import themeMap from 'resources/images/sbt/theme';
 import ThemeChecked from '../ThemeChecked';
 import ThemeCheckModal from '../ThemeCheckModal';
@@ -47,6 +49,8 @@ const ThemePanel = () => {
     hideModal: hideThemeCheckModal
   } = useModal();
 
+  const swiperRef = useRef<SwiperRef>(null);
+
   const btnDisabled = useMemo(() => {
     return (
       checkedThemeItems.size <= 0 || checkedThemeItems.size > MAX_THEME_LEN
@@ -75,6 +79,11 @@ const ThemePanel = () => {
         name,
         img: themeMap[name]
       });
+      setTimeout(() => {
+        if (swiperRef?.current) {
+          swiperRef.current?.slideTo(checkedThemeItems.size - 1);
+        }
+      }, 100);
     }
 
     toggleCheckedThemeItem(new Map(checkedThemeItems));
@@ -94,7 +103,7 @@ const ThemePanel = () => {
         You can select up to {MAX_THEME_LEN} types of themes
       </p>
       <div className="flex pb-48 mt-6">
-        <ThemeChecked />
+        <ThemeChecked swiperRef={swiperRef} />
         <div className="grid gap-6 grid-cols-5 grid-rows-3 ml-6">
           {Object.keys(themeMap).map((name, index) => {
             return (
