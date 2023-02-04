@@ -57,9 +57,10 @@ export const PrivateTxHistoryContextProvider = (
         txStatus?.extrinsic
       ) {
         const txHistoryEvent = new TxHistoryEvent(
-          config,
+          config.network,
           senderAssetTargetBalance,
           txStatus.extrinsic,
+          config.SUBSCAN_URL,
           getTransactionType()
         );
         appendTxHistoryEvent(txHistoryEvent);

@@ -25,27 +25,30 @@ export type JsonBalance = {
 };
 
 export default class TxHistoryEvent {
-  transactionType: PRIVATE_TX_TYPE;
-  balance: Balance | JsonBalance;
-  date: Date;
-  status: HISTORY_EVENT_STATUS;
+  network: string;
+  balance: Balance;
   extrinsicHash: string;
   subscanUrl: string;
-  network: string;
+  transactionType: PRIVATE_TX_TYPE;
+  date: Date;
+  status: HISTORY_EVENT_STATUS;
   constructor(
-    config: any,
+    network: string,
     balance: Balance,
     extrinsicHash: string,
-    transactionType: PRIVATE_TX_TYPE
+    subscanUrlPrefix: string,
+    transactionType: PRIVATE_TX_TYPE,
+    date?: Date,
+    status?: HISTORY_EVENT_STATUS
   ) {
-    const subscanUrl = `${config.SUBSCAN_URL}/extrinsic/${extrinsicHash}`;
-    this.transactionType = transactionType;
+    const subscanUrl = `${subscanUrlPrefix}/extrinsic/${extrinsicHash}`;
+    this.network = network;
     this.balance = balance;
-    this.date = new Date();
-    this.status = HISTORY_EVENT_STATUS.PENDING;
     this.extrinsicHash = extrinsicHash;
     this.subscanUrl = subscanUrl;
-    this.network = config.network;
+    this.transactionType = transactionType;
+    this.date = date || new Date();
+    this.status = status || HISTORY_EVENT_STATUS.PENDING;
   }
 
   toJson() {
@@ -53,15 +56,29 @@ export default class TxHistoryEvent {
       assetType: this.balance.assetType,
       valueAtomicUnits: this.balance.valueAtomicUnits.toString()
     };
-    this.balance = jsonBalance;
+    return JSON.stringify({
+      ...this,
+      balance: jsonBalance
+    });
   }
 
-  static fromJson(txHistoryEvent: TxHistoryEvent) {
+  static fromJson(txHistoryEventJsonStr: string): TxHistoryEvent {
+    const txHistoryEventJsonObj = JSON.parse(txHistoryEventJsonStr);
     const balance = new Balance(
-      txHistoryEvent.balance.assetType,
-      new BN(txHistoryEvent.balance.valueAtomicUnits)
+      txHistoryEventJsonObj.balance.assetType,
+      new BN(txHistoryEventJsonObj.balance.valueAtomicUnits)
     );
-    txHistoryEvent.date = new Date(txHistoryEvent.date);
-    txHistoryEvent.balance = balance;
+    const date = new Date(txHistoryEventJsonObj.date);
+    const subscanUrlPrefix =
+      txHistoryEventJsonObj.subscanUrl.match(/(https:\/\/.*?)\//)[1];
+    return new TxHistoryEvent(
+      txHistoryEventJsonObj.network,
+      balance,
+      txHistoryEventJsonObj.extrinsicHash,
+      subscanUrlPrefix,
+      txHistoryEventJsonObj.transactionType,
+      date,
+      txHistoryEventJsonObj.status
+    );
   }
 }

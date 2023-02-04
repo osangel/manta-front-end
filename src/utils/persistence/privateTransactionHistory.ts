@@ -1,39 +1,42 @@
 import store from 'store';
 import TxHistoryEvent, { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
-import { ExtrinsicOrHash } from '@polkadot/types/interfaces';
 
 const PRIVATE_TRANSACTION_STORAGE_KEY = 'privateTransactionHistory';
 
-export const getPrivateTransactionHistory = (fromJson = true) => {
-  const privateTransactionHistory = [
+export const getPrivateTransactionHistory = (): TxHistoryEvent[] => {
+  const jsonPrivateTransactionHistory = [
     ...store.get(PRIVATE_TRANSACTION_STORAGE_KEY, [])
   ];
-  privateTransactionHistory.forEach((txHistoryEvent) => {
-    if (fromJson) {
-      TxHistoryEvent.fromJson(txHistoryEvent);
+  const privateTransactionHistory = jsonPrivateTransactionHistory.map(
+    (jsonTxHistoryEvent): TxHistoryEvent => {
+      return TxHistoryEvent.fromJson(jsonTxHistoryEvent);
     }
-  });
+  );
   return privateTransactionHistory;
 };
 
 export const setPrivateTransactionHistory = (privateTransactionHistory: TxHistoryEvent[]) => {
-  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
+  const jsonPrivateTransactionHistory = privateTransactionHistory.map((txHistoryEvent) => {
+    return txHistoryEvent.toJson();
+  });
+  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, jsonPrivateTransactionHistory);
 };
 
 // add pending private transaction to the history
 export const appendTxHistoryEvent = (txHistoryEvent: TxHistoryEvent) => {
-  const privateTransactionHistory = [...getPrivateTransactionHistory(false)];
-  txHistoryEvent.toJson();
-  privateTransactionHistory.push(txHistoryEvent);
-  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
+  const jsonPrivateTransactionHistory = [
+    ...store.get(PRIVATE_TRANSACTION_STORAGE_KEY, [])
+  ];
+  jsonPrivateTransactionHistory.push(txHistoryEvent.toJson());
+  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, jsonPrivateTransactionHistory);
 };
 
 // update pending transaction to finalized transaction status
 export const updateTxHistoryEventStatus = (
   status: HISTORY_EVENT_STATUS,
-  extrinsicHash: ExtrinsicOrHash
+  extrinsicHash: string
 ) => {
-  const privateTransactionHistory = [...getPrivateTransactionHistory(false)];
+  const privateTransactionHistory = [...getPrivateTransactionHistory()];
   privateTransactionHistory.forEach((txHistoryEvent) => {
     if (
       txHistoryEvent.extrinsicHash === extrinsicHash &&
@@ -42,12 +45,15 @@ export const updateTxHistoryEventStatus = (
       txHistoryEvent.status = status;
     }
   });
-  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
+  const jsonPrivateTransactionHistory = privateTransactionHistory.map((txHistoryEvent) => {
+    return txHistoryEvent.toJson();
+  });
+  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, jsonPrivateTransactionHistory);
 };
 
 // remove pending history event (usually the last one) from the history
-export const removePendingTxHistoryEvent = (extrinsicHash: ExtrinsicOrHash) => {
-  const privateTransactionHistory = [...getPrivateTransactionHistory(false)];
+export const removePendingTxHistoryEvent = (extrinsicHash: string) => {
+  const privateTransactionHistory = [...getPrivateTransactionHistory()];
   if (privateTransactionHistory.length === 0) {
     return;
   }
