@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useReducer, useContext, useEffect, useState } from 'react';
+import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
@@ -11,11 +11,11 @@ import TxStatus from 'types/TxStatus';
 import AssetType from 'types/AssetType';
 import getExtrinsicGivenBlockHash from 'utils/api/getExtrinsicGivenBlockHash';
 import { useConfig } from 'contexts/configContext';
-import { MantaPrivateWallet, MantaUtilities } from 'manta.js-kg-dev';
-import SEND_ACTIONS from './sendActions';
-import sendReducer, { buildInitState } from './sendReducer';
+import { MantaPrivateWallet, MantaUtilities } from 'manta.js';
 import { updateTxHistoryEventStatus } from 'utils/persistence/privateTransactionHistory';
 import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
+import SEND_ACTIONS from './sendActions';
+import sendReducer, { buildInitState } from './sendReducer';
 
 const SendContext = React.createContext();
 
