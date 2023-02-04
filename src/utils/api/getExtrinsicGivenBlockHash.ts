@@ -1,7 +1,10 @@
-// @ts-nocheck
-import extrinsicWasSentByUser from "./ExtrinsicWasSendByUser";
+import extrinsicWasSentByUser from './ExtrinsicWasSendByUser';
+import { BlockHash } from '@polkadot/types/interfaces';
+import { ApiPromise } from '@polkadot/api';
 const getExtrinsicGivenBlockHash = async (
-    blockHash, externalAccount, api
+  blockHash: BlockHash,
+  externalAccount: any,
+  api: ApiPromise
 ) => {
   const signedBlock = await api.rpc.chain.getBlock(blockHash);
   const extrinsics = signedBlock.block.extrinsics;
