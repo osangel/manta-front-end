@@ -438,7 +438,7 @@ export const SendContextProvider = (props) => {
         api
       );
       const extrinsicHash = extrinsic.hash.toHex();
-      setTxStatus(TxStatus.finalized(extrinsicHash));
+      setTxStatus(TxStatus.finalized(extrinsicHash, config.SUBSCAN_URL));
       updateTxHistoryEventStatus(
         HISTORY_EVENT_STATUS.SUCCESS,
         extrinsic.hash.toString()
