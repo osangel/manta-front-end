@@ -4,18 +4,21 @@ import Main from './Main';
 import { SBTContextProvider } from './SBTContext';
 import { FaceRecognitionContextProvider } from './SBTContext/faceRecognitionContext';
 import { SBTPrivateContextProvider } from './SBTContext/sbtPrivateWalletContext';
+import { SBTThemeContextProvider } from './SBTContext/sbtThemeContext';
 
 const SBT = () => {
   return (
     <SBTContextProvider>
       <FaceRecognitionContextProvider>
-        <SBTPrivateContextProvider>
-          <div className="text-white min-h-screen flex flex-col">
-            <Navbar showZkBtn={true} />
-            <Main />
-            <OnGoingTaskNotification />
-          </div>
-        </SBTPrivateContextProvider>
+        <SBTThemeContextProvider>
+          <SBTPrivateContextProvider>
+            <div className="text-white min-h-screen flex flex-col">
+              <Navbar showZkBtn={true} />
+              <Main />
+              <OnGoingTaskNotification />
+            </div>
+          </SBTPrivateContextProvider>
+        </SBTThemeContextProvider>
       </FaceRecognitionContextProvider>
     </SBTContextProvider>
   );

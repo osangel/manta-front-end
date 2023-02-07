@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Gender } from 'face-api.js';
 import {
   createContext,
   ReactElement,
@@ -29,11 +28,6 @@ export enum Step {
   Generated
 }
 
-export type ThemeItem = {
-  name: string;
-  img: string;
-};
-
 export type UploadFile = {
   file: File;
   metadata?: string;
@@ -53,10 +47,6 @@ type SBTContextValue = {
   setCurrentStep: (nextStep: Step) => void;
   imgList: Array<UploadFile>;
   setImgList: (imgList: Array<UploadFile>) => void;
-  checkedThemeItems: Map<string, ThemeItem>;
-  toggleCheckedThemeItem: (map: Map<string, ThemeItem>) => void;
-  themeGender: Gender;
-  setThemeGender: (themeGerder: Gender) => void;
   uploadImgs: (files: File[]) => void;
   onGoingTask: OnGoingTaskResult | null;
   showOnGoingTask: boolean;
@@ -72,10 +62,6 @@ const SBTContext = createContext<SBTContextValue | null>(null);
 export const SBTContextProvider = (props: { children: ReactElement }) => {
   const [currentStep, setCurrentStep] = useState(Step.Home);
   const [imgList, setImgList] = useState([] as Array<UploadFile>);
-  const [checkedThemeItems, toggleCheckedThemeItem] = useState<
-    Map<string, ThemeItem>
-  >(new Map<string, ThemeItem>());
-  const [themeGender, setThemeGender] = useState<Gender>(Gender.MALE);
   const [onGoingTask, setOnGoingTask] = useState<OnGoingTaskResult | null>(
     null
   );
@@ -189,10 +175,6 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       setCurrentStep,
       imgList,
       setImgList,
-      checkedThemeItems,
-      toggleCheckedThemeItem,
-      themeGender,
-      setThemeGender,
       uploadImgs,
       onGoingTask,
       showOnGoingTask,
@@ -202,8 +184,6 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
   }, [
     currentStep,
     imgList,
-    checkedThemeItems,
-    themeGender,
     uploadImgs,
     onGoingTask,
     showOnGoingTask,

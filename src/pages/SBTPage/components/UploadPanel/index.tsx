@@ -35,7 +35,8 @@ const UploadPanel = () => {
   const imgContainer = useRef<HTMLDivElement>(null);
 
   const { setCurrentStep, imgList } = useSBT();
-  const { modelsLoaded, detectFaces, errorMsg } = useFaceRecognition();
+  const { modelsLoaded, detectFaces, errorMsg, getGender } =
+    useFaceRecognition();
 
   useEffect(() => {
     if (!imgList.length || !imgContainer?.current || !modelsLoaded) {
@@ -47,6 +48,7 @@ const UploadPanel = () => {
 
   const toThemePage = async () => {
     setCurrentStep(Step.Theme);
+    getGender();
   };
 
   const btnDisabled = useMemo(() => {

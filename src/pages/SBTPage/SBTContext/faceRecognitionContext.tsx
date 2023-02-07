@@ -18,6 +18,8 @@ type FaceRecognitionContextValue = {
   handleRemove: (index: number) => void;
   checkInvalid: (index: number) => boolean;
   errorMsg: string;
+  themeGender: faceapi.Gender;
+  getGender: () => void;
 };
 
 type DetectionResult = faceapi.WithAge<
@@ -40,8 +42,11 @@ export const FaceRecognitionContextProvider = ({
     [] as Array<DetectionResult[]>
   );
   const [errorMsg, setErrorMsg] = useState('');
+  const [themeGender, setThemeGender] = useState<faceapi.Gender>(
+    faceapi.Gender.MALE
+  );
 
-  const { imgList, setThemeGender, setImgList } = useSBT();
+  const { imgList, setImgList } = useSBT();
 
   useEffect(() => {
     const loadModels = async () => {
@@ -137,7 +142,13 @@ export const FaceRecognitionContextProvider = ({
       setErrorMsg('');
     };
     getErrorMsg();
-  }, [getDetectionIsInvalid, detectionResults, errorMsg, imgList, getUploadIsFailed]);
+  }, [
+    getDetectionIsInvalid,
+    detectionResults,
+    errorMsg,
+    imgList,
+    getUploadIsFailed
+  ]);
 
   const checkInvalid = useCallback(
     (index: number) => {
@@ -167,7 +178,9 @@ export const FaceRecognitionContextProvider = ({
       handleRemove,
       checkInvalid,
       getGender,
-      errorMsg
+      errorMsg,
+      themeGender,
+      setThemeGender
     }),
     [
       modelsLoaded,
@@ -176,7 +189,8 @@ export const FaceRecognitionContextProvider = ({
       handleRemove,
       checkInvalid,
       getGender,
-      errorMsg
+      errorMsg,
+      themeGender
     ]
   );
 

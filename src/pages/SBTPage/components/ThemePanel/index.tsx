@@ -1,25 +1,27 @@
 import { type Swiper as SwiperRef } from 'swiper';
+import { useMemo, useRef } from 'react';
 
 import Icon from 'components/Icon';
 import ConnectWalletModal from 'components/Modal/connectWalletModal';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useModal } from 'hooks';
-import { useSBT } from 'pages/SBTPage/SBTContext';
-import { useMemo, useRef } from 'react';
-import themeMap from 'resources/images/sbt/theme';
+import {
+  useSBTTheme,
+  ThemeItem
+} from 'pages/SBTPage/SBTContext/sbtThemeContext';
 import ThemeChecked from '../ThemeChecked';
 import ThemeCheckModal from '../ThemeCheckModal';
 
 export const MAX_THEME_LEN = 10;
 
 type ThemeItemProps = {
-  name: string;
+  themeItem: ThemeItem;
   index: number;
-  toggleCheckImg: (name: string) => void;
+  toggleCheckImg: (index: number) => void;
 };
-const ThemeItem = ({ name, index, toggleCheckImg }: ThemeItemProps) => {
-  const { checkedThemeItems } = useSBT();
-
+const Theme = ({ themeItem, index, toggleCheckImg }: ThemeItemProps) => {
+  const { name, url } = themeItem;
+  const { checkedThemeItems } = useSBTTheme();
   const bgStyle = checkedThemeItems.has(name)
     ? 'bg-light-check border border-check'
     : 'bg-primary';
@@ -30,17 +32,18 @@ const ThemeItem = ({ name, index, toggleCheckImg }: ThemeItemProps) => {
 
   return (
     <div
-      onClick={() => toggleCheckImg(name)}
+      onClick={() => toggleCheckImg(index)}
       key={index}
       className={`flex ${bgStyle} ${cursorStyle} rounded-xl w-28 h-28 flex-col items-center justify-center `}>
-      <img src={themeMap[name]} className="w-14 h-14 rounded-full mb-2" />
+      <img src={url} className="w-14 h-14 rounded-full mb-2" />
       <p>{name}</p>
     </div>
   );
 };
 
 const ThemePanel = () => {
-  const { checkedThemeItems, toggleCheckedThemeItem } = useSBT();
+  const { checkedThemeItems, toggleCheckedThemeItem, themeList } =
+    useSBTTheme();
   const { externalAccount } = useExternalAccount();
   const { ModalWrapper, showModal, hideModal } = useModal();
   const {
@@ -68,7 +71,8 @@ const ThemePanel = () => {
     showThemeCheckModal();
   };
 
-  const toggleCheckImg = (name: string) => {
+  const toggleCheckImg = (index: number) => {
+    const { name, url } = themeList[index];
     if (checkedThemeItems.has(name)) {
       checkedThemeItems.delete(name);
     } else {
@@ -77,7 +81,7 @@ const ThemePanel = () => {
       }
       checkedThemeItems.set(name, {
         name,
-        img: themeMap[name]
+        url
       });
       setTimeout(() => {
         if (swiperRef?.current) {
@@ -103,13 +107,16 @@ const ThemePanel = () => {
         You can select up to {MAX_THEME_LEN} types of themes
       </p>
       <div className="flex pb-48 mt-6">
-        <ThemeChecked swiperRef={swiperRef} />
+        <ThemeChecked
+          swiperRef={swiperRef}
+          defaultThemeItem={themeList?.[0] ?? {}}
+        />
         <div className="grid gap-6 grid-cols-5 grid-rows-3 ml-6">
-          {Object.keys(themeMap).map((name, index) => {
+          {themeList.map((themeItem, index) => {
             return (
-              <ThemeItem
+              <Theme
                 key={index}
-                name={name}
+                themeItem={themeItem}
                 index={index}
                 toggleCheckImg={toggleCheckImg}
               />
