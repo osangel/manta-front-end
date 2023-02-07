@@ -106,7 +106,7 @@ const ChainSelector = () => {
   const [showNetworkList, setShowNetworkList] = useState(false);
 
   const disabled = txStatus?.isProcessing();
-  const onClickChainSelector = () => !disabled && setShowNetworkList(true);
+  const onClickChainSelector = () => !disabled && setShowNetworkList(!showNetworkList);
 
   return (
     <OutsideClickHandler onOutsideClick={() => setShowNetworkList(false)}>
