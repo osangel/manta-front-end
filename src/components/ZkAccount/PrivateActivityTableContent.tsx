@@ -48,8 +48,8 @@ const PrivateActivityItem = ({ txHistoryEvent }: PrivateActivityItemProps) => {
 
   const amount = balance.toString();
   const assetBaseType = balance.assetType.baseTicker;
-  const dateString = `${date.toUTCString().split(' ')[2]} ${
-    date.toUTCString().split(' ')[1]
+  const dateString = `${date.toString().split(' ')[2]} ${
+    date.toString().split(' ')[1]
   }`;
   const onCLickHandler = (subscanUrl: string) => () => {
     if (subscanUrl) {
