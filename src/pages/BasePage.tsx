@@ -10,7 +10,7 @@ import { MetamaskContextProvider } from 'contexts/metamaskContext';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { TxStatusContextProvider, useTxStatus } from 'contexts/txStatusContext';
 import { useEffect } from 'react';
-import { showError, showInfo, showSuccess } from 'utils/ui/Notifications';
+import { showError, showInfo, showSuccess, showWarning } from 'utils/ui/Notifications';
 import { UsdPricesContextProvider } from 'contexts/usdPricesContext';
 import { PrivateWalletContextProvider } from 'contexts/privateWalletContext';
 import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesContext';
@@ -27,6 +27,8 @@ const TxStatusHandler = () => {
       setTxStatus(null);
     } else if (txStatus?.isProcessing() && txStatus.message) {
       showInfo(txStatus.message);
+    } else if (txStatus?.isDisconnected()) {
+      showWarning('Network disconnected');
     }
   }, [txStatus]);
 
@@ -39,15 +41,15 @@ const BasePage = ({ children }) => {
     initAxios(config);
   }, []);
   return (
-    <SubstrateContextProvider>
-      <ExternalAccountContextProvider>
-        <TxStatusContextProvider>
+    <TxStatusContextProvider>
+      <SubstrateContextProvider>
+        <ExternalAccountContextProvider>
           <DeveloperConsole />
           <TxStatusHandler />
           {children}
-        </TxStatusContextProvider>
-      </ExternalAccountContextProvider>
-    </SubstrateContextProvider>
+        </ExternalAccountContextProvider>
+      </SubstrateContextProvider>
+    </TxStatusContextProvider>
   );
 };
 

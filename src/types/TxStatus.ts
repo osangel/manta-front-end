@@ -1,7 +1,9 @@
 // @ts-nocheck
+
 const FINALIZED = 'finalized';
 const FAILED = 'failed';
 const PROCESSING = 'processing';
+const DISCONNECTED = 'disconnected';
 
 export default class TxStatus {
   constructor(status, extrinsic = null, subscanUrl = null, message = null) {
@@ -26,6 +28,10 @@ export default class TxStatus {
     return new TxStatus(FAILED, null, null, message);
   }
 
+  static disconnected(extrinsic) {
+    return new TxStatus(DISCONNECTED, extrinsic);
+  }
+
   isProcessing() {
     return this.status === PROCESSING;
   }
@@ -36,6 +42,10 @@ export default class TxStatus {
 
   isFailed() {
     return this.status === FAILED;
+  }
+
+  isDisconnected() {
+    return this.status === DISCONNECTED;
   }
 
   toString() {
