@@ -64,7 +64,7 @@ const PrivateActivityItem = ({ txHistoryEvent }: PrivateActivityItemProps) => {
   return (
     <div
       onClick={onCLickHandler(subscanUrl)}
-      className="flex flex-col hover:bg-thirdry hover:cursor-pointer">
+      className="flex flex-col hover:bg-thirdry cursor-pointer">
       <div className="flex items-center justify-between pl-2.5 pr-3.5 py-1.5 text-sm">
         <div className="flex flex-col">
           <div className="text-white">{transactionMsg}</div>
