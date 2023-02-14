@@ -64,7 +64,8 @@ export const SBTThemeContextProvider = ({
       name: externalAccount?.address,
       category_id: 1,
       artist_style: [...checkedThemeItems.keys()],
-      images: imgList.map((imgFile) => imgFile?.url)
+      images: imgList.map((imgFile) => imgFile?.url),
+      gender: themeGender
     };
     const ret = await axios.post<{
       model_id: string;
@@ -72,7 +73,13 @@ export const SBTThemeContextProvider = ({
     if (ret.status === 200 || ret.status === 201) {
       setModelId(ret?.data?.model_id);
     }
-  }, [checkedThemeItems, config, externalAccount, imgList]);
+  }, [
+    checkedThemeItems,
+    config.SBT_NODE_SERVICE,
+    externalAccount,
+    imgList,
+    themeGender
+  ]);
 
   const value = useMemo(
     () => ({
