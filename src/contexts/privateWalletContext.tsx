@@ -37,6 +37,13 @@ export const PrivateWalletContextProvider = (props) => {
   const [isReady, setIsReady] = useState(false);
   const isInitialSync = useRef(false);
 
+  const setDisconnectedState = () => {
+    setSignerIsConnected(false);
+    setSignerVersion(null);
+    setPrivateAddress(null);
+    setPrivateWallet(null);
+  };
+
   // transaction state
   const txQueue = useRef([]);
   const finalTxResHandler = useRef(null);
@@ -57,6 +64,7 @@ export const PrivateWalletContextProvider = (props) => {
   useEffect(() => {
     setIsReady(false);
   }, [socket]);
+
 
   useEffect(() => {
     const canInitWallet = () => {
@@ -99,17 +107,11 @@ export const PrivateWalletContextProvider = (props) => {
           setSignerVersion(new Version(updatedSignerVersion));
         }
       } else {
-        setSignerIsConnected(false);
-        setSignerVersion(null);
-        setPrivateAddress(null);
-        setPrivateWallet(null);
+        setDisconnectedState();
       }
     } catch (err) {
       console.error(err);
-      setSignerIsConnected(false);
-      setSignerVersion(null);
-      setPrivateAddress(null);
-      setPrivateWallet(null);
+      setDisconnectedState();
     }
   };
 
@@ -119,6 +121,26 @@ export const PrivateWalletContextProvider = (props) => {
     }, 1000);
     return () => interval && clearInterval(interval);
   }, [api, privateWallet]);
+
+  const fetchZkAddress = async () => {
+    try {
+      const currentPrivateAddress = await privateWallet.getZkAddress();
+      if (currentPrivateAddress !== privateAddress) {
+        setPrivateAddress(currentPrivateAddress);
+      }
+    } catch (err) {
+      setDisconnectedState();
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (isReady) {
+        fetchZkAddress();
+      }
+    }, 1000);
+    return () => interval && clearInterval(interval);
+  }, [isReady]);
 
   const sync = async () => {
     // Don't refresh during a transaction to prevent stale balance updates

@@ -88,6 +88,16 @@ export const ZkAccountBalancesContextProvider = (props) => {
     balancesAreStale
   ]);
 
+  useEffect(() => {
+    const clearBalancesOnDeleteZkAccount = () => {
+      if (!privateAddress) {
+        setBalances([]);
+        setTotalBalanceString('$0.00');
+      }
+    };
+    clearBalancesOnDeleteZkAccount();
+  }, [privateAddress]);
+
   const value = {
     balances,
     totalBalanceString
