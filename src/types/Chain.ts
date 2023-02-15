@@ -49,12 +49,8 @@ export default class Chain {
       9997,
       'dolphin',
       config.DOLPHIN_SOCKET,
-      'https://dolphin.subscan.io',
-      [
-        AssetType.Kusama(config),
-        AssetType.Karura(config),
-        AssetType.Moonriver(config)
-      ],
+      config.DOLPHIN_SUBSCAN_URL,
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.DolphinSkinnedCalamari(config),
       CalamariAdapter,
       types
@@ -68,12 +64,8 @@ export default class Chain {
       2084,
       'dolphin',
       config.DOLPHIN_SOCKET,
-      'https://dolphin.subscan.io',
-      [
-        AssetType.Kusama(config),
-        AssetType.Karura(config),
-        AssetType.Moonriver(config)
-      ],
+      config.DOLPHIN_SUBSCAN_URL,
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.DolphinSkinnedCalamari(config),
       CalamariAdapter,
       types
@@ -87,12 +79,8 @@ export default class Chain {
       2084,
       'calamari',
       config.CALAMARI_SOCKET,
-      'https://calamari.subscan.io',
-      [
-        AssetType.Kusama(config),
-        AssetType.Karura(config),
-        AssetType.Moonriver(config)
-      ],
+      config.CALAMARI_SUBSCAN_URL,
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.Calamari(config),
       CalamariAdapter,
       types
@@ -106,7 +94,7 @@ export default class Chain {
       null,
       'roc',
       config.ROCOCO_SOCKET,
-      'https://rococo.subscan.io',
+      config.ROCOCO_SUBSCAN_URL,
       [AssetType.Rococo(config)],
       AssetType.Rococo(config),
       KusamaAdapter
@@ -120,7 +108,7 @@ export default class Chain {
       null,
       'kusama',
       config.KUSAMA_SOCKET,
-      'https://kusama.subscan.io',
+      config.KUSAMA_SUBSCAN_URL,
       [AssetType.Kusama(config)],
       AssetType.Kusama(config),
       KusamaAdapter
@@ -134,7 +122,7 @@ export default class Chain {
       2000,
       'kar',
       config.KARURA_SOCKET,
-      'https://karura.subscan.io',
+      config.KARURA_SUBSCAN_URL,
       [AssetType.Karura(config)],
       AssetType.Karura(config),
       KaruraAdapter,
@@ -161,7 +149,7 @@ export default class Chain {
       1000,
       'movr',
       config.MOONRIVER_SOCKET,
-      'https://moonriver.subscan.io',
+      config.MOONRIVER_SUBSCAN_URL,
       [AssetType.Moonriver(config)],
       AssetType.Moonriver(config),
       MoonriverAdapter,

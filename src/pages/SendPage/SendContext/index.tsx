@@ -11,7 +11,7 @@ import TxStatus from 'types/TxStatus';
 import AssetType from 'types/AssetType';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import { useConfig } from 'contexts/configContext';
-import { MantaPrivateWallet, MantaUtilities } from 'manta.js-kg-dev';
+import { MantaPrivateWallet, MantaUtilities } from 'manta.js';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
 
@@ -408,7 +408,7 @@ export const SendContextProvider = (props) => {
           extrinsicWasSentByUser(extrinsic, externalAccount, api)
         );
         const extrinsicHash = extrinsic.hash.toHex();
-        setTxStatus(TxStatus.finalized(extrinsicHash));
+        setTxStatus(TxStatus.finalized(extrinsicHash, config.SUBSCAN_URL));
         // Correct private balances will only appear after a sync has completed
         // Until then, do not display stale balances
         privateWallet.setBalancesAreStale(true);
