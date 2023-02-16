@@ -1,5 +1,14 @@
-import { createContext, ReactNode, useState, useMemo, useContext } from 'react';
-import { GeneratedImg } from './generatingContext';
+import {
+  createContext,
+  ReactNode,
+  useState,
+  useMemo,
+  useContext,
+  useEffect
+} from 'react';
+import { useGenerating } from './generatingContext';
+import { useSBTTheme } from './sbtThemeContext';
+import { useSBT, GeneratedImg } from '.';
 
 type GeneratedContextValue = {
   mintSet: Set<GeneratedImg>;
@@ -14,6 +23,25 @@ export const GeneratedContextProvider = ({
   children: ReactNode;
 }) => {
   const [mintSet, setMintSet] = useState<Set<GeneratedImg>>(new Set());
+
+  const { skippedStep, onGoingTask } = useSBT();
+  const { setGeneratedImgs } = useGenerating();
+  const { setModelId } = useSBTTheme();
+  const { setImgList } = useSBT();
+
+  useEffect(() => {
+    const checkSkipStep = () => {
+      if (skippedStep) {
+        if (onGoingTask?.status && onGoingTask?.urls?.length) {
+          setGeneratedImgs(onGoingTask.urls);
+        } else {
+          setModelId(onGoingTask?.model_id ?? '');
+          setImgList(onGoingTask?.urls ?? []);
+        }
+      }
+    };
+    checkSkipStep();
+  }, [onGoingTask, setGeneratedImgs, setImgList, setModelId, skippedStep]);
 
   const value = useMemo(
     () => ({

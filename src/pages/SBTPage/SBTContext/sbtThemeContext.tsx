@@ -25,6 +25,7 @@ type SBTThemeContextValue = {
   toggleCheckedThemeItem: (map: Map<string, ThemeItem>) => void;
   generateImgs: () => void;
   modelId: string;
+  setModelId: (modelId: string) => void;
 };
 
 const SBTThemeContext = createContext<SBTThemeContextValue | null>(null);
@@ -62,7 +63,6 @@ export const SBTThemeContextProvider = ({
     const data = {
       address: externalAccount?.address,
       name: externalAccount?.address,
-      category_id: 1,
       artist_style: [...checkedThemeItems.keys()],
       images: imgList.map((imgFile) => imgFile?.url),
       gender: themeGender
@@ -87,7 +87,8 @@ export const SBTThemeContextProvider = ({
       checkedThemeItems,
       toggleCheckedThemeItem,
       generateImgs,
-      modelId
+      modelId,
+      setModelId
     }),
     [themeList, checkedThemeItems, generateImgs, modelId]
   );

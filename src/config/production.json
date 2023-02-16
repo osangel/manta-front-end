@@ -11,10 +11,10 @@
     {
       "name": "Dolphin",
       "path": "/dolphin",
-      "url": "wss://ws.calamari.seabird.systems",
+      "url": "wss://ws.npoimage-backend-service.cloud:444",
       "testnet": true,
       "explorer": "dolphin.subscan.io"
     }
   ],
-  "SBT_NODE_SERVICE": "http://47.100.96.241:3000"
+  "SBT_NODE_SERVICE": "https://dev.asmatch-api-npo.nonprod-asmatch.xyz"
 }

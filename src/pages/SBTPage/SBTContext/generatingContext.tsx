@@ -13,20 +13,17 @@ import { useConfig } from 'contexts/configContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useSBTTheme } from './sbtThemeContext';
 import { Step, useSBT } from '.';
+import { GeneratedImg } from './index';
 
 export enum GenerateStatus {
   finished,
   doing
 }
 
-export type GeneratedImg = {
-  style: string;
-  url: string;
-};
-
 type GeneratingContextValue = {
   generatedImgs: GeneratedImg[];
   generateStatus: GenerateStatus;
+  setGeneratedImgs: (generatedImgs: GeneratedImg[]) => void;
   queryGenerateResult: () => void;
 };
 
@@ -68,7 +65,8 @@ export const GeneratingContextProvider = ({
     () => ({
       generatedImgs,
       generateStatus,
-      queryGenerateResult
+      queryGenerateResult,
+      setGeneratedImgs
     }),
     [generateStatus, generatedImgs, queryGenerateResult]
   );

@@ -85,6 +85,9 @@ const UploadPanel = () => {
         className="grid w-full gap-6 grid-cols-5 pb-16 pt-4 mt-9 max-h-120 overflow-y-auto"
         ref={imgContainer}>
         {imgList?.map(({ file }, index) => {
+          if (!file) {
+            return null;
+          }
           return <UploadItem file={file} index={index} key={index} />;
         })}
         <UploadImg />

@@ -29,20 +29,26 @@ export enum Step {
 }
 
 export type UploadFile = {
-  file: File;
-  metadata?: string;
-  proofId?: string;
-  name: string;
+  file?: File;
+  name?: string;
   url?: string;
   success?: boolean;
+};
+export type GeneratedImg = {
+  style: string;
+  url: string;
+  cid?: string;
+  proofId?: string;
+  blur_url?: string;
 };
 
 export type OnGoingTaskResult = {
   status: boolean;
-  urls: string[];
+  urls: GeneratedImg[];
+  model_id: string;
 };
 
-type SBTContextValue = {
+export type SBTContextValue = {
   currentStep: Step;
   setCurrentStep: (nextStep: Step) => void;
   imgList: Array<UploadFile>;
@@ -55,6 +61,8 @@ type SBTContextValue = {
     assetType: AssetType
   ) => Promise<Balance | null>;
   nativeTokenBalance: Balance | null;
+  skippedStep: boolean;
+  toggleSkippedStep: (skippedStep: boolean) => void;
 };
 
 const SBTContext = createContext<SBTContextValue | null>(null);
@@ -68,6 +76,7 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
   const [nativeTokenBalance, setNativeTokenBalance] = useState<Balance | null>(
     null
   );
+  const [skippedStep, toggleSkippedStep] = useState(false);
 
   const { externalAccount } = useExternalAccount();
   const config = useConfig();
@@ -102,8 +111,7 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
         const addedImgList = files.map((file) => ({
           file,
           success: false,
-          name: file.name,
-          metadata: ''
+          name: file.name
         }));
         const newImgList = [...imgList, ...addedImgList].slice(
           0,
@@ -117,7 +125,10 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
 
   useEffect(() => {
     const getOnGoingTask = async () => {
-      if (externalAccount?.address) {
+      if (
+        externalAccount?.address &&
+        (currentStep === Step.Home || currentStep === Step.Upload)
+      ) {
         const url = `${config.SBT_NODE_SERVICE}/npo/ongoing`;
 
         const ret = await axios.post<OnGoingTaskResult>(url, {
@@ -129,7 +140,7 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       }
     };
     getOnGoingTask();
-  }, [config.SBT_NODE_SERVICE, externalAccount]);
+  }, [config.SBT_NODE_SERVICE, currentStep, externalAccount]);
 
   const showOnGoingTask = useMemo(() => {
     return (
@@ -179,7 +190,9 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       onGoingTask,
       showOnGoingTask,
       getPublicBalance,
-      nativeTokenBalance
+      nativeTokenBalance,
+      toggleSkippedStep,
+      skippedStep
     };
   }, [
     currentStep,
@@ -188,7 +201,8 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
     onGoingTask,
     showOnGoingTask,
     getPublicBalance,
-    nativeTokenBalance
+    nativeTokenBalance,
+    skippedStep
   ]);
 
   return (

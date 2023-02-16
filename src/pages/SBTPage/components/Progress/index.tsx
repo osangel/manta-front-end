@@ -8,7 +8,7 @@ import {
 import ProgressCircle from '../ProgressCircle';
 
 const PROGRESS_MAX = 251.327;
-const PROGRESS_SPEED = 1;
+const PROGRESS_SPEED = 0.05;
 const PROGRESS_BEFORE_FINISH = 240;
 
 const REMAIN_TIME_BEFORE_FINISH = 5;

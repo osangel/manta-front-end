@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import BN from 'bn.js';
 
 import DotLoader from 'components/Loaders/DotLoader';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
@@ -9,7 +10,6 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import { useSBTTheme } from 'pages/SBTPage/SBTContext/sbtThemeContext';
 import Balance from 'types/Balance';
-import BN from 'bn.js';
 
 const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
   const [loading, toggleLoading] = useState(false);
@@ -32,6 +32,8 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
     try {
       await reserveSBT();
     } catch (e) {
+      toggleLoading(false);
+
       console.error(e);
     }
   };
@@ -49,6 +51,8 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
         setTimeout(() => {
           setCurrentStep(Step.Generating);
         }, 100);
+      } else if (txStatus?.isFailed()) {
+        toggleLoading(false);
       }
     };
 
@@ -60,7 +64,8 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
   const loadingStyle = loading ? 'brightness-50 cursor-not-allowed' : '';
   const disabled =
     loading ||
-    totalValue?.gt(nativeTokenBalance ?? new Balance(nativeAsset, new BN(0)));
+    totalValue?.gt(nativeTokenBalance ?? Balance.Native(config, new BN(0))) ||
+    reserveGasFee == null;
 
   const disabledStyle = disabled ? 'brightness-50 cursor-not-allowed' : '';
 
@@ -95,7 +100,7 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
         </div>
       </div>
       <p className="text-sm text-left">
-        {nativeTokenBalance?.toDisplayString() ?? '-'}
+        Balance: {nativeTokenBalance?.toDisplayString() ?? '-'}
       </p>
       <button
         onClick={toGeneratingPage}

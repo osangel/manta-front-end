@@ -4,14 +4,14 @@ import { useEffect, useRef } from 'react';
 import { type Swiper as SwiperRef } from 'swiper';
 
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
-import {
-  GeneratedImg,
-  useGenerating
-} from 'pages/SBTPage/SBTContext/generatingContext';
+import { useGenerating } from 'pages/SBTPage/SBTContext/generatingContext';
+import { GeneratedImg } from 'pages/SBTPage/SBTContext/index';
 import { MAX_MINT_SIZE } from '../Generated';
 
 const PRE_SCALE = 0.07;
-const MAX_Z_INDEX = 30;
+const MAX_Z_INDEX = 60;
+const MAX_IMG_LEN = 10;
+const MIN_LOOP = 10;
 
 type ItemType = {
   generatedImg: GeneratedImg;
@@ -70,7 +70,6 @@ const GeneratedImgs = () => {
       const activeSlide = wraper.querySelector(
         '.swiper-slide-active'
       ) as unknown as HTMLDivElement;
-
       if (!activeSlide) {
         return;
       }
@@ -97,37 +96,42 @@ const GeneratedImgs = () => {
 
   return (
     <div className="w-full mx-auto">
-      <Swiper
-        autoplay={false}
-        slidesPerView={generatedImgs.length}
-        centeredSlides={true}
-        spaceBetween={-90}
-        initialSlide={Math.floor(generatedImgs.length / 2)}
-        slideToClickedSlide={true}
-        modules={[]}
-        className="generated-swiper"
-        onSwiper={(swiper) => {
-          swiperRef && (swiperRef.current = swiper);
-        }}
-        onSlideChange={() =>
-          setTimeout(() => {
-            scaleSwiperSlide();
-          }, 100)
-        }
-        loop={true}>
-        {generatedImgs.map((generatedImg, index) => {
-          return (
-            <SwiperSlide
-              key={index}
-              className="transform scale-75 transition-transform opacity-90">
-              <GeneratedImgItem
-                generatedImg={generatedImg}
-                toggleMint={toggleMint}
-              />
-            </SwiperSlide>
-          );
-        })}
-      </Swiper>
+      {generatedImgs.length ? (
+        <Swiper
+          autoplay={false}
+          slidesPerView={MAX_IMG_LEN}
+          centeredSlides={true}
+          spaceBetween={-90}
+          initialSlide={Math.min(
+            MAX_IMG_LEN / 2,
+            Math.floor(generatedImgs.length / 2)
+          )}
+          slideToClickedSlide={true}
+          modules={[]}
+          className="generated-swiper"
+          onSwiper={(swiper) => {
+            swiperRef && (swiperRef.current = swiper);
+          }}
+          onSlideChange={() =>
+            setTimeout(() => {
+              scaleSwiperSlide();
+            }, 100)
+          }
+          loop={generatedImgs.length >= MIN_LOOP}>
+          {generatedImgs.map((generatedImg, index) => {
+            return (
+              <SwiperSlide
+                key={index}
+                className="transform scale-75 transition-transform opacity-90">
+                <GeneratedImgItem
+                  generatedImg={generatedImg}
+                  toggleMint={toggleMint}
+                />
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      ) : null}
     </div>
   );
 };
