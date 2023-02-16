@@ -118,7 +118,7 @@ export const SBTPrivateContextProvider = ({
       status: ExtrinsicStatus;
       events: EventRecord[];
     }) => {
-      if (status.isInBlock) {
+      if (status.isInBlock || status.isFinalized) {
         const systemEvents = events.filter(
           ({ event: { section } }) => section === 'system'
         );
@@ -136,11 +136,15 @@ export const SBTPrivateContextProvider = ({
             } else {
               console.error(error.toString());
             }
-            setTxStatus(TxStatus.failed(''));
           } else if (api.events.system.ExtrinsicSuccess.is(event.event)) {
             try {
-              const signedBlock: SignedBlock =
-                await sbtPrivateWallet.api.rpc.chain.getBlock(status.asInBlock);
+              const signedBlock: SignedBlock = status.isInBlock
+                ? await sbtPrivateWallet.api.rpc.chain.getBlock(
+                  status.asInBlock
+                )
+                : await sbtPrivateWallet.api.rpc.chain.getBlock(
+                  status.asFinalized
+                );
               const extrinsics = signedBlock.block.extrinsics;
               const extrinsic = extrinsics.find((extrinsic) =>
                 extrinsicWasSentByUser(extrinsic, externalAccount, api)

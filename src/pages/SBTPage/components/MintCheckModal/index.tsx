@@ -47,7 +47,7 @@ const MintCheckModal = ({
   const { nativeTokenBalance } = useSBT();
   const { mintGasFee, mintSBT, getMintGasFee } = useSBTPrivateWallet();
   const config = useConfig();
-  const { txStatus }: { txStatus: TxStatus | null } = useTxStatus();
+  const { txStatus, setTxStatus } = useTxStatus();
   const { getWatermarkedImgs } = useMint();
   const { externalAccount } = useExternalAccount();
   const { generateAccount } = useSBTTheme();
@@ -74,8 +74,9 @@ const MintCheckModal = ({
       proofIdRef.current = proofIds;
     } catch (e) {
       console.error(e);
+      setTxStatus(TxStatus.failed(''));
     }
-  }, [getWatermarkedImgs, mintSBT]);
+  }, [getWatermarkedImgs, mintSBT, setTxStatus]);
 
   useEffect(() => {
     const handleTxFinalized = () => {
