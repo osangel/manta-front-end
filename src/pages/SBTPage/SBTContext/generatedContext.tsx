@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect
 } from 'react';
+import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useGenerating } from './generatingContext';
 import { useSBTTheme } from './sbtThemeContext';
 import { useSBT, GeneratedImg } from '.';
@@ -24,24 +25,36 @@ export const GeneratedContextProvider = ({
 }) => {
   const [mintSet, setMintSet] = useState<Set<GeneratedImg>>(new Set());
 
-  const { skippedStep, onGoingTask } = useSBT();
+  const { skippedStep, onGoingTask, toggleSkippedStep } = useSBT();
   const { setGeneratedImgs } = useGenerating();
-  const { setModelId } = useSBTTheme();
+  const { setModelId, setGenerateAccount } = useSBTTheme();
   const { setImgList } = useSBT();
+  const { externalAccount } = useExternalAccount();
 
   useEffect(() => {
     const checkSkipStep = () => {
       if (skippedStep) {
+        setGenerateAccount(externalAccount);
+        setModelId(onGoingTask?.model_id ?? '');
         if (onGoingTask?.status && onGoingTask?.urls?.length) {
           setGeneratedImgs(onGoingTask.urls);
         } else {
-          setModelId(onGoingTask?.model_id ?? '');
           setImgList(onGoingTask?.urls ?? []);
         }
+        toggleSkippedStep(false);
       }
     };
     checkSkipStep();
-  }, [onGoingTask, setGeneratedImgs, setImgList, setModelId, skippedStep]);
+  }, [
+    externalAccount,
+    onGoingTask,
+    setGenerateAccount,
+    setGeneratedImgs,
+    setImgList,
+    setModelId,
+    skippedStep,
+    toggleSkippedStep
+  ]);
 
   const value = useMemo(
     () => ({

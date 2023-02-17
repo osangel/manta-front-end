@@ -12,6 +12,9 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import { GeneratedImg } from 'pages/SBTPage/SBTContext/index';
 import { useMint } from 'pages/SBTPage/SBTContext/mintContext';
+import { useExternalAccount } from 'contexts/externalAccountContext';
+import { useSBTTheme } from 'pages/SBTPage/SBTContext/sbtThemeContext';
+import Icon from 'components/Icon';
 
 const MintImg = ({ url }: { url: string }) => (
   <img src={url} className="w-24 h-24 rounded-2xl" />
@@ -46,6 +49,8 @@ const MintCheckModal = ({
   const config = useConfig();
   const { txStatus }: { txStatus: TxStatus | null } = useTxStatus();
   const { getWatermarkedImgs } = useMint();
+  const { externalAccount } = useExternalAccount();
+  const { generateAccount } = useSBTTheme();
 
   const nativeAsset = AssetType.Native(config);
 
@@ -119,14 +124,26 @@ const MintCheckModal = ({
 
   const mintCostStyle = mintSet.size === 1 ? 'text-check' : 'text-white';
 
+  const errorMsg = useMemo(() => {
+    if (generateAccount?.address !== externalAccount?.address) {
+      return 'The address to mint must be the same as the address to genereate.';
+    }
+    if (nativeTokenBalance == null || totalValue.gt(nativeTokenBalance)) {
+      return 'You account does not have enough balance for this transaction.';
+    }
+    return '';
+  }, [
+    externalAccount?.address,
+    generateAccount?.address,
+    nativeTokenBalance,
+    totalValue
+  ]);
+
   const disabled = useMemo(
-    () =>
-      loading ||
-      mintGasFee == null ||
-      nativeTokenBalance == null ||
-      totalValue.gt(nativeTokenBalance),
-    [loading, mintGasFee, nativeTokenBalance, totalValue]
+    () => loading || mintGasFee == null || !!errorMsg,
+    [errorMsg, loading, mintGasFee]
   );
+
   const disabledStyle = disabled ? 'brightness-50 cursor-not-allowed' : '';
 
   return (
@@ -156,6 +173,12 @@ const MintCheckModal = ({
       <p className="text-sm text-left">
         Balance: {nativeTokenBalance?.toDisplayString() ?? '-'}
       </p>
+      {errorMsg && (
+        <p className="mt-2 text-error text-left">
+          <Icon name="information" className="mr-2 inline-block" />
+          {errorMsg}
+        </p>
+      )}
       <button
         onClick={() => mintSBTConfirm()}
         disabled={disabled}

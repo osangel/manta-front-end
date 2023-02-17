@@ -19,6 +19,10 @@ export type ThemeItem = {
   url: string;
 };
 
+type ExternalAccount = {
+  address?: string;
+};
+
 type SBTThemeContextValue = {
   themeList: ThemeItem[];
   checkedThemeItems: Map<string, ThemeItem>;
@@ -26,6 +30,8 @@ type SBTThemeContextValue = {
   generateImgs: () => void;
   modelId: string;
   setModelId: (modelId: string) => void;
+  generateAccount: ExternalAccount | null;
+  setGenerateAccount: (generateAccount: ExternalAccount) => void;
 };
 
 const SBTThemeContext = createContext<SBTThemeContextValue | null>(null);
@@ -40,6 +46,8 @@ export const SBTThemeContextProvider = ({
     Map<string, ThemeItem>
   >(new Map<string, ThemeItem>());
   const [modelId, setModelId] = useState<string>('');
+  const [generateAccount, setGenerateAccount] =
+    useState<ExternalAccount | null>(null);
 
   const config = useConfig();
   const { themeGender } = useFaceRecognition();
@@ -72,6 +80,7 @@ export const SBTThemeContextProvider = ({
     }>(url, data);
     if (ret.status === 200 || ret.status === 201) {
       setModelId(ret?.data?.model_id);
+      setGenerateAccount(externalAccount);
     }
   }, [
     checkedThemeItems,
@@ -88,9 +97,11 @@ export const SBTThemeContextProvider = ({
       toggleCheckedThemeItem,
       generateImgs,
       modelId,
-      setModelId
+      setModelId,
+      generateAccount,
+      setGenerateAccount
     }),
-    [themeList, checkedThemeItems, generateImgs, modelId]
+    [themeList, checkedThemeItems, generateImgs, modelId, generateAccount]
   );
 
   return (
