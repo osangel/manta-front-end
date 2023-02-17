@@ -145,7 +145,8 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
   const showOnGoingTask = useMemo(() => {
     return (
       (currentStep === Step.Home || currentStep === Step.Upload) &&
-      !!onGoingTask
+      !!onGoingTask &&
+      !!Object.keys(onGoingTask)?.length
     );
   }, [currentStep, onGoingTask]);
 
