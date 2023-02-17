@@ -13,6 +13,9 @@ import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import { MantaPrivateWallet, MantaUtilities, Environment, Network } from 'manta.js';
+import {
+  removePendingTxHistoryEvent,
+} from 'utils/persistence/privateTransactionHistory';
 import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
@@ -24,7 +27,8 @@ export const PrivateWalletContextProvider = (props) => {
   // external contexts
   const config = useConfig();
   const { api, socket } = useSubstrate();
-  const { externalAccountSigner, externalAccount, extensionSigner } = useExternalAccount();
+  const { externalAccountSigner, externalAccount, extensionSigner } =
+    useExternalAccount();
   const { setTxStatus, txStatusRef } = useTxStatus();
 
   // private wallet
@@ -143,7 +147,9 @@ export const PrivateWalletContextProvider = (props) => {
     if (!isReady || balancesAreStaleRef.current) {
       return null;
     }
-    const balanceRaw = await privateWallet.getPrivateBalance(new BN(assetType.assetId));
+    const balanceRaw = await privateWallet.getPrivateBalance(
+      new BN(assetType.assetId)
+    );
     return new Balance(assetType, balanceRaw);
   };
 
@@ -170,9 +176,11 @@ export const PrivateWalletContextProvider = (props) => {
           externalAccountSigner,
           finalTxResHandler.current
         );
+        setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
         setTxStatus(TxStatus.failed('Transaction declined'));
+        removePendingTxHistoryEvent();
         txQueue.current = [];
       }
     };
