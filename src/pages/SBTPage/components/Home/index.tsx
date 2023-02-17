@@ -20,7 +20,7 @@ const Home = () => {
   return (
     <div className="flex flex-col items-center mx-auto bg-secondary rounded-xl p-14 w-75">
       <Icon className="w-20 h-20" name="manta" />
-      <h2 className="text-white text-6xl mt-6 mb-4">MANTA zkSBT</h2>
+      <h2 className="text-white text-2xl mt-6 mb-4">MANTA zkSBT</h2>
       <div className="grid gap-6 grid-cols-9 grid-rows-3 w-full justify-between mt-8 mb-20">
         {sbtImgs.map((item, index) => {
           return (
