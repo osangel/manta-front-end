@@ -49,6 +49,7 @@ import { ReactComponent as information } from 'resources/icons/information-solid
 import { ReactComponent as threeRightArrow } from 'resources/icons/three-right-arrow.svg';
 import { ReactComponent as grayThinLine } from 'resources/icons/gray-thin-line.svg';
 import { ReactComponent as blueSolidLine } from 'resources/icons/blue-solid-line.svg';
+import { ReactComponent as unfilledCircle } from 'resources/icons/unfilled-circle.svg';
 
 // chain data icons
 import { ReactComponent as Blocks } from 'resources/icons/chain/blocks.svg';
@@ -124,6 +125,7 @@ const icons = {
   search,
   greenCheck,
   information,
+  unfilledCircle,
   Blocks,
   Sign,
   transfer,

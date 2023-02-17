@@ -417,6 +417,11 @@ export const SendContextProvider = (props) => {
         }
       }
     } else if (status.isFinalized) {
+      for (const event of events) {
+        if (api.events.utility.BatchInterrupted.is(event.event)) {
+          return;
+        }
+      }
       handleTxSuccess(status);
     }
   };
