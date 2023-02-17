@@ -136,6 +136,7 @@ export const SBTPrivateContextProvider = ({
             } else {
               console.error(error.toString());
             }
+            setTxStatus(TxStatus.failed(''));
           } else if (api.events.system.ExtrinsicSuccess.is(event.event)) {
             try {
               const signedBlock: SignedBlock = status.isInBlock
