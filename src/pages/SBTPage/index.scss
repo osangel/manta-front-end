@@ -7,4 +7,8 @@
   .el-popover[x-placement^='right'] .popper__arrow {
     display: none;
   }
+  .img-bg {
+    background: url(../../resources/images/img-bg.png) no-repeat center
+      center/100% 100%;
+  }
 }

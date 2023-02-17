@@ -25,7 +25,7 @@ const Home = () => {
         {sbtImgs.map((item, index) => {
           return (
             <img
-              className="w-24 h-24 rounded-xl cursor-pointer hover:scale-200 transform duration-200 hover:z-10"
+              className="img-bg w-24 h-24 rounded-xl cursor-pointer hover:scale-200 transform duration-200 hover:z-10"
               key={index}
               src={item}
             />
