@@ -23,7 +23,7 @@ const ReceiverBalanceDisplay = () => {
     receiverCurrentBalance,
     apiIsDisconnected,
     receiverIsPrivate(),
-    isInitialSync.current
+    isInitialSync
   );
 
   const shouldShowLoader = receiverAddress && !receiverCurrentBalance && !balanceText;

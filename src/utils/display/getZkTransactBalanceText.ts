@@ -10,7 +10,7 @@ const getZkTransactBalanceText = (
   if (apiIsDisconnected) {
     return 'Connecting to network';
   } else if (isInitialSync && isPrivate) {
-    return 'Syncing zk account';
+    return 'Syncing zkAccount';
   } else if (balance) {
     return balance.toString();
   } else {

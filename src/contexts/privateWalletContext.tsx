@@ -35,7 +35,7 @@ export const PrivateWalletContextProvider = (props) => {
   const [signerIsConnected, setSignerIsConnected] = useState(null);
   const [signerVersion, setSignerVersion] = useState(null);
   const [isReady, setIsReady] = useState(false);
-  const isInitialSync = useRef(false);
+  const [isInitialSync, setIsInitialSync] = useState(false);
 
   // transaction state
   const txQueue = useRef([]);
@@ -64,12 +64,12 @@ export const PrivateWalletContextProvider = (props) => {
         signerIsConnected &&
         signerVersion &&
         !signerIsOutOfDate(config, signerVersion) &&
-        !isInitialSync.current
+        !isInitialSync
       );
     };
 
     const initWallet = async () => {
-      isInitialSync.current = true;
+      setIsInitialSync(true);
       const privateWalletConfig = {
         environment: Environment.Production,
         network: Network.Dolphin,
@@ -77,11 +77,10 @@ export const PrivateWalletContextProvider = (props) => {
       };
       const privateWallet = await MantaPrivateWallet.init(privateWalletConfig);
       const privateAddress = await privateWallet.getZkAddress();
-      setPrivateAddress(privateAddress);
       await privateWallet.initalWalletSync();
       setPrivateAddress(privateAddress);
       setPrivateWallet(privateWallet);
-      isInitialSync.current = false;
+      setIsInitialSync(false);
     };
 
     if (canInitWallet() && !isReady) {

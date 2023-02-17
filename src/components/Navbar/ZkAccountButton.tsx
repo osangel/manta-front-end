@@ -30,7 +30,7 @@ const ZkAccountDisplay = () => {
           />
         )}
         <div
-          className="flex flex-row justify-center items-center gap-3 h-12 w-36 text-white font-medium cursor-pointer bg-fifth border border-white border-opacity-20 rounded-lg"
+          className="flex flex-row justify-center items-center gap-3 h-12 w-44 text-white font-medium cursor-pointer bg-fifth border border-white border-opacity-20 rounded-lg"
           onClick={() => setShowZkModal(!showZkModal)}>
           <Icon className="w-6 h-6" name="manta" />
           zkAddress
@@ -59,7 +59,7 @@ const ZkAccountWarning = ({
           />
         )}
         <div
-          className="flex gap-3 py-3 px-4 text-white font-medium cursor-pointer bg-fifth border border-white border-opacity-20 rounded-lg"
+          className="flex gap-3 py-3 px-4 w-44 text-white font-medium cursor-pointer bg-fifth border border-white border-opacity-20 rounded-lg"
           onClick={() => setShowZkModal(!showZkModal)}>
           <Icon className="w-6 h-6" name="manta" />
           zkAddress
@@ -78,10 +78,11 @@ const ZkAccountWarning = ({
 
 export const ZkAccountConnect = ({ className = '' }) => {
   const { ModalWrapper, showModal } = useModal();
+  const { isInitialSync } = usePrivateWallet();
   return (
     <>
-      <button className={classNames(className)} onClick={showModal}>
-        Connect Signer
+      <button className={classNames(className, isInitialSync && 'disabled')} disabled={ isInitialSync } onClick={showModal}>
+        {isInitialSync ? 'Syncing zkAccount': 'Connect Signer'}
       </button>
       <ModalWrapper>
         <ConnectSignerModal />
@@ -111,7 +112,7 @@ const ZkAccountButton = () => {
     return (
       <ZkAccountConnect
         className={
-          'bg-connect-signer-button text-white h-12 w-36 font-medium cursor-pointer rounded-lg'
+          'bg-connect-signer-button text-white h-12 w-44 font-medium cursor-pointer rounded-lg'
         }
       />
     );

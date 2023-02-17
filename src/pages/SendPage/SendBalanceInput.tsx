@@ -31,7 +31,7 @@ const SendBalanceInput = () => {
     senderAssetCurrentBalance,
     apiIsDisconnected,
     senderIsPrivate(),
-    isInitialSync.current
+    isInitialSync
   );
 
   const shouldShowPublicLoader = Boolean(
