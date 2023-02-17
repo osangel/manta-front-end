@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 
 import Icon from 'components/Icon';
 import { useSBT } from 'pages/SBTPage/SBTContext';
@@ -6,6 +6,7 @@ import DotLoader from 'components/Loaders/DotLoader';
 
 const UploadImg = () => {
   const [loading, toggleLoading] = useState(false);
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
   const { uploadImgs } = useSBT();
 
@@ -14,6 +15,10 @@ const UploadImg = () => {
       toggleLoading(true);
       await uploadImgs([...e.target.files]);
       toggleLoading(false);
+    }
+    // fix the same file can not upload twice bug
+    if (fileRef?.current) {
+      fileRef.current.value = '';
     }
   };
   const disabledStyle = loading
@@ -35,6 +40,7 @@ const UploadImg = () => {
         accept="image/*"
         onChange={onImageChange}
         disabled={loading}
+        ref={fileRef}
       />
     </div>
   );
