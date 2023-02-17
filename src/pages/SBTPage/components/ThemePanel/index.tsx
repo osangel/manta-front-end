@@ -97,7 +97,7 @@ const ThemePanel = () => {
   const disabledStyle = btnDisabled ? 'brightness-50 cursor-not-allowed' : '';
 
   return (
-    <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative mt-6">
+    <div className="flex flex-col mx-auto bg-secondary rounded-xl p-6 w-75 relative mt-6">
       <div className="flex items-center">
         <Icon name="manta" className="w-8 h-8 mr-3" />
         <h2 className="text-2xl">zkSBT</h2>

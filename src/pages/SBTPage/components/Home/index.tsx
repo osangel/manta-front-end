@@ -18,7 +18,7 @@ const Home = () => {
     setCurrentStep(Step.Upload);
   };
   return (
-    <div className="flex flex-col items-center mx-auto mb-32 bg-secondary rounded-xl p-14 w-75">
+    <div className="flex flex-col items-center mx-auto bg-secondary rounded-xl p-14 w-75">
       <Icon className="w-20 h-20" name="manta" />
       <h2 className="text-white text-6xl mt-6 mb-4">MANTA zkSBT</h2>
       <div className="grid gap-6 grid-cols-9 grid-rows-3 w-full justify-between mt-8 mb-20">
