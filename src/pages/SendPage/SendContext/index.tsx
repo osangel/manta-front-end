@@ -11,7 +11,7 @@ import TxStatus from 'types/TxStatus';
 import AssetType from 'types/AssetType';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import { useConfig } from 'contexts/configContext';
-import { MantaPrivateWallet, MantaUtilities } from 'manta.js';
+import { getPublicBalance, assetIdToUInt8Array } from 'utils/sdk';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
 
@@ -187,7 +187,7 @@ export const SendContextProvider = (props) => {
     if (!api?.isConnected || !address || !assetType) {
       return null;
     }
-    const balanceRaw = await MantaUtilities.getPublicBalance(
+    const balanceRaw = await getPublicBalance(
       api, new BN(assetType.assetId), address
     );
     const balance = balanceRaw ? new Balance(assetType, balanceRaw) : null;
@@ -466,7 +466,7 @@ export const SendContextProvider = (props) => {
   const buildPublicTransfer = async (senderAssetTargetBalance, receiverAddress) => {
     const assetId = senderAssetTargetBalance.assetType.assetId;
     const valueAtomicUnits = senderAssetTargetBalance.valueAtomicUnits;
-    const assetIdArray = Array.from(MantaPrivateWallet.assetIdToUInt8Array(new BN(assetId)));
+    const assetIdArray = Array.from(assetIdToUInt8Array(new BN(assetId)));
     const valueArray = valueAtomicUnits.toArray('le', 16);
     const tx = await api.tx.mantaPay.publicTransfer(
       { id: assetIdArray, value: valueArray },

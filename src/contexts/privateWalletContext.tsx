@@ -4,36 +4,33 @@ import React, {
   useState,
   useEffect,
   useContext,
-  useRef
+  useRef,
+  useMemo
 } from 'react';
 import PropTypes from 'prop-types';
 import { BN } from 'bn.js';
 import Balance from 'types/Balance';
-import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
-import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
-import { MantaPrivateWallet, MantaUtilities, Environment, Network } from 'manta.js';
+import { Network } from '../utils/sdk';
 import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
-import { useConfig } from './configContext';
 
 const PrivateWalletContext = createContext();
 
 export const PrivateWalletContextProvider = (props) => {
   // external contexts
-  const config = useConfig();
   const { api, socket } = useSubstrate();
-  const { externalAccountSigner, externalAccount, extensionSigner } = useExternalAccount();
+  const { externalAccountSigner, externalAccount, privateProvider, walletVersion } = useExternalAccount();
   const { setTxStatus, txStatusRef } = useTxStatus();
 
   // private wallet
   const [privateAddress, setPrivateAddress] = useState(null);
-  const [privateWallet, setPrivateWallet] = useState(null);
 
   // signer connection
-  const [signerIsConnected, setSignerIsConnected] = useState(null);
-  const [signerVersion, setSignerVersion] = useState(null);
+  const signerIsConnected = useMemo(() => {
+    return !!privateProvider;
+  });
   const [isReady, setIsReady] = useState(false);
   const isInitialSync = useRef(false);
 
@@ -42,6 +39,7 @@ export const PrivateWalletContextProvider = (props) => {
   const finalTxResHandler = useRef(null);
   const [balancesAreStale, _setBalancesAreStale] = useState(false);
   const balancesAreStaleRef = useRef(false);
+  const currentNetwork = useMemo(() => `${Network.Dolphin}`);
 
   const setBalancesAreStale = (areBalancesStale) => {
     balancesAreStaleRef.current = areBalancesStale;
@@ -49,8 +47,8 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   useEffect(() => {
-    setIsReady(privateWallet && signerIsConnected);
-  }, [privateWallet, signerIsConnected]);
+    setIsReady(signerIsConnected);
+  }, [signerIsConnected]);
 
   // Wallet must be reinitialized when socket changes
   // because the old api will have been disconnected
@@ -62,63 +60,21 @@ export const PrivateWalletContextProvider = (props) => {
     const canInitWallet = () => {
       return (
         signerIsConnected &&
-        signerVersion &&
-        !signerIsOutOfDate(config, signerVersion) &&
         !isInitialSync.current
       );
     };
 
     const initWallet = async () => {
       isInitialSync.current = true;
-      const privateWalletConfig = {
-        environment: Environment.Production,
-        network: Network.Dolphin,
-        loggingEnabled: true
-      };
-      const privateWallet = await MantaPrivateWallet.init(privateWalletConfig);
-      const privateAddress = await privateWallet.getZkAddress();
-      setPrivateAddress(privateAddress);
-      await privateWallet.initalWalletSync();
-      setPrivateAddress(privateAddress);
-      setPrivateWallet(privateWallet);
+      // const privateAddress = await privateProvider.getZkAddress();
+      // setPrivateAddress(privateAddress);
       isInitialSync.current = false;
     };
 
     if (canInitWallet() && !isReady) {
       initWallet();
     }
-  }, [api, signerIsConnected, signerVersion]);
-
-  const fetchSignerVersion = async () => {
-    try {
-      const updatedSignerVersion = await MantaUtilities.getSignerVersion();
-      const updatedSignerIsConnected = !!updatedSignerVersion;
-      if (updatedSignerIsConnected) {
-        setSignerIsConnected(true);
-        if (signerVersion?.toString() !== updatedSignerVersion) {
-          setSignerVersion(new Version(updatedSignerVersion));
-        }
-      } else {
-        setSignerIsConnected(false);
-        setSignerVersion(null);
-        setPrivateAddress(null);
-        setPrivateWallet(null);
-      }
-    } catch (err) {
-      console.error(err);
-      setSignerIsConnected(false);
-      setSignerVersion(null);
-      setPrivateAddress(null);
-      setPrivateWallet(null);
-    }
-  };
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      fetchSignerVersion();
-    }, 1000);
-    return () => interval && clearInterval(interval);
-  }, [api, privateWallet]);
+  }, [api, signerIsConnected]);
 
   const sync = async () => {
     // Don't refresh during a transaction to prevent stale balance updates
@@ -126,24 +82,28 @@ export const PrivateWalletContextProvider = (props) => {
     if (txStatusRef.current?.isProcessing()) {
       return;
     }
-    await privateWallet.walletSync();
+    await privateProvider.walletSync(currentNetwork);
     setBalancesAreStale(false);
   };
 
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (isReady) {
-        sync();
-      }
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [isReady]);
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     if (isReady) {
+  //       sync();
+  //     }
+  //   }, 10000);
+  //   return () => clearInterval(interval);
+  // }, [isReady]);
 
   const getSpendableBalance = async (assetType) => {
     if (!isReady || balancesAreStaleRef.current) {
       return null;
     }
-    const balanceRaw = await privateWallet.getPrivateBalance(new BN(assetType.assetId));
+    // const balanceRaw = await privateProvider.getPrivateBalance({
+    //   network: currentNetwork,
+    //   assetId: new BN(assetType.assetId),
+    // });
+    const balanceRaw = '0';
     return new Balance(assetType, balanceRaw);
   };
 
@@ -212,12 +172,12 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const toPublic = async (balance, txResHandler) => {
-    const signResult = await privateWallet.toPublicBuild(
-      new BN(balance.assetType.assetId),
-      balance.valueAtomicUnits,
-      extensionSigner,
-      externalAccount.address
-    );
+    const signResult = await privateProvider.toPublicBuild({
+      network: currentNetwork,
+      assetId: new BN(balance.assetType.assetId),
+      amount: balance.valueAtomicUnits,
+      polkadotAddress: externalAccount.address,
+    });
     if (signResult === null) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
@@ -227,13 +187,13 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const privateTransfer = async (balance, recipient, txResHandler) => {
-    const signResult = await privateWallet.privateTransferBuild(
-      new BN(balance.assetType.assetId),
-      balance.valueAtomicUnits,
-      recipient,
-      extensionSigner,
-      externalAccount.address
-    );
+    const signResult = await privateProvider.privateTransferBuild({
+      network: currentNetwork,
+      assetId: new BN(balance.assetType.assetId),
+      amount: balance.valueAtomicUnits,
+      polkadotAddress: externalAccount.address,
+      toPrivateAddress: recipient,
+    });
     if (signResult === null) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
@@ -243,12 +203,12 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const toPrivate = async (balance, txResHandler) => {
-    const signResult = await privateWallet.toPrivateBuild(
-      new BN(balance.assetType.assetId),
-      balance.valueAtomicUnits,
-      extensionSigner,
-      externalAccount.address
-    );
+    const signResult = await privateProvider.toPrivateBuild({
+      network: currentNetwork,
+      assetId: new BN(balance.assetType.assetId),
+      amount: balance.valueAtomicUnits,
+      polkadotAddress: externalAccount.address,
+    });
     if (signResult === null) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
@@ -266,7 +226,7 @@ export const PrivateWalletContextProvider = (props) => {
     privateTransfer,
     sync,
     signerIsConnected,
-    signerVersion,
+    signerVersion: walletVersion,
     isInitialSync,
     setBalancesAreStale,
     balancesAreStale,

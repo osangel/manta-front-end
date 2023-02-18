@@ -15,6 +15,7 @@ import {
 import { useSubstrate } from './substrateContext';
 import { useKeyring } from './keyringContext';
 import { useConfig } from './configContext';
+import Version from 'types/Version';
 
 const ExternalAccountContext = createContext();
 
@@ -28,6 +29,8 @@ export const ExternalAccountContextProvider = (props) => {
   const [extensionSigner, setExtensionSigner] = useState(null);
   const [externalAccountOptions, setExternalAccountOptions] = useState([]);
   const [isInitialAccountSet, setIsInitialAccountSet] = useState(false);
+  const [privateProvider, setPrivateProvider] = useState(null);
+  const [walletVersion, setWalletVersion] = useState(null);
 
 
   const setApiSigner = (api) => {
@@ -44,7 +47,10 @@ export const ExternalAccountContextProvider = (props) => {
       const selectedWallet = getWallets().find(
         (wallet) => wallet.extensionName === source
       );
+      setPrivateProvider(selectedWallet?.extension?.privateWallet || null);
+      setWalletVersion((selectedWallet?.extension?.version || null) ? new Version(selectedWallet?.extension?.version) : null);
       setExtensionSigner(selectedWallet._signer);
+      
       api.setSigner(selectedWallet._signer);
     }
     const signer = externalAccount.meta.isInjected
@@ -162,7 +168,9 @@ export const ExternalAccountContextProvider = (props) => {
     externalAccountRef,
     externalAccountSigner,
     externalAccountOptions: externalAccountOptions,
-    changeExternalAccount
+    changeExternalAccount,
+    privateProvider,
+    walletVersion,
   };
 
   return (

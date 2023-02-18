@@ -4,7 +4,6 @@ import { getWallets } from '@talismn/connect-wallets';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import Icon from 'components/Icon';
-import getWalletDisplayName from 'utils/display/getWalletDisplayName';
 
 const WalletNotInstalledBlock = ({
   walletName,
@@ -155,7 +154,7 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
     return (
       <ConnectWalletBlock
         key={wallet.extensionName}
-        walletName={getWalletDisplayName(wallet.extensionName)}
+        walletName={wallet.title}
         isWalletInstalled={wallet.installed}
         walletInstallLink={wallet.installUrl}
         walletLogo={wallet.logo}
