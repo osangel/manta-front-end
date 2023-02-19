@@ -8,7 +8,7 @@ import React, {
   useMemo
 } from 'react';
 import PropTypes from 'prop-types';
-import { BN } from 'bn.js';
+import BN from 'bn.js';
 import Balance from 'types/Balance';
 import TxStatus from 'types/TxStatus';
 import { Network } from '../utils/sdk';
@@ -66,8 +66,9 @@ export const PrivateWalletContextProvider = (props) => {
 
     const initWallet = async () => {
       isInitialSync.current = true;
-      // const privateAddress = await privateProvider.getZkAddress();
-      // setPrivateAddress(privateAddress);
+      const privateAddress = await privateProvider.getZkAddress();
+      setPrivateAddress(privateAddress);
+      // setPrivateAddress('EEi5GnBESRt2jsPyi79c9SnzQXnBbkiFD4YfoYvacBwT');
       isInitialSync.current = false;
     };
 
@@ -99,12 +100,17 @@ export const PrivateWalletContextProvider = (props) => {
     if (!isReady || balancesAreStaleRef.current) {
       return null;
     }
-    // const balanceRaw = await privateProvider.getPrivateBalance({
-    //   network: currentNetwork,
-    //   assetId: new BN(assetType.assetId),
-    // });
-    const balanceRaw = '0';
-    return new Balance(assetType, balanceRaw);
+    const balanceRaw = await privateProvider.getPrivateBalance({
+      network: currentNetwork,
+      assetId: `${assetType.assetId}`,
+    });
+
+    if (!balanceRaw) {
+      return null;
+    }
+    
+    // const balanceRaw = new BN('0');
+    return new Balance(assetType, new BN(balanceRaw));
   };
 
   const handleInternalTxRes = async ({ status, events }) => {
