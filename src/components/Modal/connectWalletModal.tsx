@@ -112,7 +112,7 @@ const ConnectWalletBlock = ({
   }
 };
 
-const MetamaskConnectWalletBlock = ({hideModal}) => {
+const MetamaskConnectWalletBlock = ({ hideModal }) => {
   const { configureMoonRiver, ethAddress } = useMetamask();
   const metamaskIsInstalled =
     window.ethereum?.isMetaMask &&
@@ -137,14 +137,17 @@ const MetamaskConnectWalletBlock = ({hideModal}) => {
   );
 };
 
-export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
+export const SubstrateConnectWalletBlock = ({
+  setIsMetamaskSelected = null,
+  hideModal
+}) => {
   const { connectWallet, connectWalletExtension } = useKeyring();
 
   const handleConnectWallet = (walletName) => async () => {
     connectWalletExtension(walletName);
     const isConnected = await connectWallet(walletName);
     if (isConnected) {
-      setIsMetamaskSelected(false);
+      setIsMetamaskSelected && setIsMetamaskSelected(false);
       hideModal();
     }
   };
