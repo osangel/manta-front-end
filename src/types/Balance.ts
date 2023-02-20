@@ -57,6 +57,10 @@ export default class Balance {
       .toString();
   }
 
+  toStringUnrounded(): string {
+    return this.valueBaseUnits().toDecimalPlaces(this.assetType.numberOfDecimals, Decimal.ROUND_DOWN).toString();
+  }
+
   toDisplayString(decimals = 3, roundDown = true): string {
     const rounding = roundDown ? Decimal.ROUND_DOWN : Decimal.ROUND_UP;
     return `${this.valueBaseUnits()
