@@ -22,8 +22,7 @@ const ModalContainer: React.FC<{ children: React.ReactNode }> = ({
       right: 0,
       bottom: 0,
       zIndex: 50
-    }}
-  >
+    }}>
     {children}
   </div>
 );
@@ -39,9 +38,9 @@ const ModalBackDrop: React.FC<{ onClick: MouseEventHandler }> = ({
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      WebkitBackdropFilter: 'blur(8px)',
-      backdropFilter: 'blur(8px)',
+      backgroundColor: 'rgba(0, 0, 0, 0.1)',
+      WebkitBackdropFilter: 'blur(3px)',
+      backdropFilter: 'blur(3px)',
       zIndex: -1
     }}
   />
@@ -95,8 +94,7 @@ export const useModal: (options?: IUseModal) => any = (
               <div className="relative inline-block p-6 bg-fourth rounded-lg text-black">
                 <div
                   className="absolute top-5 right-7 text-black dark:text-white cursor-pointer text-lg"
-                  onClick={() => hideModal()}
-                >
+                  onClick={() => hideModal()}>
                   <FontAwesomeIcon icon={faTimes} />
                 </div>
                 {children}
