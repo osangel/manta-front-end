@@ -1,23 +1,41 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 
 import Icon from 'components/Icon';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 import { useFaceRecognition } from 'pages/SBTPage/SBTContext/faceRecognitionContext';
+import DotLoader from 'components/Loaders/DotLoader';
 import UploadImg from '../UploadImg';
 
 export const MAX_UPLOAD_LEN = 20;
 const MIN_UPLOAD_LEN = 5;
 
-const UploadItem = ({ file, index }: { file: File; index: number }) => {
+const UploadItem = memo(function UploadItem({
+  file,
+  index
+}: {
+  file: File;
+  index: number;
+}) {
   const { handleRemove, checkInvalid } = useFaceRecognition();
+
+  const imgUrl = useMemo(() => URL.createObjectURL(file), [file]);
+
+  useEffect(() => {
+    return () => {
+      URL.revokeObjectURL(imgUrl);
+    };
+  }, [imgUrl]);
 
   const invalid = checkInvalid(index);
   const inValidStyle = invalid ? '' : 'hidden group-hover:block';
+
   return (
     <div className="relative w-max group" key={index}>
-      <img src={URL.createObjectURL(file)} className="rounded-lg w-48 h-48" />
+      <img src={imgUrl} className="rounded-lg w-48 h-48 img-bg" />
       <Icon
-        onClick={() => handleRemove(index)}
+        onClick={() => {
+          handleRemove(index);
+        }}
         name="close"
         className={`absolute ${inValidStyle} -right-3 -top-3  cursor-pointer`}
       />
@@ -29,17 +47,47 @@ const UploadItem = ({ file, index }: { file: File; index: number }) => {
       )}
     </div>
   );
+});
+
+const TipComponent = () => {
+  const { imgList } = useSBT();
+  const { errorMsg } = useFaceRecognition();
+
+  const maxLenInfo = useMemo(() => {
+    if (imgList.length >= MAX_UPLOAD_LEN) {
+      return 'You have exceeded the 20 pictures limit. We only support 20 pictures at maximum for the AI analysis.';
+    }
+    return '';
+  }, [imgList?.length]);
+
+  if (errorMsg) {
+    return (
+      <p className="absolute flex top-48 text-error">
+        <Icon name="information" className="mr-2" />
+        {errorMsg}
+      </p>
+    );
+  }
+  if (maxLenInfo) {
+    return (
+      <p className="absolute flex top-48 text-tip">
+        <Icon name="information" className="mr-2" />
+        {maxLenInfo}
+      </p>
+    );
+  }
+  return null;
 };
 
 const UploadPanel = () => {
   const imgContainer = useRef<HTMLDivElement>(null);
 
   const { setCurrentStep, imgList } = useSBT();
-  const { modelsLoaded, detectFaces, errorMsg, getGender } =
+  const { modelsLoaded, detectFaces, errorMsg, getGender, detectLoading } =
     useFaceRecognition();
 
   useEffect(() => {
-    if (!imgList.length || !imgContainer?.current || !modelsLoaded) {
+    if (!imgContainer?.current || !modelsLoaded) {
       return;
     }
 
@@ -55,9 +103,10 @@ const UploadPanel = () => {
     return (
       imgList.length < MIN_UPLOAD_LEN ||
       imgList.length > MAX_UPLOAD_LEN ||
-      !!errorMsg
+      !!errorMsg ||
+      detectLoading
     );
-  }, [imgList, errorMsg]);
+  }, [imgList, errorMsg, detectLoading]);
 
   const disabledStyle = btnDisabled ? 'brightness-50 cursor-not-allowed' : '';
 
@@ -75,12 +124,7 @@ const UploadPanel = () => {
         sure the background is clean. This will ensure the best generation of
         your zkSBT.
       </p>
-      {errorMsg && (
-        <p className="absolute flex top-48 text-error">
-          <Icon name="information" className="mr-2" />
-          {errorMsg}
-        </p>
-      )}
+      <TipComponent />
       <div
         className="grid w-full gap-6 grid-cols-5 pb-16 pt-4 mt-9 max-h-120 overflow-y-auto"
         ref={imgContainer}>
@@ -88,15 +132,18 @@ const UploadPanel = () => {
           if (!file) {
             return null;
           }
-          return <UploadItem file={file} index={index} key={index} />;
+          return (
+            <UploadItem file={file} index={index} key={index + file.name} />
+          );
         })}
-        <UploadImg />
+        {imgList.length < MAX_UPLOAD_LEN ? <UploadImg /> : null}
       </div>
       <button
         onClick={toThemePage}
         disabled={btnDisabled}
-        className={`absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-4 left-1/2 -translate-x-1/2 transform ${disabledStyle}`}>
-        Confirm
+        className={`flex items-center absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-4 left-1/2 -translate-x-1/2 transform ${disabledStyle}`}>
+        {detectLoading ? 'Refreshing' : 'Confirm'}
+        {detectLoading && <DotLoader cls="transform scale-150 ml-4" />}
       </button>
     </div>
   );

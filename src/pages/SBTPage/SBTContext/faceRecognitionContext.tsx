@@ -6,7 +6,8 @@ import {
   useEffect,
   useCallback,
   RefObject,
-  useContext
+  useContext,
+  useRef
 } from 'react';
 import * as faceapi from 'face-api.js';
 import { useSBT } from '.';
@@ -20,6 +21,7 @@ type FaceRecognitionContextValue = {
   errorMsg: string;
   themeGender: faceapi.Gender;
   getGender: () => void;
+  detectLoading: boolean;
 };
 
 type DetectionResult = faceapi.WithAge<
@@ -45,6 +47,9 @@ export const FaceRecognitionContextProvider = ({
   const [themeGender, setThemeGender] = useState<faceapi.Gender>(
     faceapi.Gender.MALE
   );
+  const [detectLoading, toggleDetectLoading] = useState(false);
+
+  const detectCountRef = useRef<number>(0);
 
   const { imgList, setImgList } = useSBT();
 
@@ -64,20 +69,47 @@ export const FaceRecognitionContextProvider = ({
   }, []);
 
   const detectFaces = useCallback(async (imgContainer) => {
-    const imgEls = [...(imgContainer?.current?.querySelectorAll('img') ?? [])];
+    const count = detectCountRef.current;
+
+    toggleDetectLoading(true);
+
+    const imgEls: HTMLImageElement[] = [
+      ...(imgContainer?.current?.querySelectorAll('img') ?? [])
+    ];
     const options = new faceapi.SsdMobilenetv1Options({
       minConfidence: MIN_CONFIDENCE
     });
 
     const detectionPromises = [] as any[];
+
     imgEls.forEach((imgEl) => {
-      detectionPromises.push(
-        faceapi.detectAllFaces(imgEl, options).withAgeAndGender()
-      );
+      if (imgEl.dataset.detected) {
+        detectionPromises.push(
+          Promise.resolve(JSON.parse(imgEl.dataset.detected))
+        );
+      } else {
+        detectionPromises.push(
+          faceapi.detectAllFaces(imgEl, options).withAgeAndGender()
+        );
+      }
     });
     const detectionResults: Array<DetectionResult[]> = await Promise.all(
       detectionPromises
     );
+    toggleDetectLoading(false);
+
+    // if user click remove mutilple times, detectFaces will be called mutilple times
+    // but the result might not returned in order
+    // using ref.current to count how many times detectFaces being called
+    // do nothing with the old ones
+    if (count !== detectCountRef?.current) {
+      return;
+    }
+    detectCountRef.current = ++detectCountRef.current;
+
+    imgEls.forEach((imgEl, index) => {
+      imgEl.dataset.detected = JSON.stringify(detectionResults[index]);
+    });
 
     setDectionResults(detectionResults);
   }, []);
@@ -87,6 +119,11 @@ export const FaceRecognitionContextProvider = ({
       const newArr = [...imgList];
       newArr.splice(index, 1);
       setImgList(newArr);
+
+      if (!newArr.length) {
+        setDectionResults([]);
+        return;
+      }
 
       const newDetectionResults = [...detectionResults];
       newDetectionResults.splice(index, 1);
@@ -108,6 +145,12 @@ export const FaceRecognitionContextProvider = ({
         return false;
       }
       const detectionResult = detectionResults[index];
+
+      // At the momnent of the image is uploaded, it's detectionResult will be undefined
+      // because the detection is not finish yet
+      if (detectionResult === undefined) {
+        return false;
+      }
 
       return (
         !detectionResult ||
@@ -180,7 +223,8 @@ export const FaceRecognitionContextProvider = ({
       getGender,
       errorMsg,
       themeGender,
-      setThemeGender
+      setThemeGender,
+      detectLoading
     }),
     [
       modelsLoaded,
@@ -190,7 +234,8 @@ export const FaceRecognitionContextProvider = ({
       checkInvalid,
       getGender,
       errorMsg,
-      themeGender
+      themeGender,
+      detectLoading
     ]
   );
 

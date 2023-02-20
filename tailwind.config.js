@@ -71,7 +71,8 @@ module.exports = {
         'manta-blue': 'var(--color-manta-blue)',
         warning: '#FF8A00',
         check: '#29CCB9',
-        error: '#FF472E'
+        error: '#FF472E',
+        tip: '#3894FF'
       },
       fill: {
         current: 'var(--color-text-secondary)',
