@@ -21,7 +21,7 @@ const PrivateWalletContext = createContext();
 export const PrivateWalletContextProvider = (props) => {
   // external contexts
   const { api, socket } = useSubstrate();
-  const { externalAccountSigner, externalAccount, privateProvider, walletVersion } = useExternalAccount();
+  const { externalAccount, privateProvider, walletVersion } = useExternalAccount();
   const { setTxStatus, txStatusRef } = useTxStatus();
 
   // private wallet
@@ -35,8 +35,6 @@ export const PrivateWalletContextProvider = (props) => {
   const isInitialSync = useRef(false);
 
   // transaction state
-  const txQueue = useRef([]);
-  const finalTxResHandler = useRef(null);
   const [balancesAreStale, _setBalancesAreStale] = useState(false);
   const balancesAreStaleRef = useRef(false);
   const currentNetwork = useMemo(() => `${Network.Dolphin}`);
@@ -87,14 +85,14 @@ export const PrivateWalletContextProvider = (props) => {
     setBalancesAreStale(false);
   };
 
-  // useEffect(() => {
-  //   const interval = setInterval(async () => {
-  //     if (isReady) {
-  //       sync();
-  //     }
-  //   }, 10000);
-  //   return () => clearInterval(interval);
-  // }, [isReady]);
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (isReady) {
+        sync();
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isReady]);
 
   const getSpendableBalance = async (assetType) => {
     if (!isReady || balancesAreStaleRef.current) {
@@ -113,114 +111,47 @@ export const PrivateWalletContextProvider = (props) => {
     return new Balance(assetType, new BN(balanceRaw));
   };
 
-  const handleInternalTxRes = async ({ status, events }) => {
-    if (status.isInBlock) {
-      for (const event of events) {
-        if (api.events.utility.BatchInterrupted.is(event.event)) {
-          setTxStatus(TxStatus.failed());
-          txQueue.current = [];
-          console.error('Internal transaction failed', event);
-        }
-      }
-    } else if (status.isFinalized) {
-      console.log('Internal transaction finalized');
-      await publishNextBatch();
-    }
-  };
-
-  const publishNextBatch = async () => {
-    const sendExternal = async () => {
-      try {
-        const lastTx = txQueue.current.shift();
-        await lastTx.signAndSend(
-          externalAccountSigner,
-          finalTxResHandler.current
-        );
-      } catch (e) {
-        console.error('Error publishing private transaction batch', e);
-        setTxStatus(TxStatus.failed('Transaction declined'));
-        txQueue.current = [];
-      }
-    };
-
-    const sendInternal = async () => {
-      try {
-        const internalTx = txQueue.current.shift();
-        await internalTx.signAndSend(
-          externalAccountSigner,
-          handleInternalTxRes
-        );
-      } catch (e) {
-        setTxStatus(TxStatus.failed());
-        txQueue.current = [];
-      }
-    };
-
-    if (txQueue.current.length === 0) {
-      return;
-    } else if (txQueue.current.length === 1) {
-      sendExternal();
-    } else {
-      sendInternal();
-    }
-  };
-
-  const publishBatchesSequentially = async (batches, txResHandler) => {
-    txQueue.current = batches;
-    finalTxResHandler.current = txResHandler;
-    try {
-      publishNextBatch();
-      return true;
-    } catch (e) {
-      console.error('Sequential baching failed', e);
-      return false;
-    }
-  };
-
   const toPublic = async (balance, txResHandler) => {
     const signResult = await privateProvider.toPublicBuild({
       network: currentNetwork,
-      assetId: new BN(balance.assetType.assetId),
-      amount: balance.valueAtomicUnits,
+      assetId: `${balance.assetType.assetId}`,
+      amount: balance.valueAtomicUnits.toString(),
       polkadotAddress: externalAccount.address,
     });
-    if (signResult === null) {
+    if (!signResult) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
-    const batches = signResult.txs;
-    await publishBatchesSequentially(batches, txResHandler);
+    txResHandler(signResult);
   };
 
   const privateTransfer = async (balance, recipient, txResHandler) => {
     const signResult = await privateProvider.privateTransferBuild({
       network: currentNetwork,
-      assetId: new BN(balance.assetType.assetId),
-      amount: balance.valueAtomicUnits,
+      assetId: `${balance.assetType.assetId}`,
+      amount: balance.valueAtomicUnits.toString(),
       polkadotAddress: externalAccount.address,
       toPrivateAddress: recipient,
     });
-    if (signResult === null) {
+    if (!signResult) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
-    const batches = signResult.txs;
-    await publishBatchesSequentially(batches, txResHandler);
+    txResHandler(signResult);
   };
 
   const toPrivate = async (balance, txResHandler) => {
     const signResult = await privateProvider.toPrivateBuild({
       network: currentNetwork,
-      assetId: new BN(balance.assetType.assetId),
-      amount: balance.valueAtomicUnits,
+      assetId: `${balance.assetType.assetId}`,
+      amount: balance.valueAtomicUnits.toString(),
       polkadotAddress: externalAccount.address,
     });
-    if (signResult === null) {
+    if (!signResult) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
-    const batches = signResult.txs;
-    await publishBatchesSequentially(batches, txResHandler);
+    txResHandler(signResult);
   };
 
   const value = {

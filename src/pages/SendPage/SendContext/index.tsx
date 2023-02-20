@@ -420,6 +420,26 @@ export const SendContextProvider = (props) => {
     }
   };
 
+  // Handles the result of a transaction
+  const handleBlockRes = async (hash) => {
+    try {
+      const signedBlock = await api.rpc.chain.getBlock(hash);
+      const extrinsics = signedBlock.block.extrinsics;
+      const extrinsic = extrinsics.find((extrinsic) =>
+        extrinsicWasSentByUser(extrinsic, externalAccount, api)
+      );
+      const extrinsicHash = extrinsic.hash.toHex();
+      setTxStatus(TxStatus.finalized(extrinsicHash, config.SUBSCAN_URL));
+      // Correct private balances will only appear after a sync has completed
+      // Until then, do not display stale balances
+      privateWallet.setBalancesAreStale(true);
+      senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
+      receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
+    } catch(error) {
+      console.error(error);
+    }
+  };
+
   // Attempts to build and send a transaction
   const send = async () => {
     if (!isValidToSend()) {
@@ -441,7 +461,7 @@ export const SendContextProvider = (props) => {
   const toPrivate = async () => {
     await privateWallet.toPrivate(
       state.senderAssetTargetBalance,
-      handleTxRes
+      handleBlockRes
     );
   };
 
@@ -449,7 +469,7 @@ export const SendContextProvider = (props) => {
   const toPublic = async () => {
     await privateWallet.toPublic(
       state.senderAssetTargetBalance,
-      handleTxRes
+      handleBlockRes
     );
   };
 
@@ -459,7 +479,7 @@ export const SendContextProvider = (props) => {
     await privateWallet.privateTransfer(
       senderAssetTargetBalance,
       receiverAddress,
-      handleTxRes
+      handleBlockRes
     );
   };
 

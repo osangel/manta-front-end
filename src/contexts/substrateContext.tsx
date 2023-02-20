@@ -36,6 +36,7 @@ const reducer = (state, action) => {
     return { ...state, apiState: API_STATE.CONNECT_INIT };
 
   case SUBSTRATE_ACTIONS.CONNECT_SUCCESS:
+    window.api = action.payload;
     return { ...state, api: action.payload, apiState: API_STATE.READY };
 
   case SUBSTRATE_ACTIONS.CONNECT_ERROR:
