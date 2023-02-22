@@ -1,8 +1,8 @@
 // @ts-nocheck
-import keyring from '@polkadot/ui-keyring';
-import { getWallets } from '@talismn/connect-wallets';
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
+import keyring from '@polkadot/ui-keyring';
+import { getWallets } from '@talismn/connect-wallets';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import PropTypes from 'prop-types';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
@@ -25,6 +25,7 @@ export const KeyringContextProvider = (props) => {
   const [keyringAddresses, setKeyringAddresses] = useState([]);
   const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState([]);
   const [selectedWallet, setSelectedWallet] = useState(null);
+  const [isTalismanExtConfigured, setIsTalismanExtConfigured] = useState(true);
   const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useState(
     getHasAuthToConnectWalletStorage()
   );
@@ -155,11 +156,19 @@ export const KeyringContextProvider = (props) => {
     );
     if (!selectedWallet?.extension) {
       try {
+        if (extensionName.toLowerCase() === 'talisman' && !isTalismanExtConfigured) {
+          // hide tips
+          setIsTalismanExtConfigured(true);
+        }
         await selectedWallet.enable(APP_NAME);
         await refreshWalletAccounts(selectedWallet);
         saveToStorage && setLastAccessedWallet(selectedWallet);
         return true;
       } catch (e) {
+        if (e.message === 'Talisman extension has not been configured yet. Please continue with onboarding.') {
+          // show tips
+          setIsTalismanExtConfigured(false);
+        }
         const walletNames = removeWalletName(
           extensionName,
           hasAuthToConnectWallet
@@ -199,6 +208,7 @@ export const KeyringContextProvider = (props) => {
     connectWallet,
     connectWalletExtension,
     refreshWalletAccounts,
+    isTalismanExtConfigured,
     getLatestAccountAndPairs
   };
 
