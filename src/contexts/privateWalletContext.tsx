@@ -112,7 +112,7 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const toPublic = async (balance, txResHandler) => {
-    const signResult = await privateProvider.toPublicBuild({
+    const signResult = await privateProvider.toPublicSend({
       network: currentNetwork,
       assetId: `${balance.assetType.assetId}`,
       amount: balance.valueAtomicUnits.toString(),
@@ -126,7 +126,7 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const privateTransfer = async (balance, recipient, txResHandler) => {
-    const signResult = await privateProvider.privateTransferBuild({
+    const signResult = await privateProvider.privateTransferSend({
       network: currentNetwork,
       assetId: `${balance.assetType.assetId}`,
       amount: balance.valueAtomicUnits.toString(),
@@ -141,7 +141,7 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const toPrivate = async (balance, txResHandler) => {
-    const signResult = await privateProvider.toPrivateBuild({
+    const signResult = await privateProvider.toPrivateSend({
       network: currentNetwork,
       assetId: `${balance.assetType.assetId}`,
       amount: balance.valueAtomicUnits.toString(),
