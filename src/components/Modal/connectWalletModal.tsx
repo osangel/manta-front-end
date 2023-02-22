@@ -1,4 +1,5 @@
 // @ts-nocheck
+import WALLET_NAME from 'constants/WalletConstants';
 import React from 'react';
 import { getWallets } from '@talismn/connect-wallets';
 import { useKeyring } from 'contexts/keyringContext';
@@ -12,7 +13,7 @@ const WalletNotInstalledBlock = ({
   walletInstallLink
 }) => {
   return (
-    <div className="mt-6 py-3 px-4 h-16 text-sm flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
+    <div className="mt-6 py-3 px-4 h-16 text-sm flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -38,7 +39,7 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
   return (
     <button
       onClick={connectHandler}
-      className="mt-5 py-3 px-4 h-16 flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
+      className="mt-5 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -60,7 +61,7 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
 
 const WalletEnabledBlock = ({ walletName, walletLogo }) => {
   return (
-    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
+    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -127,7 +128,7 @@ const MetamaskConnectWalletBlock = ({hideModal}) => {
   return (
     <ConnectWalletBlock
       key={'metamask'}
-      walletName={'Metamask (for Moonriver)'}
+      walletName={'MetaMask (for Moonriver)'}
       isWalletInstalled={metamaskIsInstalled}
       walletInstallLink={'https://metamask.io/'}
       walletLogo="metamask"
@@ -149,21 +150,23 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
     }
   };
 
-  return getWallets().map((wallet) => {
-    // wallet.extension would not be defined if enabled not called
-    const isWalletEnabled = wallet.extension ? true : false;
-    return (
-      <ConnectWalletBlock
-        key={wallet.extensionName}
-        walletName={getWalletDisplayName(wallet.extensionName)}
-        isWalletInstalled={wallet.installed}
-        walletInstallLink={wallet.installUrl}
-        walletLogo={wallet.logo}
-        isWalletEnabled={isWalletEnabled}
-        connectHandler={handleConnectWallet(wallet.extensionName)}
-      />
-    );
-  });
+  return getWallets()
+    .filter(wallet => Object.values(WALLET_NAME).includes(wallet.extensionName))
+    .map((wallet) => {
+      // wallet.extension would not be defined if enabled not called
+      const isWalletEnabled = wallet.extension ? true : false;
+      return (
+        <ConnectWalletBlock
+          key={wallet.extensionName}
+          walletName={getWalletDisplayName(wallet.extensionName)}
+          isWalletInstalled={wallet.installed}
+          walletInstallLink={wallet.installUrl}
+          walletLogo={wallet.logo}
+          isWalletEnabled={isWalletEnabled}
+          connectHandler={handleConnectWallet(wallet.extensionName)}
+        />
+      );
+    });
 };
 
 const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
