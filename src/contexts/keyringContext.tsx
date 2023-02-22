@@ -56,8 +56,11 @@ export const KeyringContextProvider = (props) => {
       .getAccounts()
       .map((account) => account.address);
 
-    const updatedAccounts = await wallet.getAccounts();
-    const updatedAddresses = updatedAccounts.map((account) => account.address);
+    const originUpdatedAccounts = await wallet.getAccounts();
+    const updatedAccounts = originUpdatedAccounts.filter((a) =>
+      ['ecdsa', 'ed25519', 'sr25519'].includes(a.type)
+    ); // ethereum account address should be avoid in substrate (tailsman)
+    const substrateAddresses = updatedAccounts.map((account) => account.address);
     currentKeyringAddresses.forEach((address) => {
       keyring.forgetAccount(address);
     });
@@ -68,11 +71,11 @@ export const KeyringContextProvider = (props) => {
 
     if (currentKeyringAddresses.length === 0) {
       updatedAccounts.forEach((account) => {
-        keyring.loadInjected(account.address, { ...account });
+        keyring.loadInjected(account.address, { ...account }, account.type);
       });
 
       setSelectedWallet(wallet);
-      setKeyringAddresses(updatedAddresses);
+      setKeyringAddresses(substrateAddresses);
     }
 
     keyringIsBusy.current = false;
