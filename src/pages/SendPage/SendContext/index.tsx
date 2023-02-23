@@ -299,7 +299,9 @@ export const SendContextProvider = (props) => {
         zeroBalance
       );
     }
-    return senderAssetCurrentBalance.valueOverExistentialDeposit();
+    return senderAssetType.baseTicker !== 'DOL'
+      ? senderAssetCurrentBalance
+      : senderAssetCurrentBalance.valueOverExistentialDeposit();
   };
 
   // Gets the amount of the native token the user is not allowed to go below
