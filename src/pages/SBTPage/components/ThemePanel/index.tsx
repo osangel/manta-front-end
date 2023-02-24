@@ -50,7 +50,9 @@ const ThemePanel = () => {
     ModalWrapper: ThemeCheckModalWrapper,
     showModal: showThemeCheckModal,
     hideModal: hideThemeCheckModal
-  } = useModal();
+  } = useModal({
+    closeOnBackdropClick: false
+  });
 
   const swiperRef = useRef<SwiperRef>(null);
 

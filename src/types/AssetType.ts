@@ -71,8 +71,8 @@ export default class AssetType {
       'Dolphin',
       'DOL',
       'dolphin',
-      12,
-      new BN('100000000000'),
+      18, // TODO: just for test only, will remove this later
+      new BN('100000000000000000'), // TODO: just for test only, will remove this later
       isPrivate,
       'dolphin',
       true,

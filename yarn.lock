@@ -11597,10 +11597,10 @@ manta.js-kg-dev@^2.0.16:
     bn.js "^5.2.0"
     typescript "^4.9.4"
 
-mantasbt.js@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/mantasbt.js/-/mantasbt.js-0.0.3.tgz#da960dc967672cc936b57caa15e1e0cf0de19380"
-  integrity sha512-+40yZvy9GCyAhRABiKYNjbgJPyRO3hKDk5n9Q10ETAs5JIc01w5qIdXGLWRPoSBtf/WPnCOyfCtFNgdmDluB3w==
+mantasbt.js@0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/mantasbt.js/-/mantasbt.js-0.0.4.tgz#c9f5c4ddd815ec887b7a7bea6c62a27878a4fad8"
+  integrity sha512-rnzTt6AILXf+LDDmlfJlqVDq0+mtSqMlGIYxORglldj9ds3oyco5JvT1cw5vPqlE5jvMZb0iDHHJHqwlyueP3w==
   dependencies:
     "@polkadot/api" "6.8.1"
     "@polkadot/extension-dapp" "0.39.3"

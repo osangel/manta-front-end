@@ -1,5 +1,6 @@
-import React, {
+import {
   MouseEventHandler,
+  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -8,9 +9,7 @@ import React, {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
-const ModalContainer: React.FC<{ children: React.ReactNode }> = ({
-  children
-}) => (
+const ModalContainer = ({ children }: { children: ReactNode }) => (
   <div
     style={{
       display: 'flex',
@@ -21,15 +20,13 @@ const ModalContainer: React.FC<{ children: React.ReactNode }> = ({
       left: 0,
       right: 0,
       bottom: 0,
-      zIndex: 50
+      zIndex: 1000
     }}>
     {children}
   </div>
 );
 
-const ModalBackDrop: React.FC<{ onClick: MouseEventHandler }> = ({
-  onClick
-}) => (
+const ModalBackDrop = ({ onClick }: { onClick: MouseEventHandler }) => (
   <div
     onClick={onClick}
     style={{
@@ -38,9 +35,7 @@ const ModalBackDrop: React.FC<{ onClick: MouseEventHandler }> = ({
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.1)',
-      WebkitBackdropFilter: 'blur(3px)',
-      backdropFilter: 'blur(3px)',
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
       zIndex: -1
     }}
   />
@@ -49,15 +44,23 @@ const ModalBackDrop: React.FC<{ onClick: MouseEventHandler }> = ({
 interface IUseModal {
   closeDisabled?: boolean;
   closeCallback?: () => void;
+  closeOnBackdropClick?: boolean;
 }
 
-export const useModal: (options?: IUseModal) => any = (
+type UseModalResult = {
+  ModalWrapper: ({ children }: { children: ReactNode }) => JSX.Element | null;
+  showModal: () => void;
+  hideModal: () => void;
+  open: boolean;
+};
+
+export const useModal: (options?: IUseModal) => UseModalResult = (
   options = {
     closeDisabled: false,
-    closeCallback: () => {}
+    closeOnBackdropClick: true
   }
 ) => {
-  const { closeDisabled, closeCallback } = options;
+  const { closeDisabled, closeCallback, closeOnBackdropClick } = options;
 
   const [open, setOpen] = useState(false);
 
@@ -67,7 +70,7 @@ export const useModal: (options?: IUseModal) => any = (
     if (closeCallback) {
       closeCallback();
     }
-  }, []);
+  }, [closeCallback]);
 
   useEffect(() => {
     // prevents horizontal scroll when modal is open
@@ -79,13 +82,13 @@ export const useModal: (options?: IUseModal) => any = (
   }, [open]);
 
   const ModalWrapper = useMemo(
-    () =>
-      ({ children }: { children: React.ReactNode }) => {
+    function ModalWrapper() {
+      return function ModalWrapper({ children }: { children: ReactNode }) {
         return open ? (
           <ModalContainer>
             <ModalBackDrop
               onClick={() => {
-                if (!closeDisabled) {
+                if (closeOnBackdropClick) {
                   hideModal();
                 }
               }}
@@ -106,8 +109,9 @@ export const useModal: (options?: IUseModal) => any = (
             )}
           </ModalContainer>
         ) : null;
-      },
-    [open, hideModal]
+      };
+    },
+    [closeDisabled, closeOnBackdropClick, hideModal, open]
   );
 
   return { ModalWrapper, showModal, hideModal, open };

@@ -23,8 +23,8 @@ import TxStatus from 'types/TxStatus';
 import { useTxStatus } from 'contexts/txStatusContext';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import BN from 'bn.js';
-import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
+import { u8aToHex } from '@polkadot/util';
 import { useConfig } from '../../../contexts/configContext';
 import { useSubstrate } from '../../../contexts/substrateContext';
 import { usePrivateWallet } from '../../../contexts/privateWalletContext';
@@ -32,13 +32,18 @@ import { useExternalAccount } from '../../../contexts/externalAccountContext';
 import { useGenerated } from './generatedContext';
 import { GeneratedImg } from './';
 
+export type MintResult = {
+  assetId: string;
+  proofId: string;
+};
+
 export type SBTPrivateWalletValue = {
   reserveSBT: () => void;
   getReserveGasFee: () => void;
   reserveGasFee: Balance | null;
   getMintGasFee: () => void;
   mintGasFee: Balance | null;
-  mintSBT: (mintSet: Set<GeneratedImg>) => Promise<string[]>;
+  mintSBT: (mintSet: Set<GeneratedImg>) => Promise<MintResult[] | undefined>;
 };
 
 const SBTPrivateWalletContext = createContext<SBTPrivateWalletValue | null>(
@@ -63,8 +68,6 @@ export const SBTPrivateContextProvider = ({
   const { setTxStatus } = useTxStatus();
   const { mintSet } = useGenerated();
 
-  const nativeAsset = useMemo(() => AssetType.Native(config), [config]);
-
   useEffect(() => {
     const canInitWallet = api && !isInitialSync.current && !sbtPrivateWallet;
 
@@ -75,13 +78,9 @@ export const SBTPrivateContextProvider = ({
         network: Network.Dolphin,
         loggingEnabled: true
       };
-      console.log('init sbtPrivateWallet before');
       const sbtPrivateWallet = await SbtMantaPrivateWallet.initSBT(
         privateWalletConfig
       );
-      console.log('init sbtPrivateWallet after', sbtPrivateWallet);
-
-      await sbtPrivateWallet.initalWalletSync();
       setSBTPrivateWallet(sbtPrivateWallet);
       isInitialSync.current = false;
     };
@@ -103,12 +102,9 @@ export const SBTPrivateContextProvider = ({
     const gasFee: RuntimeDispatchInfo = await reserveSbt.paymentInfo(
       externalAccount.address
     );
-    const value = new Balance(
-      nativeAsset,
-      new BN(gasFee.partialFee.toString())
-    );
+    const value = Balance.Native(config, new BN(gasFee.partialFee.toString()));
     setReserveGasFee(value);
-  }, [extensionSigner, externalAccount, nativeAsset, sbtPrivateWallet]);
+  }, [config, extensionSigner, externalAccount, sbtPrivateWallet]);
 
   const handleTxRes = useCallback(
     async ({
@@ -216,25 +212,43 @@ export const SBTPrivateContextProvider = ({
 
   const mintSBT = useCallback(
     async (newMintSet: Set<GeneratedImg>) => {
+      setTxStatus(TxStatus.processing(''));
       const sbtMint = await getBatchMintTx(newMintSet);
-      const { batchTx, transactionDatas } = sbtMint;
-
-      await batchTx.signAndSend(externalAccount.address, handleTxRes);
-      return transactionDatas;
+      const { batchTx, transactionDatas } = sbtMint ?? {};
+      setTxStatus(TxStatus.processing(''));
+      if (!batchTx) {
+        setTxStatus(TxStatus.failed(''));
+        return;
+      }
+      try {
+        await batchTx.signAndSend(externalAccount.address, handleTxRes);
+      } catch (e) {
+        setTxStatus(TxStatus.failed(''));
+      }
+      return transactionDatas.map((tx: any) => {
+        const proofId = u8aToHex(
+          tx[0].ToPrivate[0]['utxo_commitment_randomness']
+        );
+        const assetId = new BN(tx[0].ToPrivate[1]['id'], 'le').toString();
+        return {
+          assetId,
+          proofId
+        };
+      }) as MintResult[];
     },
-    [externalAccount?.address, getBatchMintTx, handleTxRes]
+    [externalAccount?.address, getBatchMintTx, handleTxRes, setTxStatus]
   );
 
   const getMintGasFee = useCallback(async () => {
     const sbtMint = await getBatchMintTx();
-    const { batchTx } = sbtMint;
+    const { batchTx } = sbtMint ?? {};
     const { partialFee } = (await batchTx?.paymentInfo(
       externalAccount.address
     )) ?? { partialFee: '' };
 
-    const value = new Balance(nativeAsset, new BN(partialFee.toString()));
+    const value = Balance.Native(config, new BN(partialFee.toString()));
     setMintGasFee(value);
-  }, [externalAccount?.address, getBatchMintTx, nativeAsset]);
+  }, [externalAccount?.address, getBatchMintTx, config]);
 
   const value = useMemo(() => {
     return {

@@ -34,7 +34,7 @@ const SignerButton = () => {
   }
 
   return (
-    <button className="my-4 border border-dashed py-2 unselectable-text text-center text-white rounded-lg w-64 flex justify-around">
+    <button className="my-4 border border-white border-opacity-20 py-2 unselectable-text text-center text-white rounded-lg w-64 flex justify-around">
       Singer Connected
       <Icon name="greenCheck" />
     </button>

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState } from 'react';
 import { Popover } from 'element-react';
 
@@ -12,9 +11,13 @@ const MintPanel = () => {
   const [showWatermark, toggleWatermark] = useState(true);
 
   const { mintSet } = useGenerated();
-  const { ModalWrapper, showModal, hideModal } = useModal();
+  const { ModalWrapper, showModal, hideModal } = useModal({
+    closeOnBackdropClick: false
+  });
   const { ModalWrapper: MintedModalWrapper, showModal: showMintedModal } =
-    useModal();
+    useModal({
+      closeOnBackdropClick: false
+    });
 
   const firstMinted = [...mintSet]?.[0]?.url;
 
@@ -40,6 +43,8 @@ const MintPanel = () => {
         <div className="flex flex-col flex-1">
           <div className="bg-secondary rounded-lg  ml-6 pb-4">
             <div className="text-white text-opacity-60 border-b border-split p-4 flex ">
+              {/* 
+              // @ts-ignore */}
               <Popover
                 trigger="hover"
                 placement="right"

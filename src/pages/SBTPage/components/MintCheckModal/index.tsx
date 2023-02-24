@@ -4,9 +4,11 @@ import BN from 'bn.js';
 import DotLoader from 'components/Loaders/DotLoader';
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
 import { useSBT } from 'pages/SBTPage/SBTContext';
-import { useSBTPrivateWallet } from 'pages/SBTPage/SBTContext/sbtPrivateWalletContext';
+import {
+  MintResult,
+  useSBTPrivateWallet
+} from 'pages/SBTPage/SBTContext/sbtPrivateWalletContext';
 import { useConfig } from 'contexts/configContext';
-import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
@@ -41,7 +43,7 @@ const MintCheckModal = ({
 }) => {
   const [loading, toggleLoading] = useState(false);
 
-  const proofIdRef = useRef<string[]>();
+  const mintResultRef = useRef<MintResult[]>();
 
   const { mintSet, setMintSet } = useGenerated();
   const { nativeTokenBalance } = useSBT();
@@ -52,11 +54,10 @@ const MintCheckModal = ({
   const { externalAccount } = useExternalAccount();
   const { generateAccount } = useSBTTheme();
 
-  const nativeAsset = AssetType.Native(config);
-
   const PRE_SBT_PRICE = useMemo(
-    () => new Balance(nativeAsset, new BN(178400000000000)),
-    [nativeAsset]
+    // TODO: just for test, will remove before release
+    () => Balance.Native(config, new BN('178400000000000000000')),
+    [config]
   );
 
   useEffect(() => {
@@ -70,8 +71,8 @@ const MintCheckModal = ({
     toggleLoading(true);
     try {
       const newMintSet = await getWatermarkedImgs();
-      const proofIds = await mintSBT(newMintSet);
-      proofIdRef.current = proofIds;
+      const mintResult = await mintSBT(newMintSet);
+      mintResultRef.current = mintResult;
     } catch (e) {
       console.error(e);
     }
@@ -81,12 +82,12 @@ const MintCheckModal = ({
     const handleTxFinalized = () => {
       if (txStatus?.isFinalized()) {
         toggleLoading(false);
-        const proofIds = proofIdRef.current;
+        const mintResult = mintResultRef.current;
         const newMintSet = new Set<GeneratedImg>();
         [...mintSet].forEach((generatedImg, index) => {
           newMintSet.add({
             ...generatedImg,
-            proofId: proofIds?.[index]
+            proofId: mintResult?.[index]?.proofId
           });
         });
         hideModal();
@@ -110,7 +111,7 @@ const MintCheckModal = ({
     }
     if (mintSet.size > 1) {
       return {
-        txt: `1 Free + ${mintSet.size - 1} Extra Mint`,
+        txt: `1 Free + ${mintSet.size - 1} Extra zkSBTs`,
         cost: `${PRE_SBT_PRICE.toDisplayString()} x ${mintSet.size - 1}`
       };
     }
@@ -118,18 +119,21 @@ const MintCheckModal = ({
 
   const totalValue = useMemo(() => {
     return PRE_SBT_PRICE.mul(new BN(mintSet.size - 1)).add(
-      mintGasFee ?? Balance.Native(nativeAsset, new BN(0))
+      mintGasFee ?? Balance.Native(config, new BN(0))
     );
-  }, [PRE_SBT_PRICE, mintGasFee, mintSet.size, nativeAsset]);
+  }, [PRE_SBT_PRICE, mintGasFee, mintSet.size, config]);
 
   const mintCostStyle = mintSet.size === 1 ? 'text-check' : 'text-white';
 
   const errorMsg = useMemo(() => {
     if (generateAccount?.address !== externalAccount?.address) {
-      return 'The address to mint must be the same as the address to genereate.';
+      return 'Please switch to the same wallet/network that you used to make the purchase for the generation';
     }
-    if (nativeTokenBalance == null || totalValue.gt(nativeTokenBalance)) {
-      return 'You account does not have enough balance for this transaction.';
+    if (nativeTokenBalance == null) {
+      return 'Some problems occurred, please try again later.';
+    }
+    if (nativeTokenBalance != null && totalValue.gt(nativeTokenBalance)) {
+      return 'Your account does not have enough balance for this transaction.';
     }
     return '';
   }, [
@@ -138,6 +142,13 @@ const MintCheckModal = ({
     nativeTokenBalance,
     totalValue
   ]);
+
+  const errorMsgStyle = useMemo(() => {
+    if (generateAccount?.address !== externalAccount?.address) {
+      return 'text-tip';
+    }
+    return 'text-error';
+  }, [externalAccount?.address, generateAccount?.address]);
 
   const disabled = useMemo(
     () => loading || mintGasFee == null || !!errorMsg,
@@ -174,7 +185,7 @@ const MintCheckModal = ({
         Balance: {nativeTokenBalance?.toDisplayString() ?? '-'}
       </p>
       {errorMsg && (
-        <p className="mt-2 text-error text-left">
+        <p className={`${errorMsgStyle} mt-2 text-left`}>
           <Icon name="information" className="mr-2 inline-block" />
           {errorMsg}
         </p>

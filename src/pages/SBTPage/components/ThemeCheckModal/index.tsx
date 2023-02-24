@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import { localStorageKeys } from 'constants/LocalStorageConstants';
+import { useEffect, useMemo, useState } from 'react';
 import BN from 'bn.js';
 
 import DotLoader from 'components/Loaders/DotLoader';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 import { useSBTPrivateWallet } from 'pages/SBTPage/SBTContext/sbtPrivateWalletContext';
 import { useConfig } from 'contexts/configContext';
-import AssetType from 'types/AssetType';
 import { useTxStatus } from 'contexts/txStatusContext';
-import TxStatus from 'types/TxStatus';
 import { useSBTTheme } from 'pages/SBTPage/SBTContext/sbtThemeContext';
 import Balance from 'types/Balance';
+import Icon from 'components/Icon';
+import { useExternalAccount } from 'contexts/externalAccountContext';
 
 const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
   const [loading, toggleLoading] = useState(false);
@@ -18,11 +19,10 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
   const { checkedThemeItems, generateImgs } = useSBTTheme();
   const { reserveSBT, getReserveGasFee, reserveGasFee } = useSBTPrivateWallet();
   const config = useConfig();
-  const { txStatus }: { txStatus: TxStatus | null } = useTxStatus();
-
-  const nativeAsset = AssetType.Native(config);
-
-  const PRE_SBT_PRICE = new Balance(nativeAsset, new BN(178400000000000));
+  const { txStatus } = useTxStatus();
+  const { externalAccount } = useExternalAccount();
+  // TODO: just for test, will remove before release
+  const PRE_SBT_PRICE = Balance.Native(config, new BN('178400000000000000000'));
 
   const toGeneratingPage = async () => {
     if (loading) {
@@ -48,6 +48,11 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
         await generateImgs();
         toggleLoading(false);
         hideModal();
+        // reset the progress counting time when start generating new images again
+        localStorage.setItem(
+          `${localStorageKeys.GeneratingStart}-${externalAccount?.address}`,
+          ''
+        );
         setTimeout(() => {
           setCurrentStep(Step.Generating);
         }, 100);
@@ -57,7 +62,7 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
     };
 
     handleTxFinalized();
-  }, [txStatus, hideModal, setCurrentStep, generateImgs]);
+  }, [txStatus, hideModal, setCurrentStep, generateImgs, externalAccount?.address]);
 
   const totalValue = reserveGasFee?.add(PRE_SBT_PRICE);
 
@@ -66,6 +71,16 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
     loading ||
     totalValue?.gt(nativeTokenBalance ?? Balance.Native(config, new BN(0))) ||
     reserveGasFee == null;
+
+  const errorMsg = useMemo(() => {
+    if (nativeTokenBalance == null) {
+      return 'Some problems occurred, please try again later.';
+    }
+    if (nativeTokenBalance != null && totalValue?.gt(nativeTokenBalance)) {
+      return 'Your account does not have enough balance for this transaction.';
+    }
+    return '';
+  }, [nativeTokenBalance, totalValue]);
 
   const disabledStyle = disabled ? 'brightness-50 cursor-not-allowed' : '';
 
@@ -87,9 +102,7 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
           <span className="ml-auto text-opacity-60 text-white mr-2">
             + approximately
           </span>
-          <span className="text-white">
-            {reserveGasFee?.toFeeDisplayString()}
-          </span>
+          <span className="text-white">{reserveGasFee?.toDisplayString()}</span>
         </div>
         <div className="flex justify-between p-4">
           <p>Total</p>
@@ -102,6 +115,12 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
       <p className="text-sm text-left">
         Balance: {nativeTokenBalance?.toDisplayString() ?? '-'}
       </p>
+      {errorMsg && (
+        <p className="text-error mt-2 text-left">
+          <Icon name="information" className="mr-2 inline-block" />
+          {errorMsg}
+        </p>
+      )}
       <button
         onClick={toGeneratingPage}
         disabled={disabled}

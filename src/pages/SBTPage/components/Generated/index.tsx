@@ -30,7 +30,7 @@ const Generated = () => {
         <Icon name="manta" className="w-8 h-8 mr-3" />
         <h2 className="text-2xl">zkSBT</h2>
       </div>
-      <h1 className="text-3xl my-6">Generated</h1>
+      <h1 className="text-3xl my-6">Generated!</h1>
       <p className="text-sm text-opacity-60 text-white mb-6">
         Your AI-generated zkSBT results are unique; the same image will never be
         generated again. You can select up to 8 images to mint as your zkSBTs.
@@ -52,7 +52,7 @@ const Generated = () => {
           className={`px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter ${
             btnDisabled ? 'brightness-50 cursor-not-allowed' : ''
           }`}>
-          Continue to Mint({mintSet.size})
+          Continue to Mint
         </button>
       </div>
     </div>

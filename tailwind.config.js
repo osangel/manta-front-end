@@ -34,7 +34,8 @@ module.exports = {
       },
       width: {
         68: '272px',
-        75: '75rem'
+        75: '75rem',
+        240: '60rem'
       },
       backgroundImage: {
         gradient: 'var(--gradient-button-third)'

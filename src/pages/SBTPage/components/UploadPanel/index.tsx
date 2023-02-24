@@ -111,7 +111,7 @@ const UploadPanel = () => {
   const disabledStyle = btnDisabled ? 'brightness-50 cursor-not-allowed' : '';
 
   return (
-    <div className="flex-1 flex flex-col mx-auto mb-32 bg-secondary rounded-xl p-6 w-75 relative">
+    <div className="flex-1 flex flex-col mx-auto mb-8 bg-secondary rounded-xl p-6 w-75 relative">
       <div className="flex items-center">
         <Icon name="manta" className="w-8 h-8 mr-3" />
         <h2 className="text-2xl">zkSBT</h2>
@@ -126,7 +126,7 @@ const UploadPanel = () => {
       </p>
       <TipComponent />
       <div
-        className="grid w-full gap-6 grid-cols-5 pb-16 pt-4 mt-9 max-h-120 overflow-y-auto"
+        className="grid w-full gap-6 grid-cols-5 mb-16 pt-4 mt-9 max-h-80 overflow-y-auto"
         ref={imgContainer}>
         {imgList?.map(({ file }, index) => {
           if (!file) {

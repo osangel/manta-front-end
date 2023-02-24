@@ -23,7 +23,7 @@ const GeneratedImgItem = ({ generatedImg, toggleMint }: ItemType) => {
   const checkedStyle = mintSet.has(generatedImg) ? 'border-4 border-check' : '';
   const disabledStyle =
     mintSet.size >= MAX_MINT_SIZE && !mintSet.has(generatedImg)
-      ? 'cursor-not-allowed'
+      ? 'cursor-not-allowed filter grayscale'
       : 'cursor-pointer';
 
   return (

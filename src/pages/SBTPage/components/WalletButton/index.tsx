@@ -15,7 +15,7 @@ const WalletButton = () => {
 
   if (externalAccount) {
     return (
-      <button className="my-4 border border-dashed py-2 unselectable-text text-center text-white rounded-lg w-64 flex justify-around item-center">
+      <button className="my-4 border border-white border-opacity-20 py-2 unselectable-text text-center text-white rounded-lg w-64 flex justify-around item-center">
         Singed in as
         <img
           className="w-6 h-6 rounded-full mx-1"
