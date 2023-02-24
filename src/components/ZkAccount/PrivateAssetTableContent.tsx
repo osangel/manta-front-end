@@ -12,7 +12,7 @@ const PrivateAssetTableContent = () => {
   const privateWallet = usePrivateWallet();
   const isInitialSync = privateWallet?.isInitialSync?.current;
   const shouldSyncZKAccount =
-    (isInitialSync && senderIsPrivate()) || (isInitialSync && receiverIsPrivate());
+    isInitialSync && (senderIsPrivate() || receiverIsPrivate());
 
   if (balances?.length) {
     return (
