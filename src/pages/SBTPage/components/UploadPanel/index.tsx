@@ -63,7 +63,7 @@ const TipComponent = () => {
 
   if (errorMsg) {
     return (
-      <p className="absolute flex top-48 text-error">
+      <p className="absolute flex top-48 text-error text-xs">
         <Icon name="information" className="mr-2" />
         {errorMsg}
       </p>
@@ -71,7 +71,7 @@ const TipComponent = () => {
   }
   if (maxLenInfo) {
     return (
-      <p className="absolute flex top-48 text-tip">
+      <p className="absolute flex top-48 text-tip text-xs">
         <Icon name="information" className="mr-2" />
         {maxLenInfo}
       </p>
@@ -122,7 +122,9 @@ const UploadPanel = () => {
     <div className="flex-1 flex flex-col mx-auto mb-8 bg-secondary rounded-xl p-6 w-75 relative">
       <div className="flex items-center">
         <Icon name="manta" className="w-8 h-8 mr-3" />
-        <h2 className="text-2xl">zkSBT</h2>
+        <h2 className="text-2xl font-red-hat-mono tracking-widest font-medium">
+          zkSBT
+        </h2>
       </div>
       <h1 className="text-3xl my-6">Upload Photos</h1>
       <p className="text-sm text-opacity-60 text-white">

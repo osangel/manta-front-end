@@ -17,7 +17,8 @@ module.exports = {
       '6xl': '4rem'
     },
     letterSpacing: {
-      tightest: '-.075em'
+      tightest: '-.075em',
+      widest: '0.14em'
     },
     minWidth: {
       layout: 'var(--min-width-layout)',
@@ -88,7 +89,8 @@ module.exports = {
         secondary: 'var(--color-bg-button-primary)',
         warning: '#FF8A00',
         check: '#29CCB9',
-        split: 'var(--color-bg-primary)'
+        split: 'var(--color-bg-primary)',
+        'dash-gray': 'rgba(255, 255, 255, 0.1)'
       },
       scale: {
         200: '2'

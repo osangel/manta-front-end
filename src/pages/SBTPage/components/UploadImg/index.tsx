@@ -29,7 +29,7 @@ const UploadImg = () => {
       : 'cursor-pointer';
   return (
     <div className="relative w-max">
-      <div className="border border-dashed bg-primary rounded-lg w-48 h-48 flex justify-center items-center">
+      <div className="border border-dash-gray border-dashed bg-secondary rounded-lg w-48 h-48 flex justify-center items-center">
         {loading ? (
           <DotLoader cls="transform scale-200" />
         ) : (

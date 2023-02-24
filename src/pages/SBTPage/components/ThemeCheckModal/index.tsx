@@ -98,11 +98,11 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
 
   return (
     <div className="text-white w-128 text-center">
-      <h2 className="text-2xl">Checkout</h2>
+      <h2 className="text-2xl text-left">Checkout</h2>
       <div className="bg-secondary rounded-lg mt-6 mb-4">
         <div className="flex justify-between p-4">
           <p>{checkedThemeItems.size} Avatars + ONE Free Mint zkSBT PLAN</p>
-          <div className="flex flex-col">
+          <div className="flex flex-col text-right">
             <span className="text-check">
               {PRE_SBT_PRICE.toDisplayString()}
             </span>
@@ -111,14 +111,14 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
         </div>
         <div className="flex justify-between border-b border-split px-4 pb-4">
           <p>Gas Fee</p>
-          <span className="ml-auto text-opacity-60 text-white mr-2">
+          <span className="ml-auto text-opacity-60 text-white mr-2 text-right">
             + approximately
           </span>
           <span className="text-white">{reserveGasFee?.toDisplayString()}</span>
         </div>
         <div className="flex justify-between p-4">
           <p>Total</p>
-          <div className="flex flex-col">
+          <div className="flex flex-col text-right">
             <span className="text-check">{totalValue?.toDisplayString()}</span>
             <span className="text-white text-opacity-60">$0 USD</span>
           </div>

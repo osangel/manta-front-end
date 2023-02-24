@@ -184,11 +184,13 @@ const MintCheckModal = ({
           <span className="ml-auto text-opacity-60 text-white mr-2">
             + approximately
           </span>
-          <span className="text-white">{mintGasFee?.toDisplayString()}</span>
+          <span className="text-white text-right">
+            {mintGasFee?.toDisplayString()}
+          </span>
         </div>
         <div className="flex justify-between p-4">
           <p>Total</p>
-          <div className="flex flex-col">
+          <div className="flex flex-col text-right">
             <span className="text-check">{totalValue?.toDisplayString()}</span>
             <span className="text-white text-opacity-60">$0 USD</span>
           </div>

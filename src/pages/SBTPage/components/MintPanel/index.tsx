@@ -38,7 +38,9 @@ const MintPanel = () => {
     <div className="relative flex-1 flex flex-col mx-auto mb-20 bg-secondary rounded-xl p-6 w-75 relative mt-6 z-0">
       <div className="flex items-center">
         <Icon name="manta" className="w-8 h-8 mr-3" />
-        <h2 className="text-2xl">zkSBT</h2>
+        <h2 className="text-2xl font-red-hat-mono tracking-widest font-medium">
+          zkSBT
+        </h2>
       </div>
       <h1 className="text-3xl my-6">Mint Your zkSBT</h1>
       <div className="flex ml-6">

@@ -23,7 +23,7 @@ const Theme = ({ themeItem, index, toggleCheckImg }: ThemeItemProps) => {
   const { checkedThemeItems } = useSBTTheme();
   const bgStyle = checkedThemeItems.has(name)
     ? 'bg-light-check border border-check'
-    : 'bg-primary';
+    : 'bg-secondary';
   const cursorStyle =
     checkedThemeItems.size >= MAX_THEME_LEN && !checkedThemeItems.has(name)
       ? 'cursor-not-allowed'
@@ -92,7 +92,9 @@ const ThemePanel = () => {
     <div className="flex flex-col mx-auto bg-secondary rounded-xl p-6 w-75 relative mt-6">
       <div className="flex items-center">
         <Icon name="manta" className="w-8 h-8 mr-3" />
-        <h2 className="text-2xl">zkSBT</h2>
+        <h2 className="text-2xl font-red-hat-mono tracking-widest font-medium">
+          zkSBT
+        </h2>
       </div>
       <h1 className="text-3xl my-6">Select Themes</h1>
       <p className="text-sm text-opacity-60 text-white">
