@@ -11,7 +11,16 @@ import { useSBTTheme } from 'pages/SBTPage/SBTContext/sbtThemeContext';
 import Balance from 'types/Balance';
 import Icon from 'components/Icon';
 import { useExternalAccount } from 'contexts/externalAccountContext';
+import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
 
+const BtnComponent = ({ loading }: { loading: boolean }) => {
+  return (
+    <>
+      Confirm
+      {loading && <DotLoader />}
+    </>
+  );
+};
 const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
   const [loading, toggleLoading] = useState(false);
 
@@ -62,11 +71,16 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
     };
 
     handleTxFinalized();
-  }, [txStatus, hideModal, setCurrentStep, generateImgs, externalAccount?.address]);
+  }, [
+    txStatus,
+    hideModal,
+    setCurrentStep,
+    generateImgs,
+    externalAccount?.address
+  ]);
 
   const totalValue = reserveGasFee?.add(PRE_SBT_PRICE);
 
-  const loadingStyle = loading ? 'brightness-50 cursor-not-allowed' : '';
   const disabled =
     loading ||
     totalValue?.gt(nativeTokenBalance ?? Balance.Native(config, new BN(0))) ||
@@ -81,8 +95,6 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
     }
     return '';
   }, [nativeTokenBalance, totalValue]);
-
-  const disabledStyle = disabled ? 'brightness-50 cursor-not-allowed' : '';
 
   return (
     <div className="text-white w-128 text-center">
@@ -121,13 +133,12 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
           {errorMsg}
         </p>
       )}
-      <button
+      <ButtonWithSignerAndWallet
+        btnComponent={<BtnComponent loading={loading} />}
         onClick={toGeneratingPage}
         disabled={disabled}
-        className={`px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-6 ${loadingStyle} ${disabledStyle}`}>
-        Confirm
-        {loading && <DotLoader />}
-      </button>
+        className="px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-6"
+      />
     </div>
   );
 };

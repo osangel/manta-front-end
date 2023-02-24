@@ -17,6 +17,7 @@ import { useMint } from 'pages/SBTPage/SBTContext/mintContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useSBTTheme } from 'pages/SBTPage/SBTContext/sbtThemeContext';
 import Icon from 'components/Icon';
+import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
 
 const MintImg = ({ url }: { url: string }) => (
   <img src={url} className="w-24 h-24 rounded-2xl" />
@@ -34,6 +35,16 @@ const MintImgs = () => {
     </div>
   );
 };
+
+const BtnComponent = ({ loading }: { loading: boolean }) => {
+  return (
+    <>
+      Confirm
+      {loading && <DotLoader />}
+    </>
+  );
+};
+
 const MintCheckModal = ({
   hideModal,
   showMintedModal
@@ -49,7 +60,7 @@ const MintCheckModal = ({
   const { nativeTokenBalance } = useSBT();
   const { mintGasFee, mintSBT, getMintGasFee } = useSBTPrivateWallet();
   const config = useConfig();
-  const { txStatus }: { txStatus: TxStatus | null } = useTxStatus();
+  const { txStatus, setTxStatus } = useTxStatus();
   const { getWatermarkedImgs } = useMint();
   const { externalAccount } = useExternalAccount();
   const { generateAccount } = useSBTTheme();
@@ -75,8 +86,9 @@ const MintCheckModal = ({
       mintResultRef.current = mintResult;
     } catch (e) {
       console.error(e);
+      setTxStatus(TxStatus.failed(''));
     }
-  }, [getWatermarkedImgs, mintSBT]);
+  }, [getWatermarkedImgs, mintSBT, setTxStatus]);
 
   useEffect(() => {
     const handleTxFinalized = () => {
@@ -155,8 +167,6 @@ const MintCheckModal = ({
     [errorMsg, loading, mintGasFee]
   );
 
-  const disabledStyle = disabled ? 'brightness-50 cursor-not-allowed' : '';
-
   return (
     <div className="text-white w-128 text-center">
       <h2 className="text-2xl text-left">Checkout</h2>
@@ -190,13 +200,12 @@ const MintCheckModal = ({
           {errorMsg}
         </p>
       )}
-      <button
-        onClick={() => mintSBTConfirm()}
+      <ButtonWithSignerAndWallet
+        onClick={mintSBTConfirm}
         disabled={disabled}
-        className={`px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-6 ${disabledStyle}`}>
-        Confirm
-        {loading && <DotLoader />}
-      </button>
+        btnComponent={<BtnComponent loading={loading} />}
+        className="px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-6"
+      />
     </div>
   );
 };

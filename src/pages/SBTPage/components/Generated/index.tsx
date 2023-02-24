@@ -2,6 +2,7 @@ import Icon from 'components/Icon';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
 import { useMemo } from 'react';
+import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
 import GeneratedImgs from '../GeneratedImgs';
 export const MAX_MINT_SIZE = 8;
 
@@ -25,7 +26,7 @@ const Generated = () => {
   }, [mintSet.size]);
 
   return (
-    <div className="relative flex-1 flex flex-col mx-auto mb-10 bg-secondary rounded-xl p-6 w-75 relative mt-6 z-0">
+    <div className="flex-1 flex flex-col mx-auto mb-10 bg-secondary rounded-xl p-6 w-75 relative mt-6 z-0">
       <div className="flex items-center">
         <Icon name="manta" className="w-8 h-8 mr-3" />
         <h2 className="text-2xl">zkSBT</h2>
@@ -36,10 +37,7 @@ const Generated = () => {
         generated again. You can select up to 8 images to mint as your zkSBTs.
       </p>
       <GeneratedImgs />
-      <div
-        className={
-          'absolute unselectable-text text-center text-white rounded-lg bottom-8 left-1/2 -translate-x-1/2 transform'
-        }>
+      <div className="absolute flex flex-col items-center w-full unselectable-text text-center text-white rounded-lg bottom-8">
         {mintSet.size > 0 ? (
           <span className="flex justify-center items-center text-xs text-white text-opacity-60 mb-3">
             <Icon name="information" className="mr-2" />
@@ -47,13 +45,12 @@ const Generated = () => {
           </span>
         ) : null}
 
-        <button
+        <ButtonWithSignerAndWallet
+          disabled={btnDisabled}
+          btnComponent={` Continue to Mint(${mintSet.size})`}
           onClick={toMintPage}
-          className={`px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter ${
-            btnDisabled ? 'brightness-50 cursor-not-allowed' : ''
-          }`}>
-          Continue to Mint
-        </button>
+          className="px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter"
+        />
       </div>
     </div>
   );

@@ -81,6 +81,7 @@ export const SBTPrivateContextProvider = ({
       const sbtPrivateWallet = await SbtMantaPrivateWallet.initSBT(
         privateWalletConfig
       );
+
       setSBTPrivateWallet(sbtPrivateWallet);
       isInitialSync.current = false;
     };
@@ -213,28 +214,30 @@ export const SBTPrivateContextProvider = ({
   const mintSBT = useCallback(
     async (newMintSet: Set<GeneratedImg>) => {
       setTxStatus(TxStatus.processing(''));
-      const sbtMint = await getBatchMintTx(newMintSet);
-      const { batchTx, transactionDatas } = sbtMint ?? {};
-      setTxStatus(TxStatus.processing(''));
-      if (!batchTx) {
-        setTxStatus(TxStatus.failed(''));
-        return;
-      }
       try {
+        const sbtMint = await getBatchMintTx(newMintSet);
+        const { batchTx, transactionDatas } = sbtMint ?? {};
+        setTxStatus(TxStatus.processing(''));
+        if (!batchTx) {
+          console.error(new Error('can not get batchTx'));
+          setTxStatus(TxStatus.failed(''));
+          return;
+        }
         await batchTx.signAndSend(externalAccount.address, handleTxRes);
+        return transactionDatas.map((tx: any) => {
+          const proofId = u8aToHex(
+            tx[0].ToPrivate[0]['utxo_commitment_randomness']
+          );
+          const assetId = new BN(tx[0].ToPrivate[1]['id'], 'le').toString();
+          return {
+            assetId,
+            proofId
+          };
+        }) as MintResult[];
       } catch (e) {
+        console.error(e);
         setTxStatus(TxStatus.failed(''));
       }
-      return transactionDatas.map((tx: any) => {
-        const proofId = u8aToHex(
-          tx[0].ToPrivate[0]['utxo_commitment_randomness']
-        );
-        const assetId = new BN(tx[0].ToPrivate[1]['id'], 'le').toString();
-        return {
-          assetId,
-          proofId
-        };
-      }) as MintResult[];
     },
     [externalAccount?.address, getBatchMintTx, handleTxRes, setTxStatus]
   );

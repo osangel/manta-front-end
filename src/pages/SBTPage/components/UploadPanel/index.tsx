@@ -5,6 +5,7 @@ import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 import { useFaceRecognition } from 'pages/SBTPage/SBTContext/faceRecognitionContext';
 import DotLoader from 'components/Loaders/DotLoader';
 import UploadImg from '../UploadImg';
+import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
 
 export const MAX_UPLOAD_LEN = 20;
 const MIN_UPLOAD_LEN = 5;
@@ -79,6 +80,15 @@ const TipComponent = () => {
   return null;
 };
 
+const BtnComponent = ({ detectLoading }: { detectLoading: boolean }) => {
+  return (
+    <>
+      {detectLoading ? 'Refreshing' : 'Confirm'}
+      {detectLoading && <DotLoader cls="transform scale-150 ml-4" />}
+    </>
+  );
+};
+
 const UploadPanel = () => {
   const imgContainer = useRef<HTMLDivElement>(null);
 
@@ -108,8 +118,6 @@ const UploadPanel = () => {
     );
   }, [imgList, errorMsg, detectLoading]);
 
-  const disabledStyle = btnDisabled ? 'brightness-50 cursor-not-allowed' : '';
-
   return (
     <div className="flex-1 flex flex-col mx-auto mb-8 bg-secondary rounded-xl p-6 w-75 relative">
       <div className="flex items-center">
@@ -138,13 +146,14 @@ const UploadPanel = () => {
         })}
         {imgList.length < MAX_UPLOAD_LEN ? <UploadImg /> : null}
       </div>
-      <button
+      <ButtonWithSignerAndWallet
+        btnComponent={<BtnComponent detectLoading={detectLoading} />}
         onClick={toThemePage}
         disabled={btnDisabled}
-        className={`flex items-center absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-4 left-1/2 -translate-x-1/2 transform ${disabledStyle}`}>
-        {detectLoading ? 'Refreshing' : 'Confirm'}
-        {detectLoading && <DotLoader cls="transform scale-150 ml-4" />}
-      </button>
+        className={
+          'flex items-center absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-4 left-1/2 -translate-x-1/2 transform'
+        }
+      />
     </div>
   );
 };

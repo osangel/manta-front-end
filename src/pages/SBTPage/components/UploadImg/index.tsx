@@ -3,11 +3,13 @@ import { ChangeEvent, useRef, useState } from 'react';
 import Icon from 'components/Icon';
 import { useSBT } from 'pages/SBTPage/SBTContext';
 import DotLoader from 'components/Loaders/DotLoader';
+import { useExternalAccount } from 'contexts/externalAccountContext';
 
 const UploadImg = () => {
   const [loading, toggleLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
+  const { externalAccount } = useExternalAccount();
   const { uploadImgs } = useSBT();
 
   const onImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -21,9 +23,10 @@ const UploadImg = () => {
       fileRef.current.value = '';
     }
   };
-  const disabledStyle = loading
-    ? 'brightness-50 cursor-not-allowed'
-    : 'cursor-pointer';
+  const disabledStyle =
+    loading || !externalAccount
+      ? 'brightness-50 cursor-not-allowed'
+      : 'cursor-pointer';
   return (
     <div className="relative w-max">
       <div className="border border-dashed bg-primary rounded-lg w-48 h-48 flex justify-center items-center">

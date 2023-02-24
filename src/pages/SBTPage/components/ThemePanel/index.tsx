@@ -2,8 +2,6 @@ import { type Swiper as SwiperRef } from 'swiper';
 import { useMemo, useRef } from 'react';
 
 import Icon from 'components/Icon';
-import ConnectWalletModal from 'components/Modal/connectWalletModal';
-import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useModal } from 'hooks';
 import {
   useSBTTheme,
@@ -11,6 +9,7 @@ import {
 } from 'pages/SBTPage/SBTContext/sbtThemeContext';
 import ThemeChecked from '../ThemeChecked';
 import ThemeCheckModal from '../ThemeCheckModal';
+import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
 
 export const MAX_THEME_LEN = 10;
 
@@ -44,8 +43,6 @@ const Theme = ({ themeItem, index, toggleCheckImg }: ThemeItemProps) => {
 const ThemePanel = () => {
   const { checkedThemeItems, toggleCheckedThemeItem, themeList } =
     useSBTTheme();
-  const { externalAccount } = useExternalAccount();
-  const { ModalWrapper, showModal, hideModal } = useModal();
   const {
     ModalWrapper: ThemeCheckModalWrapper,
     showModal: showThemeCheckModal,
@@ -64,10 +61,6 @@ const ThemePanel = () => {
 
   const handleGenerate = async () => {
     if (btnDisabled) {
-      return;
-    }
-    if (!externalAccount) {
-      showModal();
       return;
     }
     showThemeCheckModal();
@@ -94,9 +87,6 @@ const ThemePanel = () => {
 
     toggleCheckedThemeItem(new Map(checkedThemeItems));
   };
-
-  const buttonTxt = externalAccount ? 'Generate' : 'Connect Wallet to Generate';
-  const disabledStyle = btnDisabled ? 'brightness-50 cursor-not-allowed' : '';
 
   return (
     <div className="flex flex-col mx-auto bg-secondary rounded-xl p-6 w-75 relative mt-6">
@@ -126,18 +116,12 @@ const ThemePanel = () => {
           })}
         </div>
       </div>
-      <button
+      <ButtonWithSignerAndWallet
+        btnComponent="Generate"
         onClick={handleGenerate}
         disabled={btnDisabled}
-        className={`absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform ${disabledStyle}`}>
-        {buttonTxt}
-      </button>
-      <ModalWrapper>
-        <ConnectWalletModal
-          setIsMetamaskSelected={null}
-          hideModal={hideModal}
-        />
-      </ModalWrapper>
+        className="absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform"
+      />
       <ThemeCheckModalWrapper>
         <ThemeCheckModal hideModal={hideThemeCheckModal} />
       </ThemeCheckModalWrapper>
