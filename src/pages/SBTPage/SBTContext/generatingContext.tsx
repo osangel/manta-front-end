@@ -23,6 +23,7 @@ export enum GenerateStatus {
 type GeneratingContextValue = {
   generatedImgs: GeneratedImg[];
   generateStatus: GenerateStatus;
+  setGenerateStatus: (generateStatus: GenerateStatus) => void;
   setGeneratedImgs: (generatedImgs: GeneratedImg[]) => void;
   queryGenerateResult: () => void;
 };
@@ -66,7 +67,8 @@ export const GeneratingContextProvider = ({
       generatedImgs,
       generateStatus,
       queryGenerateResult,
-      setGeneratedImgs
+      setGeneratedImgs,
+      setGenerateStatus
     }),
     [generateStatus, generatedImgs, queryGenerateResult]
   );

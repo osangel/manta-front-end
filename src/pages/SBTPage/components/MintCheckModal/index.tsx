@@ -61,7 +61,7 @@ const MintCheckModal = ({
   const { mintGasFee, mintSBT, getMintGasFee } = useSBTPrivateWallet();
   const config = useConfig();
   const { txStatus, setTxStatus } = useTxStatus();
-  const { getWatermarkedImgs } = useMint();
+  const { getWatermarkedImgs, saveMintInfo } = useMint();
   const { externalAccount } = useExternalAccount();
   const { generateAccount } = useSBTTheme();
 
@@ -99,20 +99,23 @@ const MintCheckModal = ({
         [...mintSet].forEach((generatedImg, index) => {
           newMintSet.add({
             ...generatedImg,
-            proofId: mintResult?.[index]?.proofId
+            proofId: mintResult?.[index]?.proofId,
+            assetId: mintResult?.[index]?.assetId
           });
         });
+
         hideModal();
         setMintSet(newMintSet);
         setTimeout(() => {
           showMintedModal();
+          saveMintInfo(newMintSet);
         });
       } else if (txStatus?.isFailed()) {
         toggleLoading(false);
       }
     };
     handleTxFinalized();
-  }, [hideModal, mintSet, setMintSet, showMintedModal, txStatus]);
+  }, [hideModal, mintSet, saveMintInfo, setMintSet, showMintedModal, txStatus]);
 
   const mintInfo = useMemo(() => {
     if (mintSet.size === 1) {

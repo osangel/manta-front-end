@@ -40,6 +40,7 @@ export type GeneratedImg = {
   cid?: string;
   proofId?: string;
   blur_url?: string;
+  assetId?: string;
 };
 
 export type OnGoingTaskResult = {

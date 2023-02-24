@@ -3,27 +3,37 @@ import {
   ReactNode,
   useCallback,
   useMemo,
-  useContext
+  useContext,
+  useState
 } from 'react';
 import axios from 'axios';
 
 import { useConfig } from 'contexts/configContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useGenerated } from './generatedContext';
-import { useSBTTheme } from './sbtThemeContext';
-import { GeneratedImg } from './';
+import { ThemeItem, useSBTTheme } from './sbtThemeContext';
+import { GenerateStatus, useGenerating } from './generatingContext';
+import { GeneratedImg, useSBT } from './';
 
 type MintContextValue = {
   getWatermarkedImgs: () => Promise<Set<GeneratedImg>>;
+  saveMintInfo: (mintSet: Set<GeneratedImg>) => void;
+  mintSuccessed: boolean;
+  toggleMintSuccessed: (mintSuccessed: boolean) => void;
+  resetContextData: () => void;
 };
 
 const MintContext = createContext<MintContextValue | null>(null);
 
 export const MintContextProvider = ({ children }: { children: ReactNode }) => {
+  const [mintSuccessed, toggleMintSuccessed] = useState(false);
+
   const config = useConfig();
-  const { modelId } = useSBTTheme();
+  const { modelId, toggleCheckedThemeItem } = useSBTTheme();
+  const { setGeneratedImgs, setGenerateStatus } = useGenerating();
   const { mintSet, setMintSet } = useGenerated();
   const { externalAccount } = useExternalAccount();
+  const { setImgList } = useSBT();
 
   const getWatermarkedImgs = useCallback(async () => {
     const url = `${config.SBT_NODE_SERVICE}/npo/watermark`;
@@ -54,11 +64,51 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
     setMintSet
   ]);
 
+  const resetContextData = useCallback(() => {
+    setImgList([]);
+    toggleCheckedThemeItem(new Map<string, ThemeItem>());
+    setGeneratedImgs([]);
+    setGenerateStatus(GenerateStatus.doing);
+    setMintSet(new Set());
+  }, [
+    setGenerateStatus,
+    setGeneratedImgs,
+    setImgList,
+    setMintSet,
+    toggleCheckedThemeItem
+  ]);
+
+  const saveMintInfo = useCallback(
+    async (mintSet: Set<GeneratedImg>) => {
+      const url = `${config.SBT_NODE_SERVICE}/npo/proofs`;
+      const data = {
+        proof_info: [...mintSet].map(({ proofId, assetId, blur_url }) => ({
+          proof_id: proofId,
+          asset_id: assetId,
+          blur_url,
+          token: 'manta',
+          size: '1'
+        })),
+        address: externalAccount?.address,
+        model_id: modelId
+      };
+      const ret = await axios.post<{ status: boolean }>(url, data);
+      if (ret.status === 200 || ret.status === 201) {
+        toggleMintSuccessed(ret.data.status);
+      }
+    },
+    [config.SBT_NODE_SERVICE, externalAccount?.address, modelId]
+  );
+
   const value = useMemo(
     () => ({
-      getWatermarkedImgs
+      getWatermarkedImgs,
+      saveMintInfo,
+      mintSuccessed,
+      toggleMintSuccessed,
+      resetContextData
     }),
-    [getWatermarkedImgs]
+    [getWatermarkedImgs, saveMintInfo, mintSuccessed, resetContextData]
   );
   return <MintContext.Provider value={value}>{children}</MintContext.Provider>;
 };
