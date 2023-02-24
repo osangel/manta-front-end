@@ -40,38 +40,52 @@ const MintedModal = () => {
     navigator.clipboard.writeText(textToCopy);
   };
   return (
-    <div className="text-white w-240">
+    <div className="text-white w-204">
       <h2 className="text-2xl">MINTED！</h2>
-      <p className="text-white text-opacity-60 text-xs mb-2">
-        Your zkSBTs should appear in your Manta Signer. You can start using{' '}
-        <span className="text-check">AsMatch</span> Match2Earn (Click to
-        Download) using your newly minted
-        <br /> zkSBTs. Begin by copying your zkSBT ID or by copying all zkSBT
-        IDs.
+      <p className="text-white text-opacity-60 text-xs mb-2 mt-6">
+        Your zkSBTs should appear in your Manta Signer. You can also check all
+        your zkSBTs and zkSBT IDs in your Manta Signer. For AsMatch users, you
+        can start using these zkSBTs now by copying your zkSBT ID or by copying
+        all zkSBT IDs. Have not downloaded AsMatch yet? Click{' '}
+        <span className="text-check">here</span> to Download and start
+        Match2Earn right now!
       </p>
       <div className="grid w-full gap-6 grid-cols-5 pb-12 mt-6">
         {[...mintSet]?.map((generatedImg, index) => {
           return <MintedImg {...generatedImg} key={index} />;
         })}
       </div>
-      <div className="flex justify-center items-center">
-        <button
-          className="w-60 px-4 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter"
-          onClick={copyAll}>
-          Click to copy all zkSBT IDs
-        </button>
-        {/* 
+      {mintSet.size > 1 ? (
+        <div className="flex justify-center items-center">
+          <button
+            className="w-60 px-4 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter"
+            onClick={copyAll}>
+            Click to copy all zkSBT IDs
+          </button>
+          {/* 
         // @ts-ignore */}
+          <Popover
+            trigger="hover"
+            placement="right"
+            content={<PopContent />}
+            width="356">
+            <div>
+              <Icon name="question" className="ml-4 cursor-pointer" />
+            </div>
+          </Popover>
+        </div>
+      ) : (
+        // @ts-ignore
         <Popover
           trigger="hover"
           placement="right"
           content={<PopContent />}
           width="356">
-          <div>
+          <div className="absolute bottom-20 left-52">
             <Icon name="question" className="ml-4 cursor-pointer" />
           </div>
         </Popover>
-      </div>
+      )}
     </div>
   );
 };
