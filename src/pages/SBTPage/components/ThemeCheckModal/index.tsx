@@ -109,7 +109,7 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
             <span className="text-white text-opacity-60">$0 USD</span>
           </div>
         </div>
-        <div className="flex justify-between border-b border-split p-4">
+        <div className="flex justify-between border-b border-split px-4 pb-4">
           <p>Gas Fee</p>
           <span className="ml-auto text-opacity-60 text-white mr-2">
             + approximately
