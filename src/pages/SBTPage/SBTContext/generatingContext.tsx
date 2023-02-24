@@ -30,7 +30,7 @@ type GeneratingContextValue = {
 
 const GeneratingContext = createContext<GeneratingContextValue | null>(null);
 
-const INTERVAL_MILLISECONDS = 120000;
+const INTERVAL_MILLISECONDS = 600000;
 
 export const GeneratingContextProvider = ({
   children
