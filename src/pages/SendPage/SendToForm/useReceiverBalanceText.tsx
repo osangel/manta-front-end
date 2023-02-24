@@ -3,7 +3,7 @@ import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import getZkTransactBalanceText from 'utils/display/getZkTransactBalanceText';
 import { useSend } from '../SendContext';
 
-const useReceiverText = () => {
+const useReceiverBalanceText = () => {
   const { receiverCurrentBalance, receiverAddress, receiverIsPrivate } =
     useSend();
   const { isInitialSync } = usePrivateWallet();
@@ -25,4 +25,4 @@ const useReceiverText = () => {
   return { balanceText, shouldShowLoader };
 };
 
-export default useReceiverText;
+export default useReceiverBalanceText;

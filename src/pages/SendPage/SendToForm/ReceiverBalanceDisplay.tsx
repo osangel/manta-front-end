@@ -2,14 +2,14 @@ import React from 'react';
 import BalanceDisplay from 'components/Balance/BalanceDisplay';
 import Icon from 'components/Icon';
 import { useSend } from '../SendContext';
-import useReceiverText from '../hooks/useReceiverText'
+import useReceiverBalanceText from './useReceiverBalanceText';
 
 const ReceiverBalanceDisplay = () => {
   const {
     receiverAssetType,
     senderAssetTargetBalance
   } = useSend();
-  const {balanceText,shouldShowLoader} = useReceiverText();
+  const {balanceText,shouldShowLoader} = useReceiverBalanceText();
 
   const targetBalanceString = senderAssetTargetBalance
     ? senderAssetTargetBalance.toStringUnrounded()

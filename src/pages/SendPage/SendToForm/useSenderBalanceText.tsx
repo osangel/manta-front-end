@@ -4,7 +4,7 @@ import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useSend } from 'pages/SendPage/SendContext';
 import getZkTransactBalanceText from 'utils/display/getZkTransactBalanceText';
 
-const useSenderText = () => {
+const useSenderBalanceText = () => {
   const { apiState } = useSubstrate();
   const { senderAssetCurrentBalance, senderIsPrivate } = useSend();
   const { externalAccount } = useExternalAccount();
@@ -33,4 +33,4 @@ const useSenderText = () => {
   return { balanceText, shouldShowLoader };
 };
 
-export default useSenderText;
+export default useSenderBalanceText;

@@ -3,7 +3,7 @@ import { useSend } from 'pages/SendPage/SendContext';
 import { useEffect, useState } from 'react';
 import handleChangeBalanceInput from 'utils/validation/handleChangeBalanceInput';
 import BalanceInput from '../../components/Balance/BalanceInput';
-import useSenderText from '../SendPage/hooks/useSenderText';
+import useSenderBalanceText from './SendToForm/useSenderBalanceText';
 
 const SendBalanceInput = () => {
   const {
@@ -13,7 +13,7 @@ const SendBalanceInput = () => {
     getMaxSendableBalance
   } = useSend();
   const [inputValue, setInputValue] = useState('');
-  const {balanceText,shouldShowLoader} = useSenderText();
+  const {balanceText,shouldShowLoader} = useSenderBalanceText();
 
   const onChangeSendAmountInput = (newInputValue) => {
     handleChangeBalanceInput({

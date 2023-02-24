@@ -9,11 +9,11 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import Balance from 'types/Balance';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
-import useReceiverText from '../SendPage/hooks/useReceiverText';
-import useSenderText from '../SendPage/hooks/useSenderText';
+import useReceiverBalanceText from './SendToForm/useReceiverBalanceText';
+import useSenderBalanceText from './SendToForm/useSenderBalanceText';
 import { useSend } from './SendContext';
 
-const ActiveSendButton = ({ senderLoading, receiverLoading }) => {
+const InnerSendButton = ({ senderLoading, receiverLoading }) => {
   const { send, isToPrivate, isToPublic, isPublicTransfer, isPrivateTransfer } =
     useSend();
   const { txStatus } = useTxStatus();
@@ -71,8 +71,8 @@ const ValidationSendButton = ({ showModal }) => {
   } = useSend();
   const { signerIsConnected, signerVersion } = usePrivateWallet();
   const { externalAccount } = useExternalAccount();
-  const { shouldShowLoader: receiverLoading } = useReceiverText();
-  const { shouldShowLoader: senderLoading } = useSenderText();
+  const { shouldShowLoader: receiverLoading } = useReceiverBalanceText();
+  const { shouldShowLoader: senderLoading } = useSenderBalanceText();
 
   let validationMsg = null;
   let shouldShowWalletMissingValidation = false;
@@ -162,7 +162,7 @@ const ValidationSendButton = ({ showModal }) => {
         !shouldShowWalletMissingValidation &&
         !shouldShowWalletSignerMissingValidation &&
         !validationMsg && (
-          <ActiveSendButton
+          <InnerSendButton
             senderLoading={senderLoading}
             receiverLoading={receiverLoading}
           />
