@@ -2,8 +2,7 @@
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
 import keyring from '@polkadot/ui-keyring';
-import { getWallets } from '@talismn/connect-wallets';
-import { useExternalAccount } from 'contexts/externalAccountContext';
+import { getSubstrateWallets } from 'utils';
 import PropTypes from 'prop-types';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
@@ -153,7 +152,7 @@ export const KeyringContextProvider = (props) => {
     if (!isKeyringInit) {
       return;
     }
-    const substrateWallets = getWallets();
+    const substrateWallets = getSubstrateWallets();
     const selectedWallet = substrateWallets.find(
       (wallet) => wallet.extensionName === extensionName
     );

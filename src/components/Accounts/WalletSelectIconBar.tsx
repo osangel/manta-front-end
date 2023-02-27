@@ -1,11 +1,11 @@
 // @ts-nocheck
-import { getWallets } from '@talismn/connect-wallets';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { useTxStatus } from 'contexts/txStatusContext';
+import { getSubstrateWallets } from 'utils';
 import { setLastAccessedWallet } from 'utils/persistence/walletStorage';
 
 const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
@@ -18,7 +18,8 @@ const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
     selectedWallet,
     keyringIsBusy
   } = useKeyring();
-  const enabledWallet = getWallets().filter((wallet) => wallet.extension);
+  const substrateWallets = getSubstrateWallets();
+  const enabledExtentions = substrateWallets.filter((wallet) => wallet.extension);
   const onClickWalletIconHandler = (wallet) => async () => {
     if (keyringIsBusy.current === false && !disabled) {
       await refreshWalletAccounts(wallet);
@@ -29,7 +30,7 @@ const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
     }
   };
 
-  return enabledWallet.map((wallet) => (
+  return enabledExtentions.map((wallet) => (
     <button
       className={classNames('px-5 py-5 rounded-t-lg', {
         'bg-primary':

@@ -1,19 +1,15 @@
 // @ts-nocheck
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useContext,
-  useRef
-} from 'react';
+import { getSubstrateWallets } from 'utils';
 import PropTypes from 'prop-types';
-import { getWallets } from '@talismn/connect-wallets';
+import {
+  createContext, useContext, useEffect, useRef, useState
+} from 'react';
 import {
   getLastAccessedExternalAccount,
   setLastAccessedExternalAccountAddress
 } from 'utils/persistence/externalAccountStorage';
-import { useSubstrate } from './substrateContext';
 import { useKeyring } from './keyringContext';
+import { useSubstrate } from './substrateContext';
 
 const ExternalAccountContext = createContext();
 
@@ -35,10 +31,11 @@ export const ExternalAccountContextProvider = (props) => {
     const {
       meta: { source, isInjected }
     } = externalAccount;
-    const extensions = getWallets().filter((wallet) => wallet.extension);
-    const extensionNames = extensions.map((ext) => ext.extensionName);
+    const substrateWallets = getSubstrateWallets();
+    const substrateExtensions = substrateWallets.filter((wallet) => wallet.extension);
+    const extensionNames = substrateExtensions.map((ext) => ext.extensionName);
     if (isInjected && extensionNames.includes(source)) {
-      const selectedWallet = getWallets().find(
+      const selectedWallet = substrateExtensions.find(
         (wallet) => wallet.extensionName === source
       );
       setExtensionSigner(selectedWallet._signer);

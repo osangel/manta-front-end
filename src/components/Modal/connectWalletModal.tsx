@@ -1,10 +1,8 @@
 // @ts-nocheck
-import WALLET_NAME from 'constants/WalletConstants';
-import React from 'react';
-import { getWallets } from '@talismn/connect-wallets';
+import Icon from 'components/Icon';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
-import Icon from 'components/Icon';
+import { getSubstrateWallets } from 'utils';
 import getWalletDisplayName from 'utils/display/getWalletDisplayName';
 
 const WalletNotInstalledBlock = ({
@@ -149,6 +147,7 @@ const MetamaskConnectWalletBlock = ({hideModal}) => {
 
 export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
   const { connectWallet, connectWalletExtension } = useKeyring();
+  const substrateWallets = getSubstrateWallets();
 
   const handleConnectWallet = (walletName) => async () => {
     connectWalletExtension(walletName);
@@ -159,9 +158,7 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
     }
   };
 
-  return getWallets()
-    .filter(wallet => Object.values(WALLET_NAME).includes(wallet.extensionName))
-    .map((wallet) => {
+  return substrateWallets.map((wallet) => {
       // wallet.extension would not be defined if enabled not called
       const isWalletEnabled = wallet.extension ? true : false;
       return (
