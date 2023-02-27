@@ -11,7 +11,7 @@ const Item = ({ item }: { item: ThemeItem }) => {
   return (
     <div className="relative h-content">
       <img src={item?.url} className="w-96 h-96" />
-      <span className="absolute bottom-4 left-1/2 transform -translate-x-1/2 trans bg-gradient rounded-lg text-sm px-2">
+      <span className="absolute bottom-4 left-1/2 transform -translate-x-1/2 trans bg-gradient rounded-full text-sm px-2">
         {item?.name}
       </span>
     </div>

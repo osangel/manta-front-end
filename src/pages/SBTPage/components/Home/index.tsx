@@ -12,12 +12,14 @@ const Home = () => {
   return (
     <div className="flex flex-col items-center mx-auto bg-secondary rounded-xl p-14 w-75">
       <Icon className="w-20 h-20" name="manta" />
-      <h2 className="text-white text-2xl mt-6 mb-4">MANTA zkSBT</h2>
+      <h2 className="text-white text-2xl mt-6 mb-4 font-red-hat-mono font-medium">
+        MANTA zkSBT
+      </h2>
       <div className="grid gap-6 grid-cols-9 grid-rows-3 w-full justify-between mt-8 mb-20">
         {sbtImgs.map((item, index) => {
           return (
             <img
-              className="img-bg w-24 h-24 rounded-xl cursor-pointer hover:scale-200 transform duration-200 hover:z-10"
+              className="img-bg w-24 h-24 rounded-xl cursor-pointer hover:scale-200 transform duration-500 hover:z-10"
               key={index}
               src={item}
             />

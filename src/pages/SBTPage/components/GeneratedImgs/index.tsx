@@ -30,7 +30,7 @@ const GeneratedImgItem = ({ generatedImg, toggleMint }: ItemType) => {
     <>
       <img
         src={generatedImg?.url}
-        className={`rounded-xl ${checkedStyle} ${disabledStyle}`}
+        className={`rounded-xl ${checkedStyle} ${disabledStyle} img-bg unselectable-text`}
         onClick={() => toggleMint(generatedImg)}
       />
       {mintSet.has(generatedImg) && (
@@ -117,7 +117,8 @@ const GeneratedImgs = () => {
               scaleSwiperSlide();
             }, 100)
           }
-          loop={generatedImgs.length >= MIN_LOOP}>
+          loop={generatedImgs.length >= MIN_LOOP}
+          allowTouchMove={false}>
           {generatedImgs.map((generatedImg, index) => {
             return (
               <SwiperSlide

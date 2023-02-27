@@ -4,6 +4,8 @@ import { Popover } from 'element-react';
 import Icon from 'components/Icon';
 import { useModal } from 'hooks';
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
+import { useMint } from 'pages/SBTPage/SBTContext/mintContext';
+import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 import MintCheckModal from '../MintCheckModal';
 import MintedModal from '../MintedModal';
 
@@ -11,6 +13,9 @@ const MintPanel = () => {
   const [showWatermark, toggleWatermark] = useState(true);
 
   const { mintSet } = useGenerated();
+  const { mintSuccessed, toggleMintSuccessed, resetContextData } = useMint();
+  const { setCurrentStep } = useSBT();
+
   const { ModalWrapper, showModal, hideModal } = useModal({
     closeOnBackdropClick: false
   });
@@ -18,6 +23,12 @@ const MintPanel = () => {
     useModal({
       closeOnBackdropClick: false
     });
+
+  const toHomePage = () => {
+    toggleMintSuccessed(false);
+    resetContextData();
+    setCurrentStep(Step.Home);
+  };
 
   const firstMinted = [...mintSet]?.[0]?.url;
 
@@ -27,7 +38,9 @@ const MintPanel = () => {
     <div className="relative flex-1 flex flex-col mx-auto mb-20 bg-secondary rounded-xl p-6 w-75 relative mt-6 z-0">
       <div className="flex items-center">
         <Icon name="manta" className="w-8 h-8 mr-3" />
-        <h2 className="text-2xl">zkSBT</h2>
+        <h2 className="text-2xl font-red-hat-mono tracking-widest font-medium">
+          zkSBT
+        </h2>
       </div>
       <h1 className="text-3xl my-6">Mint Your zkSBT</h1>
       <div className="flex ml-6">
@@ -65,11 +78,20 @@ const MintPanel = () => {
           </div>
         </div>
       </div>
-      <button
-        onClick={showModal}
-        className="absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-8 left-1/2 -translate-x-1/2 transform ">
-        Mint
-      </button>
+      {mintSuccessed ? (
+        <button
+          onClick={toHomePage}
+          className="absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-8 left-1/2 -translate-x-1/2 transform ">
+          Go to Home Page
+        </button>
+      ) : (
+        <button
+          onClick={showModal}
+          className="absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-8 left-1/2 -translate-x-1/2 transform ">
+          Mint
+        </button>
+      )}
+
       <ModalWrapper>
         <MintCheckModal
           hideModal={hideModal}

@@ -61,7 +61,7 @@ const MintCheckModal = ({
   const { mintGasFee, mintSBT, getMintGasFee } = useSBTPrivateWallet();
   const config = useConfig();
   const { txStatus, setTxStatus } = useTxStatus();
-  const { getWatermarkedImgs } = useMint();
+  const { getWatermarkedImgs, saveMintInfo } = useMint();
   const { externalAccount } = useExternalAccount();
   const { generateAccount } = useSBTTheme();
 
@@ -99,20 +99,23 @@ const MintCheckModal = ({
         [...mintSet].forEach((generatedImg, index) => {
           newMintSet.add({
             ...generatedImg,
-            proofId: mintResult?.[index]?.proofId
+            proofId: mintResult?.[index]?.proofId,
+            assetId: mintResult?.[index]?.assetId
           });
         });
+
         hideModal();
         setMintSet(newMintSet);
         setTimeout(() => {
           showMintedModal();
+          saveMintInfo(newMintSet);
         });
       } else if (txStatus?.isFailed()) {
         toggleLoading(false);
       }
     };
     handleTxFinalized();
-  }, [hideModal, mintSet, setMintSet, showMintedModal, txStatus]);
+  }, [hideModal, mintSet, saveMintInfo, setMintSet, showMintedModal, txStatus]);
 
   const mintInfo = useMemo(() => {
     if (mintSet.size === 1) {
@@ -169,24 +172,28 @@ const MintCheckModal = ({
 
   return (
     <div className="text-white w-128 text-center">
-      <h2 className="text-2xl text-left">Checkout</h2>
+      <h2 className="text-2xl text-left font-bold">Checkout</h2>
       <div className="bg-secondary rounded-lg mt-6 mb-4">
         <MintImgs />
         <div className="flex justify-between border-b border-split p-4">
           <p>{mintInfo?.txt}</p>
-          <span className={`${mintCostStyle}`}>{mintInfo?.cost}</span>
+          <span className={`font-bold ${mintCostStyle}`}>{mintInfo?.cost}</span>
         </div>
         <div className="flex justify-between border-b border-split p-4">
           <p>Gas Fee</p>
           <span className="ml-auto text-opacity-60 text-white mr-2">
             + approximately
           </span>
-          <span className="text-white">{mintGasFee?.toDisplayString()}</span>
+          <span className="text-white text-right font-bold">
+            {mintGasFee?.toDisplayString()}
+          </span>
         </div>
         <div className="flex justify-between p-4">
           <p>Total</p>
-          <div className="flex flex-col">
-            <span className="text-check">{totalValue?.toDisplayString()}</span>
+          <div className="flex flex-col text-right">
+            <span className="text-check font-bold">
+              {totalValue?.toDisplayString()}
+            </span>
             <span className="text-white text-opacity-60">$0 USD</span>
           </div>
         </div>
