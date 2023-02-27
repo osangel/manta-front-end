@@ -12,9 +12,7 @@ import ConnectWallet from './ConnectWallet';
 import AccountSelectDropdown from './AccountSelectDropdown';
 
 const DisplayAccountsButton = () => {
-  const { txStatus } = useTxStatus();
   const { ethAddress } = useMetamask();
-  const disabled = txStatus?.isProcessing();
   const { selectedWallet } = useKeyring();
   const { externalAccount } = useExternalAccount();
   const [showAccountList, setShowAccountList] = useState(false);
@@ -32,14 +30,14 @@ const DisplayAccountsButton = () => {
     return (
       <>
         <img
-          className="w-6 h-6 rounded-full"
+          className="unselectable-text w-6 h-6 rounded-full"
           src={selectedWallet.logo.src}
           alt={selectedWallet.logo.alt}
         />
         {isMetamaskEnabled && (
-          <Icon className="w-6 h-6 rounded-full" name="metamask" />
+          <Icon className="unselectable-text w-6 h-6 rounded-full" name="metamask" />
         )}
-        {text}
+        <p className="unselectable-text">{text}</p>
       </>
     );
   };

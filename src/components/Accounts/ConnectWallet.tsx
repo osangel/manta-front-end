@@ -22,7 +22,7 @@ const ConnectWallet = ({
     <>
       {isButtonShape ? (
         <button className={classNames(className)} onClick={onClickPlusIcon}>
-          {text}
+          <p className="unselectable-text">{text}</p>
         </button>
       ) : (
         <FontAwesomeIcon

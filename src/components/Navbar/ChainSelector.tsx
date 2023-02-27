@@ -29,7 +29,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
             name={(node.name as string).toLowerCase()}
             className="w-6 h-6"
           />
-          <div className="text-white w-32">
+          <div className="unselectable-text text-white w-32">
             {node.name}&nbsp;
             {node.testnet ? 'Testnet' : 'Network'}
           </div>
@@ -76,7 +76,7 @@ const ChainSelector = () => {
             />
           </div>
           <div>
-            <div className="mb-0 pl-5 text-white">
+            <div className="mb-0 pl-5 unselectable-text text-white">
               {activeNode.name}&nbsp;
               {activeNode.testnet ? 'Testnet' : 'Network'}
             </div>
@@ -86,7 +86,10 @@ const ChainSelector = () => {
           </div>
         </div>
         {showNetworkList && (
-          <div className="flex flex-col w-68 gap-4 bg-fifth rounded-lg p-4 absolute left-0 top-16 z-50 border border-white-light font-light text-secondary">
+          <div className={classNames(
+            'unselectable-text flex flex-col w-68 gap-4 bg-fifth rounded-lg p-4',
+            'absolute left-0 top-16 z-50 border border-white-light font-light text-secondary'
+          )}>
             <div>Select a network</div>
             {nodes.map((node) => (
               <ChainDropdownItem
