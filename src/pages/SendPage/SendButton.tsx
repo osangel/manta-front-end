@@ -1,22 +1,23 @@
 // @ts-nocheck
-import React from 'react';
 import classNames from 'classnames';
-import MantaLoading from 'components/Loading';
 import ConnectWallet from 'components/Accounts/ConnectWallet';
+import MantaLoading from 'components/Loading';
 import { ZkAccountConnect } from 'components/Navbar/ZkAccountButton';
+import { useConfig } from 'contexts/configContext';
+import { useExternalAccount } from 'contexts/externalAccountContext';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import Balance from 'types/Balance';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
-import { useExternalAccount } from 'contexts/externalAccountContext';
-import { useConfig } from 'contexts/configContext';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
+import useReceiverBalanceText from './SendToForm/useReceiverBalanceText';
+import useSenderBalanceText from './SendToForm/useSenderBalanceText';
 import { useSend } from './SendContext';
 
-const ActiveSendButton = () => {
+const InnerSendButton = ({ senderLoading, receiverLoading }) => {
   const { send, isToPrivate, isToPublic, isPublicTransfer, isPrivateTransfer } =
     useSend();
   const { txStatus } = useTxStatus();
-  const disabled = txStatus?.isProcessing();
+  const disabled = txStatus?.isProcessing() || senderLoading || receiverLoading;
 
   let buttonLabel;
   if (isToPrivate()) {
@@ -34,7 +35,7 @@ const ActiveSendButton = () => {
     }
   };
 
-  return (
+  return !disabled ? (
     <button
       id="sendButton"
       onClick={onClickHandler}
@@ -45,6 +46,13 @@ const ActiveSendButton = () => {
       )}>
       {buttonLabel}
     </button>
+  ) : (
+    <div
+      className={classNames(
+        'py-2 unselectable-text text-center text-white rounded-lg w-full gradient-button filter brightness-50'
+      )}>
+      {buttonLabel}
+    </div>
   );
 };
 
@@ -63,6 +71,8 @@ const ValidationSendButton = ({ showModal }) => {
   } = useSend();
   const { signerIsConnected, signerVersion } = usePrivateWallet();
   const { externalAccount } = useExternalAccount();
+  const { shouldShowLoader: receiverLoading } = useReceiverBalanceText();
+  const { shouldShowLoader: senderLoading } = useSenderBalanceText();
 
   let validationMsg = null;
   let shouldShowWalletMissingValidation = false;
@@ -151,7 +161,12 @@ const ValidationSendButton = ({ showModal }) => {
       {!shouldShowSignerMissingValidation &&
         !shouldShowWalletMissingValidation &&
         !shouldShowWalletSignerMissingValidation &&
-        !validationMsg && <ActiveSendButton />}
+        !validationMsg && (
+          <InnerSendButton
+            senderLoading={senderLoading}
+            receiverLoading={receiverLoading}
+          />
+        )}
     </>
   );
 };
@@ -162,7 +177,7 @@ const SendButton = ({ showModal }) => {
   if (txStatus?.isProcessing()) {
     return <MantaLoading className="ml-6 py-4 place-self-center" />;
   } else {
-    return <ValidationSendButton showModal={showModal}/>;
+    return <ValidationSendButton showModal={showModal} />;
   }
 };
 
