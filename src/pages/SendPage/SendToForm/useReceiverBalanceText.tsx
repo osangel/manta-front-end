@@ -22,7 +22,11 @@ const useReceiverBalanceText = () => {
   const shouldShowLoader =
     receiverAddress && !receiverCurrentBalance && !balanceText;
 
-  return { balanceText, shouldShowLoader };
+  return {
+    balanceText,
+    shouldShowLoader,
+    receiverIsPrivate: receiverIsPrivate()
+  };
 };
 
 export default useReceiverBalanceText;

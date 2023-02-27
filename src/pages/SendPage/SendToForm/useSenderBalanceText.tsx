@@ -30,7 +30,7 @@ const useSenderBalanceText = () => {
   const shouldShowLoader = senderIsPrivate()
     ? shouldShowPrivateLoader
     : shouldShowPublicLoader;
-  return { balanceText, shouldShowLoader };
+  return { balanceText, shouldShowLoader, senderIsPrivate: senderIsPrivate() };
 };
 
 export default useSenderBalanceText;
