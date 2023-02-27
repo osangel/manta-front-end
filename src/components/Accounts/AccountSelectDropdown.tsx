@@ -55,12 +55,10 @@ const SingleAccountDisplay = ({
             <div className="text-base">{succinctAccountName}</div>
             <div className="flex flex-row items-center gap-2 text-white text-opacity-60 text-sm">
               {succinctAddress}
-              <div className="w-5 h-5">
-                <CopyPasteIcon
-                  className="place-self-center cursor-pointer w-full h-full hover:text-link"
-                  textToCopy={accountAddress}
-                />
-              </div>
+              <CopyPasteIcon
+                iconClassName="w-5 h-5"
+                textToCopy={accountAddress}
+              />
             </div>
           </div>
         </div>

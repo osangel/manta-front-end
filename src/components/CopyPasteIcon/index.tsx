@@ -5,17 +5,19 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import Icon from 'components/Icon';
 
 type ICopyPastIconProps = {
-  className?: string;
+  btnClassName?: string;
+  iconClassName?: string;
   textToCopy: string;
 };
 
 const CopyPasteIcon: React.FC<ICopyPastIconProps> = ({
-  className,
+  btnClassName,
+  iconClassName,
   textToCopy
 }) => {
   const [copied, setCopied] = useState(false);
 
-  const copyToClipboard = (e: any) => {
+  const copyToClipboard = (e: React.MouseEvent<HTMLDivElement>) => {
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     e.stopPropagation();
@@ -26,14 +28,19 @@ const CopyPasteIcon: React.FC<ICopyPastIconProps> = ({
     return () => clearTimeout(timer);
   }, [copied]);
 
-  return copied ? (
-    <FontAwesomeIcon className={classNames(className)} icon={faCheck} />
-  ) : (
-    <Icon
-      className={classNames(`${className} cursor-pointer hover:text-link`)}
-      name="copySquare"
-      onClick={(e) => copyToClipboard(e)}
-    />
+  return (
+    <div className={classNames('cursor-pointer hover:text-link', btnClassName)} onClick={(e) => copyToClipboard(e)}>
+      {
+        copied ? (
+          <FontAwesomeIcon className={classNames(iconClassName)} icon={faCheck} />
+        ) : (
+          <Icon
+            className={classNames(iconClassName)}
+            name="copySquare"
+          />
+        )
+      }
+    </div>
   );
 };
 

@@ -3,6 +3,7 @@ module.exports = {
   darkMode: 'class',
   theme: {
     fontSize: {
+      0: '0px',
       xsss: '.70rem',
       xss: '.75rem',
       xs: '.825rem',
@@ -40,6 +41,7 @@ module.exports = {
         '70':'17.5rem',
       },
       width: {
+        '10.5': '42px',
         '68': '272px'
       },
       backgroundImage: {},

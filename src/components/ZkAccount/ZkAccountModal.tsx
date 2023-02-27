@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import PrivateActivityTableContent from './PrivateActivityTableContent';
-import PrivateAssetTableContent from './PrivateAssetTableContent';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import CopyPasteIcon from 'components/CopyPasteIcon';
 import Icon from 'components/Icon';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import getAbbreviatedName from 'utils/display/getAbbreviatedName';
+import PrivateAssetTableContent from './PrivateAssetTableContent';
+import PrivateActivityTableContent from './PrivateActivityTableContent';
 
 type TableContentSelectorProp = {
   displayAssets: boolean;
@@ -51,18 +51,18 @@ const ZkAddressDisplay = () => {
   const { privateAddress } = usePrivateWallet();
   const privateAddressDisplayString = `zkAddress ${getAbbreviatedName(
     privateAddress,
-    6,
+    5,
     4
   )}`;
   return (
-    <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-2 text-secondary flex items-center justify-center gap-4">
-      <div className="flex items-center gap-2">
+    <div className="flex justify-between">
+      <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-2 flex items-center gap-2">
         <Icon className="w-6 h-6" name="manta" />
         <span className="text-white font-light">
           {privateAddressDisplayString}
         </span>
       </div>
-      <CopyPasteIcon className="w-5 h-5" textToCopy={privateAddress} />
+      <CopyPasteIcon btnClassName="border border-secondary bg-white bg-opacity-5 rounded-lg relative p-2.5 w-10.5 text-0" iconClassName="w-5 h-5" textToCopy={privateAddress} />
     </div>
   );
 };
