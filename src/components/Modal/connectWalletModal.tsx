@@ -37,7 +37,7 @@ const WalletNotInstalledBlock = ({
 
 const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
   const { isTalismanExtConfigured } = useKeyring();
-  return ( 
+  return (
     <button
       onClick={connectHandler}
       className="relative mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
@@ -63,7 +63,7 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
           You have no account in Talisman. Please create one first.
         </p>
       )}
-      
+
     </button>
   );
 };
