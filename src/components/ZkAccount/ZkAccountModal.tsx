@@ -106,7 +106,7 @@ const TableContentDisplay = () => {
 
 const NetworkDisconnectedDisplay = () => {
   return (
-    <div className="border border-secondary rounded-lg px-6 py-6 text-secondary overflow-y-auto bg-white bg-opacity-5">
+    <div className="border border-secondary rounded-lg px-6 py-6 mt-4 text-secondary overflow-y-auto bg-white bg-opacity-5">
       <div className="flex flex-col items-center justify-center gap-3">
         <div className="text-white text-center">
           Cannot connect to the network

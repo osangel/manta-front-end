@@ -6,12 +6,14 @@ import MantaLoading from 'components/Loading';
 import ConnectWallet from 'components/Accounts/ConnectWallet';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useMetamask } from 'contexts/metamaskContext';
+import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useBridgeTx } from './BridgeContext/BridgeTxContext';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 
 const MOONRIVER_CHAIN_ID = '1280';
 
 const ValidationButton = () => {
+  const { apiState } = useSubstrate();
   const { externalAccount } = useExternalAccount();
   const {
     senderAssetType,
@@ -27,6 +29,7 @@ const ValidationButton = () => {
   const { ethAddress, chainId } = useMetamask();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
+  const apiIsDisconnected = apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
 
   const evmIsEnabled = originChainIsEvm || destinationChainIsEvm;
 
@@ -40,6 +43,8 @@ const ValidationButton = () => {
   } else if (!ethAddress && originChainIsEvm) {
     isConnectWallet = true;
     connectWalletText = 'Connect MetaMask';
+  } else if (apiIsDisconnected) {
+    validationMsg = 'Connecting to network';
   } else if (!senderAssetTargetBalance) {
     validationMsg = 'Enter amount';
   } else if (userHasSufficientFunds() === false) {

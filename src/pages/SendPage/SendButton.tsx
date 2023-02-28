@@ -9,6 +9,7 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import Balance from 'types/Balance';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
+import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import useReceiverBalanceText from './SendToForm/useReceiverBalanceText';
 import useSenderBalanceText from './SendToForm/useSenderBalanceText';
 import { useSend } from './SendContext';
@@ -58,6 +59,7 @@ const InnerSendButton = ({ senderLoading, receiverLoading }) => {
 
 const ValidationSendButton = ({ showModal }) => {
   const config = useConfig();
+  const { apiState } = useSubstrate();
   const {
     isPublicTransfer,
     isPrivateTransfer,
@@ -71,6 +73,7 @@ const ValidationSendButton = ({ showModal }) => {
   } = useSend();
   const { signerIsConnected, signerVersion } = usePrivateWallet();
   const { externalAccount } = useExternalAccount();
+  const apiIsDisconnected = apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
   const { shouldShowLoader: receiverLoading } = useReceiverBalanceText();
   const { shouldShowLoader: senderLoading } = useSenderBalanceText();
 
@@ -87,6 +90,8 @@ const ValidationSendButton = ({ showModal }) => {
     validationMsg = 'Signer out of date';
   } else if (!externalAccount) {
     shouldShowWalletMissingValidation = true;
+  } else if (apiIsDisconnected) {
+    validationMsg = 'Connecting to network';
   } else if (!senderAssetTargetBalance) {
     validationMsg = 'Enter amount';
   } else if (userCanPayFee() === false) {
@@ -162,11 +167,11 @@ const ValidationSendButton = ({ showModal }) => {
         !shouldShowWalletMissingValidation &&
         !shouldShowWalletSignerMissingValidation &&
         !validationMsg && (
-          <InnerSendButton
-            senderLoading={senderLoading}
-            receiverLoading={receiverLoading}
-          />
-        )}
+        <InnerSendButton
+          senderLoading={senderLoading}
+          receiverLoading={receiverLoading}
+        />
+      )}
     </>
   );
 };

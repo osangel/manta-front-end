@@ -40,6 +40,7 @@ export const PrivateWalletContextProvider = (props) => {
   const [signerVersion, setSignerVersion] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const isInitialSync = useRef(false);
+  const canFetchZkAddress = privateWallet && signerIsConnected;
 
   const setDisconnectedState = () => {
     setSignerIsConnected(false);
@@ -60,7 +61,7 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   useEffect(() => {
-    setIsReady(privateWallet && signerIsConnected);
+    setIsReady(privateWallet?.api.isReady && signerIsConnected);
   }, [privateWallet, signerIsConnected]);
 
   // Wallet must be reinitialized when socket changes
@@ -139,7 +140,7 @@ export const PrivateWalletContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (isReady) {
+      if (canFetchZkAddress) {
         fetchZkAddress();
       }
     }, 1000);
