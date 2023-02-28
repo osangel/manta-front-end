@@ -29,6 +29,7 @@ const TxStatusHandler = () => {
       showInfo(txStatus.message);
     } else if (txStatus?.isDisconnected()) {
       showWarning('Network disconnected');
+      setTxStatus(null);
     }
   }, [txStatus]);
 

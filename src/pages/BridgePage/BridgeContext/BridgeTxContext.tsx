@@ -16,7 +16,7 @@ const BridgeTxContext = React.createContext();
 export const BridgeTxContextProvider = (props) => {
   const config = useConfig();
   const { provider } = useMetamask();
-  const { setTxStatus } = useTxStatus();
+  const { setTxStatus, txStatusRef } = useTxStatus();
   const { externalAccount, externalAccountSigner, setApiSigner } = useExternalAccount();
   const {
     isApiInitialized,
@@ -117,18 +117,22 @@ export const BridgeTxContextProvider = (props) => {
           } else {
             console.error(error.toString());
           }
-          setTxStatus(TxStatus.failed());
+          // Don't show failure if tx interrupted by disconnection
+          txStatusRef.current?.isProcessing() && setTxStatus(TxStatus.failed());
         } else if (originApi.events.system.ExtrinsicSuccess.is(event.event)) {
-          try {
-            const signedBlock = await originApi.rpc.chain.getBlock(status.asInBlock);
-            const extrinsics = signedBlock.block.extrinsics;
-            const extrinsic = extrinsics.find((extrinsic) =>
-              extrinsicWasSentByUser(extrinsic, externalAccount, originApi)
-            );
-            const extrinsicHash = extrinsic.hash.toHex();
-            setTxStatus(TxStatus.finalized(extrinsicHash, originChain.subscanUrl));
-          } catch(error) {
-            console.error(error);
+          // Don't show success if tx interrupted by disconnection
+          if (txStatusRef.current?.isProcessing()) {
+            try {
+              const signedBlock = await originApi.rpc.chain.getBlock(status.asInBlock);
+              const extrinsics = signedBlock.block.extrinsics;
+              const extrinsic = extrinsics.find((extrinsic) =>
+                extrinsicWasSentByUser(extrinsic, externalAccount, originApi)
+              );
+              const extrinsicHash = extrinsic.hash.toHex();
+              setTxStatus(TxStatus.finalized(extrinsicHash, originChain.subscanUrl));
+            } catch(error) {
+              console.error(error);
+            }
           }
         }
       }

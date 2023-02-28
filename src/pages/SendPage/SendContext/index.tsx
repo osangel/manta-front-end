@@ -22,7 +22,7 @@ const SendContext = React.createContext();
 export const SendContextProvider = (props) => {
   const config = useConfig();
   const { api } = useSubstrate();
-  const { setTxStatus, txStatus } = useTxStatus();
+  const { setTxStatus, txStatus, txStatusRef } = useTxStatus();
   const { externalAccount, externalAccountSigner } = useExternalAccount();
   const privateWallet = usePrivateWallet();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
@@ -427,7 +427,8 @@ export const SendContextProvider = (props) => {
   };
 
   const handleTxFailure = (extrinsic) => {
-    setTxStatus(TxStatus.failed());
+    // Don't show failure if the tx was interrupted by disconnection
+    txStatusRef.current?.isProcessing() && setTxStatus(TxStatus.failed());
     updateTxHistoryEventStatus(
       HISTORY_EVENT_STATUS.FAILED,
       extrinsic.hash.toString()
@@ -437,13 +438,16 @@ export const SendContextProvider = (props) => {
 
   const handleTxSuccess = async (status) => {
     try {
+      // Don't show success if the tx was interrupted by disconnection
       const extrinsic = await getExtrinsicGivenBlockHash(
         status.asFinalized,
         externalAccount,
         api
       );
       const extrinsicHash = extrinsic.hash.toHex();
-      setTxStatus(TxStatus.finalized(extrinsicHash, config.SUBSCAN_URL));
+      if (txStatusRef.current?.isProcessing()) {
+        setTxStatus(TxStatus.finalized(extrinsicHash, config.SUBSCAN_URL));
+      }
       updateTxHistoryEventStatus(
         HISTORY_EVENT_STATUS.SUCCESS,
         extrinsic.hash.toString()
