@@ -12,10 +12,10 @@ import {
   getLastAccessedExternalAccount,
   setLastAccessedExternalAccountAddress
 } from 'utils/persistence/externalAccountStorage';
+import Version from 'types/Version';
 import { useSubstrate } from './substrateContext';
 import { useKeyring } from './keyringContext';
 import { useConfig } from './configContext';
-import Version from 'types/Version';
 
 const ExternalAccountContext = createContext();
 

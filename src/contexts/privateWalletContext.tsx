@@ -26,6 +26,11 @@ export const PrivateWalletContextProvider = (props) => {
 
   // private wallet
   const [privateAddress, setPrivateAddress] = useState(null);
+  const [privateWalletState, setPrivateWalletState] = useState({
+    isWalletInitialized: false,
+    isWalletReady: false,
+    isWalletBusy: false,
+  });
 
   // signer connection
   const signerIsConnected = useMemo(() => {
@@ -45,6 +50,34 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   useEffect(() => {
+    let timerId = -1;
+    const requestState = async () => {
+      if (!isReady || !externalAccount || !externalAccount.address) {
+        return;
+      }
+      const [isWalletInitialized, isWalletReady, isWalletBusy] = await Promise.all([
+        privateProvider.isWalletInitialized(),
+        privateProvider.isWalletReady(),
+        privateProvider.isWalletBusy(),
+      ]);
+      setPrivateWalletState({
+        isWalletInitialized,
+        isWalletReady,
+        isWalletBusy,
+      });
+      console.log([isWalletInitialized, isWalletReady, isWalletBusy]);
+      if (isWalletInitialized && !isWalletReady && !isWalletBusy) {
+        await privateProvider.initWalletSync(currentNetwork);
+      }
+      timerId = setTimeout(requestState, 5000);
+    };
+    requestState();
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [isReady, currentNetwork, externalAccount]);
+
+  useEffect(() => {
     setIsReady(signerIsConnected);
   }, [signerIsConnected]);
 
@@ -56,24 +89,20 @@ export const PrivateWalletContextProvider = (props) => {
 
   useEffect(() => {
     const canInitWallet = () => {
-      return (
-        signerIsConnected &&
-        !isInitialSync.current
-      );
+      return signerIsConnected && !isInitialSync.current && privateWalletState.isWalletReady;
     };
 
     const initWallet = async () => {
       isInitialSync.current = true;
       const privateAddress = await privateProvider.getZkAddress();
       setPrivateAddress(privateAddress);
-      // setPrivateAddress('EEi5GnBESRt2jsPyi79c9SnzQXnBbkiFD4YfoYvacBwT');
       isInitialSync.current = false;
     };
 
-    if (canInitWallet() && !isReady) {
+    if (canInitWallet()) {
       initWallet();
     }
-  }, [api, signerIsConnected]);
+  }, [api, signerIsConnected, privateWalletState]);
 
   const sync = async () => {
     // Don't refresh during a transaction to prevent stale balance updates
@@ -81,7 +110,7 @@ export const PrivateWalletContextProvider = (props) => {
     if (txStatusRef.current?.isProcessing()) {
       return;
     }
-    await privateProvider.walletSync(currentNetwork);
+    // await privateProvider.walletSync(currentNetwork);
     setBalancesAreStale(false);
   };
 
@@ -112,6 +141,7 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const toPublic = async (balance, txResHandler) => {
+    await privateProvider.walletSync(currentNetwork);
     const signResult = await privateProvider.toPublicSend({
       network: currentNetwork,
       assetId: `${balance.assetType.assetId}`,
@@ -126,6 +156,7 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const privateTransfer = async (balance, recipient, txResHandler) => {
+    await privateProvider.walletSync(currentNetwork);
     const signResult = await privateProvider.privateTransferSend({
       network: currentNetwork,
       assetId: `${balance.assetType.assetId}`,
@@ -141,6 +172,7 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   const toPrivate = async (balance, txResHandler) => {
+    await privateProvider.walletSync(currentNetwork);
     const signResult = await privateProvider.toPrivateSend({
       network: currentNetwork,
       assetId: `${balance.assetType.assetId}`,
@@ -167,7 +199,8 @@ export const PrivateWalletContextProvider = (props) => {
     isInitialSync,
     setBalancesAreStale,
     balancesAreStale,
-    balancesAreStaleRef
+    balancesAreStaleRef,
+    privateWalletState,
   };
 
   return (
