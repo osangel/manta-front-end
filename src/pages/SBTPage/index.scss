@@ -11,4 +11,13 @@
     background: url(../../resources/images/img-bg.png) no-repeat center
       center/100% 100%;
   }
+  .upload-img-cover {
+    margin-top: -1.5rem;
+    z-index: 1;
+    content: '';
+    position: fixed;
+    width: 71.3rem;
+    height: 12.7rem;
+    background: linear-gradient(180deg, #12193c 0%, rgba(18, 25, 60, 0) 86.21%);
+  }
 }

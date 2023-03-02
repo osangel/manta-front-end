@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, UIEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 import Icon from 'components/Icon';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
@@ -32,7 +32,7 @@ const UploadItem = memo(function UploadItem({
 
   return (
     <div className="relative w-max group" key={index}>
-      <img src={imgUrl} className="rounded-lg w-48 h-48 img-bg" />
+      <img src={imgUrl} className="rounded-lg w-52 h-52 img-bg" />
       <Icon
         onClick={() => {
           handleRemove(index);
@@ -80,6 +80,8 @@ const TipComponent = () => {
   return null;
 };
 
+const Cover = () => <div className="upload-img-cover" />;
+
 const BtnComponent = ({ detectLoading }: { detectLoading: boolean }) => {
   return (
     <>
@@ -90,6 +92,8 @@ const BtnComponent = ({ detectLoading }: { detectLoading: boolean }) => {
 };
 
 const UploadPanel = () => {
+  const [showCover, toggleCover] = useState(false);
+
   const imgContainer = useRef<HTMLDivElement>(null);
 
   const { setCurrentStep, imgList } = useSBT();
@@ -118,6 +122,14 @@ const UploadPanel = () => {
     );
   }, [imgList, errorMsg, detectLoading]);
 
+  const handleScroll = (e: UIEvent<HTMLDivElement>) => {
+    if (e.currentTarget.scrollTop > 0) {
+      toggleCover(true);
+    } else {
+      toggleCover(false);
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col mx-auto mb-8 bg-secondary rounded-xl p-6 w-75 relative">
       <div className="flex items-center">
@@ -136,8 +148,9 @@ const UploadPanel = () => {
       </p>
       <TipComponent />
       <div
-        className="grid w-full gap-6 grid-cols-5 mb-16 pt-4 mt-9 max-h-80 overflow-y-auto"
-        ref={imgContainer}>
+        className="grid w-full gap-6 grid-cols-5 mb-16 pt-4 mt-9 max-h-51vh overflow-y-auto relative"
+        ref={imgContainer}
+        onScroll={handleScroll}>
         {imgList?.map(({ file }, index) => {
           if (!file) {
             return null;
@@ -147,6 +160,7 @@ const UploadPanel = () => {
           );
         })}
         {imgList.length < MAX_UPLOAD_LEN ? <UploadImg /> : null}
+        {showCover && <Cover />}
       </div>
       <ButtonWithSignerAndWallet
         btnComponent={<BtnComponent detectLoading={detectLoading} />}
