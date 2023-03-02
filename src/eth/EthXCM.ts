@@ -63,7 +63,7 @@ export const transferMovrFromMoonriverToCalamari = async (config, provider, bala
   if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
     parachainId = Chain.DolphinSkinnedCalamari(config).parachainId;
   } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
-    parachainId = Chain.DolphinSkinnedCalamari(config).parachainId;
+    parachainId = Chain.Calamari(config).parachainId;
   }
   const destination = getXtokensPrecompileLocation(parachainId, accountId);
   const weight = CALAMARI_DESTINATION_WEIGHT;

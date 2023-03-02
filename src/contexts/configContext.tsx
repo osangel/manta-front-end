@@ -13,6 +13,7 @@ export const ConfigContextProvider = ({children, network}) => {
   } else if (network === NETWORK.DOLPHIN) {
     config = dolphinConfig;
   }
+
   return (
     <ConfigContext.Provider value={config}>
       {children}

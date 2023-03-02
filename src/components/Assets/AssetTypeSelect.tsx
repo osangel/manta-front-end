@@ -101,7 +101,7 @@ const dropdownStyles = (disabled) => {
     menuList: () => ({
       paddingTop: '0px',
       paddingBottom: '0px',
-    }), 
+    }),
     container: () => ({
       position: 'absolute'
     })
@@ -125,6 +125,7 @@ const AssetTypeSingleValue = ({ data }) => {
 
 const AssetTypeOption = (props) => {
   const { value, innerProps } = props;
+
   return (
     <div {...innerProps}>
       <div

@@ -1,5 +1,6 @@
 {
     "NETWORK_NAME": "Dolphin",
+    "IS_TESTNET": true,
     "SS58_FORMAT": 42,
     "SUBSCAN_API_ENDPOINT": "https://dolphin.api.subscan.io/api/scan",
     "SUBSCAN_URL": "https://dolphin.subscan.io",

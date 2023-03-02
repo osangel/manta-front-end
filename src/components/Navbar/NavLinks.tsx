@@ -12,7 +12,7 @@ const NAVLINKPATH = {
 
 const NavLinks = () => {
   const { NETWORK_NAME } = useConfig();
-  const subPath = `/${NETWORK_NAME.toLowerCase()}`;
+  const networkUrlParam = `/${NETWORK_NAME.toLowerCase()}`;
 
   const isDolphinPage = NETWORK_NAME === dolphinConfig.NETWORK_NAME;
   const isActiveTransactPage = window.location.pathname.includes(
@@ -27,7 +27,7 @@ const NavLinks = () => {
   return (
     <div className="ml-5 flex flex-row justify-between w-113.5 shadow-2xl items-center text-sm font-red-hat-text">
       <NavLink
-        to={`${subPath}${NAVLINKPATH.Transact}`}
+        to={`${networkUrlParam}${NAVLINKPATH.Transact}`}
         className={classNames(
           'py-3 w-1/3  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
           {
@@ -37,7 +37,7 @@ const NavLinks = () => {
         MantaPay
       </NavLink>
       <NavLink
-        to={`${subPath}${NAVLINKPATH.Bridge}`}
+        to={`${networkUrlParam}${NAVLINKPATH.Bridge}`}
         className={classNames(
           'py-3 w-1/3  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
           {
@@ -48,7 +48,7 @@ const NavLinks = () => {
       </NavLink>
       {!isDolphinPage && (
         <NavLink
-          to="/stake"
+          to={`${networkUrlParam}${NAVLINKPATH.Stake}`}
           className={classNames(
             'py-3 w-1/4  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
             {

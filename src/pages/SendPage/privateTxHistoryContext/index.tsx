@@ -57,7 +57,7 @@ export const PrivateTxHistoryContextProvider = (
         txStatus?.extrinsic
       ) {
         const txHistoryEvent = new TxHistoryEvent(
-          config.network,
+          config.NETWORK_NAME,
           senderAssetTargetBalance,
           txStatus.extrinsic,
           config.SUBSCAN_URL,
@@ -74,7 +74,7 @@ export const PrivateTxHistoryContextProvider = (
    */
 
   const getPendingHistoryEvents = () => {
-    return getPrivateTransactionHistory().filter(
+    return getPrivateTransactionHistory(config.NETWORK_NAME).filter(
       (tx) => tx.status === HISTORY_EVENT_STATUS.PENDING
     );
   };
@@ -92,7 +92,7 @@ export const PrivateTxHistoryContextProvider = (
         });
       const data = response?.data.data;
       if (data) {
-        const status = !!data?.error
+        const status = data?.error
           ? HISTORY_EVENT_STATUS.FAILED
           : HISTORY_EVENT_STATUS.SUCCESS;
         updateTxHistoryEventStatus(status, tx.extrinsicHash);
@@ -126,9 +126,7 @@ export const PrivateTxHistoryContextProvider = (
     const resetHistoryEvents = () => {
       if (privateAddress && privateAddress !== getLastSeenPrivateAddress()) {
         setLastSeenPrivateAddress(privateAddress);
-        if (getPrivateTransactionHistory().length > 0) {
-          setPrivateTransactionHistory([]);
-        }
+        setPrivateTransactionHistory([]);
       }
     };
     resetHistoryEvents();

@@ -1,5 +1,6 @@
 {
     "NETWORK_NAME": "Calamari",
+    "IS_TESTNET": false,
     "SS58_FORMAT": 78,
     "SUBSCAN_API_ENDPOINT": "https://calamari.api.subscan.io/api/scan",
     "SUBSCAN_URL": "https://calamari.subscan.io",
@@ -8,5 +9,10 @@
     "KUSAMA_SUBSCAN_URL": "https://kusama.subscan.io",
     "KARURA_SUBSCAN_URL": "https://karura.subscan.io",
     "MOONRIVER_SUBSCAN_URL": "https://moonriver.subscan.io",
-    "TWITTER_URL": "https://twitter.com/CalamariNetwork"
+    "TWITTER_URL": "https://twitter.com/CalamariNetwork",
+    "CALAMARI_SOCKET": "wss://ws.calamari.systems/",
+    "KUSAMA_SOCKET": "wss://kusama.api.onfinality.io/public-ws",
+    "KARURA_SOCKET": "wss://karura-rpc-0.aca-api.network",
+    "MOONRIVER_SOCKET": "wss://moonriver.api.onfinality.io/public-ws",
+    "MOONRIVER_RPC": "https://rpc.moonriver.moonbeam.network"
 }

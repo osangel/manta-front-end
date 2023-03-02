@@ -11,17 +11,12 @@ import { IconName } from 'components/Icon';
 
 const PrivateActivityTableContent = () => {
   const config = useConfig();
-  const allPrivateTransactionHistory = getPrivateTransactionHistory().reverse();
-  const currentNetworkTransactionHistory = allPrivateTransactionHistory.filter(
-    (txHistoryEvent: TxHistoryEvent) => {
-      return txHistoryEvent.network === config.network;
-    }
-  );
+  const transactionHistory = getPrivateTransactionHistory(config.NETWORK_NAME).reverse();
 
-  if (currentNetworkTransactionHistory.length > 0) {
+  if (transactionHistory.length > 0) {
     return (
       <div className="divide-y divide-dashed divide-manta-gray-secondary">
-        {currentNetworkTransactionHistory.map(
+        {transactionHistory.map(
           (txHistoryEvent: TxHistoryEvent) => (
             <PrivateActivityItem
               txHistoryEvent={txHistoryEvent}

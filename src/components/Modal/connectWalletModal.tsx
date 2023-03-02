@@ -159,24 +159,24 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
   };
 
   return substrateWallets.map((wallet) => {
-      // wallet.extension would not be defined if enabled not called
-      const isWalletEnabled = wallet.extension ? true : false;
-      return (
-        <ConnectWalletBlock
-          key={wallet.extensionName}
-          walletName={getWalletDisplayName(wallet.extensionName)}
-          isWalletInstalled={wallet.installed}
-          walletInstallLink={wallet.installUrl}
-          walletLogo={wallet.logo}
-          isWalletEnabled={isWalletEnabled}
-          connectHandler={handleConnectWallet(wallet.extensionName)}
-        />
-      );
-    });
+    // wallet.extension would not be defined if enabled not called
+    const isWalletEnabled = wallet.extension ? true : false;
+    return (
+      <ConnectWalletBlock
+        key={wallet.extensionName}
+        walletName={getWalletDisplayName(wallet.extensionName)}
+        isWalletInstalled={wallet.installed}
+        walletInstallLink={wallet.installUrl}
+        walletLogo={wallet.logo}
+        isWalletEnabled={isWalletEnabled}
+        connectHandler={handleConnectWallet(wallet.extensionName)}
+      />
+    );
+  });
 };
 
 const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
-  const isBridgePage = window?.location?.pathname?.includes('dolphin/bridge');
+  const isBridgePage = window?.location?.pathname?.includes('bridge');
   return (
     <div className="w-96">
       <h1 className="text-xl text-white">Connect Wallet</h1>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import classNames from 'classnames';
+import { useConfig } from 'contexts/configContext';
 
 const NAVLINKPATH = {
   Transact: '/transact',
@@ -8,19 +9,20 @@ const NAVLINKPATH = {
   Stake: '/stake'
 };
 const Navs = () => {
+  const config = useConfig();
+  const networkUrlParam = config.NETWORK_NAME.toLowerCase();
+
   const isActiveTransactPage = window.location.pathname.includes(
     NAVLINKPATH.Transact
   );
   const isActiveBridgePage = window.location.pathname.includes(
     NAVLINKPATH.Bridge
   );
-  const isActiveStakePage = window.location.pathname.includes(
-    NAVLINKPATH.Stake
-  );
+
   return (
     <div className="mt-2 flex flex-row justify-between rounded-full bg-secondary w-113.5 shadow-2xl items-center text-sm">
       <NavLink
-        to="/transact"
+        to={`/${networkUrlParam}/transact`}
         className={classNames(
           'py-3 w-1/3 rounded-full text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
           {
@@ -31,7 +33,7 @@ const Navs = () => {
         zkTransact
       </NavLink>
       <NavLink
-        to="/bridge"
+        to={`/${networkUrlParam}/bridge`}
         className={classNames(
           'py-3 w-1/3 rounded-full text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
           {

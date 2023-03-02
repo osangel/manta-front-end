@@ -7,12 +7,13 @@ import ConnectWallet from 'components/Accounts/ConnectWallet';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
+import Chain from 'types/Chain';
+import { useConfig } from 'contexts/configContext';
 import { useBridgeTx } from './BridgeContext/BridgeTxContext';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 
-const MOONRIVER_CHAIN_ID = '1280';
-
 const ValidationButton = () => {
+  const config = useConfig();
   const { apiState } = useSubstrate();
   const { externalAccount } = useExternalAccount();
   const {
@@ -45,16 +46,14 @@ const ValidationButton = () => {
     connectWalletText = 'Connect MetaMask';
   } else if (apiIsDisconnected) {
     validationMsg = 'Connecting to network';
+  } else if (evmIsEnabled && chainId !== Chain.Moonriver(config).ethChainId) {
+    isSwitchNetwork = true;
   } else if (!senderAssetTargetBalance) {
     validationMsg = 'Enter amount';
   } else if (userHasSufficientFunds() === false) {
     validationMsg = 'Insuffient balance';
   } else if (evmIsEnabled && !destinationAddress) {
-    validationMsg = `Enter ${
-      originChain?.xcmAdapter?.chain?.type === 'ethereum'
-        ? 'substrate'
-        : 'EVM'
-    } address`;
+    validationMsg = `Enter ${originChainIsEvm ? 'substrate' : 'EVM'} address`;
   } else if (userCanPayOriginFee() === false) {
     validationMsg = `Insufficient ${originChain.nativeAsset.ticker} to pay origin fee`;
   } else if (txIsOverMinAmount() === false) {
@@ -62,8 +61,6 @@ const ValidationButton = () => {
     validationMsg = `Minimum ${
       senderAssetType.ticker
     } transaction is ${minInput.toDisplayString(MIN_INPUT_DIGITS)}`;
-  } else if (evmIsEnabled && chainId !== MOONRIVER_CHAIN_ID) {
-    isSwitchNetwork = true;
   }
 
   const ValidationText = ({ validationMsg }) => {

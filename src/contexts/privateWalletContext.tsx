@@ -12,7 +12,7 @@ import Balance from 'types/Balance';
 import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
-import { MantaPrivateWallet, MantaUtilities, Environment, Network } from 'manta.js';
+import { MantaPrivateWallet, MantaUtilities, Environment } from 'manta.js';
 import {
   removePendingTxHistoryEvent,
 } from 'utils/persistence/privateTransactionHistory';
@@ -34,6 +34,10 @@ export const PrivateWalletContextProvider = (props) => {
   // private wallet
   const [privateAddress, setPrivateAddress] = useState(null);
   const [privateWallet, setPrivateWallet] = useState(null);
+  const walletNetworkIsActive = useRef(false);
+  useEffect(() => {
+    walletNetworkIsActive.current = window.location.pathname.includes(config.NETWORK_NAME.toLowerCase());
+  });
 
   // signer connection
   const [signerIsConnected, setSignerIsConnected] = useState(null);
@@ -74,6 +78,7 @@ export const PrivateWalletContextProvider = (props) => {
   useEffect(() => {
     const canInitWallet = () => {
       return (
+        walletNetworkIsActive.current &&
         signerIsConnected &&
         signerVersion &&
         !signerIsOutOfDate(config, signerVersion) &&
@@ -85,9 +90,10 @@ export const PrivateWalletContextProvider = (props) => {
       isInitialSync.current = true;
       const privateWalletConfig = {
         environment: Environment.Production,
-        network: Network.Dolphin,
+        network: config.NETWORK_NAME,
         loggingEnabled: true
       };
+
       const privateWallet = await MantaPrivateWallet.init(privateWalletConfig);
       const privateAddress = await privateWallet.getZkAddress();
       setPrivateAddress(privateAddress);
@@ -122,7 +128,7 @@ export const PrivateWalletContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      fetchSignerVersion();
+      walletNetworkIsActive.current && fetchSignerVersion();
     }, 1000);
     return () => interval && clearInterval(interval);
   }, [api, privateWallet]);
@@ -140,7 +146,7 @@ export const PrivateWalletContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (canFetchZkAddress) {
+      if (canFetchZkAddress && walletNetworkIsActive.current) {
         fetchZkAddress();
       }
     }, 1000);
@@ -159,7 +165,7 @@ export const PrivateWalletContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (isReady) {
+      if (isReady && walletNetworkIsActive.current) {
         sync();
       }
     }, 10000);

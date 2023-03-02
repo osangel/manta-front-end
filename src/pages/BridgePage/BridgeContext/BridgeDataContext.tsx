@@ -279,6 +279,8 @@ export const BridgeDataContextProvider = (props) => {
       ) {
         return;
       }
+      // Workaround for Karura adapter internals not being ready on initial connection
+      originChain.name === 'karura' && await originXcmAdapter.wallet.isReady;
       const inputConfigParams = getInputConfigParams();
       const inputConfigObservable = originXcmAdapter.subscribeInputConfigs(inputConfigParams);
       const inputConfig = await firstValueFrom(inputConfigObservable);

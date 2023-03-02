@@ -23,7 +23,7 @@ const PrivateAssetItem = ({ balance }: PrivateAssetItemProps) => {
     <div className="flex items-center justify-between pl-2.5 pr-3.5 py-2 text-sm hover:bg-thirdly">
       <div className="flex gap-3 items-center">
         <Icon
-          className="w-8 h-8 rounded-full"
+          className={'rounded-full w-8 h-8'}
           name={balance.assetType.icon as IconName}
         />
         <div className="overflow-hidden zkAddressTooltipWrapper">

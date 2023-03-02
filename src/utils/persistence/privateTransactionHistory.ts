@@ -3,7 +3,7 @@ import TxHistoryEvent, { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
 
 const PRIVATE_TRANSACTION_STORAGE_KEY = 'privateTransactionHistory';
 
-export const getPrivateTransactionHistory = (): TxHistoryEvent[] => {
+export const getPrivateTransactionHistory = (network: string | null): TxHistoryEvent[] => {
   const jsonPrivateTransactionHistory = [
     ...store.get(PRIVATE_TRANSACTION_STORAGE_KEY, [])
   ];
@@ -13,6 +13,12 @@ export const getPrivateTransactionHistory = (): TxHistoryEvent[] => {
         return TxHistoryEvent.fromJson(jsonTxHistoryEvent);
       }
     )
+    .filter(event => {
+      if (network === null) {
+        return true;
+      }
+      return event.network === network;
+    })
     .filter((event) => {
       const sixMonthsAgo = new Date();
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -46,7 +52,7 @@ export const updateTxHistoryEventStatus = (
   status: HISTORY_EVENT_STATUS,
   extrinsicHash: string
 ) => {
-  const privateTransactionHistory = [...getPrivateTransactionHistory()];
+  const privateTransactionHistory = [...getPrivateTransactionHistory(null)];
   privateTransactionHistory.forEach((txHistoryEvent) => {
     if (
       txHistoryEvent.extrinsicHash === extrinsicHash &&
@@ -65,7 +71,7 @@ export const updateTxHistoryEventStatus = (
 
 // remove pending history event (usually the last one) from the history
 export const removePendingTxHistoryEvent = (extrinsicHash: string) => {
-  const privateTransactionHistory = [...getPrivateTransactionHistory()];
+  const privateTransactionHistory = [...getPrivateTransactionHistory(null)];
   if (privateTransactionHistory.length === 0) {
     return;
   }

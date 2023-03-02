@@ -24,7 +24,7 @@ const CalamariRoutes = () => {
     <CalamariBasePage>
       <Routes>
         <Route path="calamari">
-          <Route index element={<Navigate to="stake" />} />
+          <Route index element={<Navigate to="transact" />} />
           <Route path="bridge" element={<BridgePage />} exact />
           <Route path="transact" element={<SendPage />} exact />
           <Route path="stake" element={<StakePage />} exact />
@@ -39,7 +39,7 @@ const RedirectRoutes = () => {
     <Routes>
       <Route
         index
-        element={<Navigate to="/calamari/stake" replace />}
+        element={<Navigate to="/calamari/transact" replace />}
         exact
       />
       <Route

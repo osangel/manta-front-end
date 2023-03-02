@@ -11,6 +11,21 @@ import types from '../config/types.json';
 import AssetType from './AssetType';
 
 export default class Chain {
+  name: string;
+  displayName: string;
+  parachainId: number;
+  icon: string;
+  socket: string;
+  subscanUrl: string;
+  xcmAssets: AssetType[];
+  nativeAsset: AssetType;
+  xcmAdapterClass: any;
+  apiTypes: any;
+  apiOptions: any;
+  apiTypesBundle: any;
+  ethMetadata: any;
+  ethChainId: null | string;
+
   constructor(
     name,
     displayName,
@@ -24,7 +39,8 @@ export default class Chain {
     apiTypes = null,
     apiOptions = null,
     apiTypesBundle = null,
-    ethMetadata = null
+    ethMetadata = null,
+    ethChainId = null
   ) {
     this.name = name;
     this.displayName = displayName;
@@ -39,6 +55,7 @@ export default class Chain {
     this.apiOptions = apiOptions;
     this.apiTypesBundle = apiTypesBundle;
     this.ethMetadata = ethMetadata;
+    this.ethChainId = ethChainId;
     this.api = null;
   }
 
@@ -77,7 +94,7 @@ export default class Chain {
       'calamari',
       'Calamari',
       2084,
-      'calamari',
+      'calamariLogo',
       config.CALAMARI_SOCKET,
       config.CALAMARI_SUBSCAN_URL,
       [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
@@ -133,8 +150,8 @@ export default class Chain {
 
   static Moonriver(config) {
     const moonriverEthMetadata = {
-      chainId: '0x500',
-      chainName: 'Moonriver Development Testnet',
+      chainId: config.IS_TESTNET ? '0x500' : '0x505',
+      chainName: config.IS_TESTNET ? 'Moonriver Development Testnet' : 'Moonriver',
       nativeCurrency: {
         name: 'MOVR',
         symbol: 'MOVR',
@@ -156,7 +173,8 @@ export default class Chain {
       typesBundlePre900,
       null,
       null,
-      moonriverEthMetadata
+      moonriverEthMetadata,
+      config.IS_TESTNET ? '1280' : '1285'
     );
   }
 
