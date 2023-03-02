@@ -10,7 +10,12 @@ import { MetamaskContextProvider } from 'contexts/metamaskContext';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { TxStatusContextProvider, useTxStatus } from 'contexts/txStatusContext';
 import { useEffect } from 'react';
-import { showError, showInfo, showSuccess, showWarning } from 'utils/ui/Notifications';
+import {
+  showError,
+  showInfo,
+  showSuccess,
+  showWarning
+} from 'utils/ui/Notifications';
 import { UsdPricesContextProvider } from 'contexts/usdPricesContext';
 import { PrivateWalletContextProvider } from 'contexts/privateWalletContext';
 import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesContext';
@@ -61,7 +66,17 @@ BasePage.propTypes = {
 export const CalamariBasePage = ({ children }) => {
   return (
     <ConfigContextProvider network={NETWORK.CALAMARI}>
-      <BasePage>{children}</BasePage>
+      <BasePage>
+        <UsdPricesContextProvider>
+          <MetamaskContextProvider>
+            <PrivateWalletContextProvider>
+              <ZkAccountBalancesContextProvider>
+                {children}
+              </ZkAccountBalancesContextProvider>
+            </PrivateWalletContextProvider>
+          </MetamaskContextProvider>
+        </UsdPricesContextProvider>
+      </BasePage>
     </ConfigContextProvider>
   );
 };

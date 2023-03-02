@@ -32,7 +32,7 @@ const ZkAccountDisplay = () => {
         <div
           className={classNames(
             'unselectable-text flex flex-row justify-center',
-            'items-center gap-3 h-10 w-36 text-white font-red-hat-mono text-sm',
+            'items-center gap-3 h-10 w-44 text-white font-red-hat-mono text-sm',
             'cursor-pointer bg-fifth border border-white-light rounded-lg'
           )}
           onClick={() => setShowZkModal(!showZkModal)}>
@@ -119,7 +119,7 @@ const ZkAccountButton = () => {
     return (
       <ZkAccountConnect
         className={
-          'unselectable-text bg-connect-signer-button text-white font-red-hat-mono text-sm h-10 w-36 cursor-pointer rounded-lg'
+          'unselectable-text bg-connect-signer-button text-white font-red-hat-text text-sm h-10 w-44 cursor-pointer rounded-lg'
         }
       />
     );

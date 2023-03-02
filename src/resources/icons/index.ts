@@ -1,5 +1,6 @@
 import { ReactComponent as dolphin } from 'resources/images/dolphin.svg';
 import { ReactComponent as calamari } from 'resources/images/calamari.svg';
+import { ReactComponent as calamariLogo } from 'resources/images/calamariLogo.svg';
 import { ReactComponent as manta } from 'resources/images/manta.svg';
 import { ReactComponent as talisman } from 'resources/icons/talisman.svg';
 import { ReactComponent as metamask } from 'resources/icons/metamask.svg';
@@ -84,6 +85,7 @@ import { ReactComponent as txPending } from 'resources/icons/tx-pending.svg';
 const icons = {
   dolphin,
   calamari,
+  calamariLogo,
   manta,
   talisman,
   metamask,

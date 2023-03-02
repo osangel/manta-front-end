@@ -4,6 +4,7 @@
     "NODES": [{
             "name": "Calamari",
             "path": "/calamari",
+            "logo": "calamariLogo",
             "url": "wss://ws.calamari.systems/",
             "explorer": "calamari.subscan.io"
         },

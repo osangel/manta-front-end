@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import { useConfig } from 'contexts/configContext';
 import DowntimeModal from 'components/Modal/downtimeModal';
-import Navs from 'components/Navbar/Navs';
 import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
 import userIsMobile from 'utils/ui/userIsMobile';
 import { useKeyring } from 'contexts/keyringContext';
@@ -49,8 +48,7 @@ const SendForm = () => {
   return (
     <div>
       {warningModal}
-      <div className="2xl:inset-x-0 justify-center min-h-full flex flex-col gap-6 items-center pb-2">
-        <Navs />
+      <div className="2xl:inset-x-0 justify-center min-h-full flex flex-col gap-6 items-center pb-2 pt-21">
         <div
           className={classNames('w-113.5 px-12 py-6 bg-secondary rounded-xl', {
             disabled: disabled
