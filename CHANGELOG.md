@@ -155,3 +155,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - [\#432](https://github.com/Manta-Network/manta-front-end/pull/432) Added fee depletion warning for public transfers of DOL
 - [\#487](https://github.com/Manta-Network/manta-front-end/pull/487) Show private transaction history in zkAccount modal
+
+
+## [5.0.0] - 2023-3-8
+
+### Fixed
+- [\#440](https://github.com/Manta-Network/manta-front-end/pull/440) Fix small balances appearing as "0" in zkAccount modal
+- [\#442](https://github.com/Manta-Network/manta-front-end/pull/442) Remove addresses from the address select dropdown if permission is revoked in the wallet browser extension
+- [\#438](https://github.com/Manta-Network/manta-front-end/pull/438) Prevents users from inputing more decimals than possible for assets on the Bridge and ZkTransact pages
+- [\#438](https://github.com/Manta-Network/manta-front-end/pull/438) Displays the amount to be sent without rounding on the ZkTransact page
+- [\#543](https://github.com/Manta-Network/manta-front-end/pull/543) Prevent error when ETH accounts are injected from Talisman wallet
+- [\#614](https://github.com/Manta-Network/manta-front-end/pull/614) Prevent user from highlighting chain selector text, zkAccount button text, and public wallet button text
+- [\#612](https://github.com/Manta-Network/manta-front-end/pull/612) Prevent enkrypt wallet accounts from appearing under other wallets
+- [\#610](https://github.com/Manta-Network/manta-front-end/pull/610) Prevent users from clicking the button to publish transactions while balances are loading on the MantaPay page
+- [\#580](https://github.com/Manta-Network/manta-front-end/pull/580) Allow users to see their zkAddress even when a node is not connected
+- [\#632](https://github.com/Manta-Network/manta-front-end/pull/632) Prevent success notifications from showing after a transaction is interrupted by a network disconnection
+- [\#637](https://github.com/Manta-Network/manta-front-end/pull/637) Show that zkAssets are loading inside the zkAccount modal during the initial sync
+- [\#652](https://github.com/Manta-Network/manta-front-end/pull/652) Use lower fee estimates for Calamari than for Dolphin
+- [\#653](https://github.com/Manta-Network/manta-front-end/pull/653) Prevent staked balances from being included in MantaPay public balances
+- [\#644](https://github.com/Manta-Network/manta-front-end/pull/644) Prevent Calamari and Dolphin private transaction history from appearing under the wrong network
+
+### Changed
+- [\#546](https://github.com/Manta-Network/manta-front-end/pull/546) Hide private transaction history older than 6 months
+- [\#613](https://github.com/Manta-Network/manta-front-end/pull/613) Restyle the address copy icon in the zkAccount modal
+- [\#629](https://github.com/Manta-Network/manta-front-end/pull/629) Replace tabbed menu with navlinks
+- [\#646](https://github.com/Manta-Network/manta-front-end/pull/646) Change fonts on staking page
+
+### Added
+- [\#493](https://github.com/Manta-Network/manta-front-end/pull/493) Remember and default to the most recently used account for each public wallet
+- [\#483](https://github.com/Manta-Network/manta-front-end/pull/483) Instruct users to create an account in Tallisman if no account exists
+- [\#594](https://github.com/Manta-Network/manta-front-end/pull/594) Set bridge form to the most recently selected chains on page load
+- [\#643](https://github.com/Manta-Network/manta-front-end/pull/643) Prevent users in restricted geographies from using MantaPay on Calamari
+- [\#644](https://github.com/Manta-Network/manta-front-end/pull/644) Enable MantaPay and Bridge pages on Calamari
