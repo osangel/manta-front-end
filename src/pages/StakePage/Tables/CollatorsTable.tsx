@@ -45,11 +45,11 @@ const dropdownStyles = () => {
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
-      cursor: 'pointer'
+      cursor: 'pointer',
     }),
     singleValue: (provided) => ({
       ...provided,
-      color: 'var(--color-text-thirdry)'
+      color: 'rgb(255,255,255)'
     })
   };
 };
@@ -236,23 +236,23 @@ const CollatorsTable = () => {
   };
 
   return (
-    <div className="mt-20 mx-auto sortable-table-wrapper" id="collatorsTable">
-      <h1 className="text-base font-semibold text-white flex items-end gap-10">
+    <div className="mt-10 mx-auto sortable-table-wrapper" id="collatorsTable">
+      <h1 className="text-base font-semibold text-white flex items-end gap-10 font-red-hat-text">
         Collators
       </h1>
-      <div className="mt-6 flex gap-5">
-        <div className="p-3 rounded-md border border-manta-gray flex items-center gap-2 text-secondary bg-secondary">
+      <div className="mt-4 flex gap-5">
+        <div className="p-3 pl-6 rounded-md border border-white-5% flex items-center gap-2 text-secondary bg-secondary">
           <input
-            className="bg-transparent text-thirdry outline-none"
+            className="bg-transparent font-red-hat-text text-sm text-thirdry outline-none"
             placeholder="Search Collators"
             onChange={(e) => setFilterText(e.target.value)}
             value={filterText}
           />
           <FontAwesomeIcon icon={faSearch} />
         </div>
-        <div className="rounded-md border border-manta-gray flex items-center gap-2">
+        <div className="rounded-md border border-white-5% flex items-center gap-2">
           <Select
-            className="w-52 cursor-pointer bg-secondary rounded-md"
+            className="w-52 cursor-pointer bg-secondary rounded-md font-red-hat-text text-sm"
             options={collatorStatusOptions}
             styles={dropdownStyles()}
             placeholder=""
@@ -266,7 +266,7 @@ const CollatorsTable = () => {
             href="https://docs.manta.network/docs/calamari/Staking/Collation/Overview"
             target="_blank"
             className={
-              'p-3 cursor-pointer text-sm btn-hover unselectable-text text-center rounded-lg btn-primary w-full hover:text-white'
+              'p-3 cursor-pointer text-sm btn-hover unselectable-text text-center rounded-lg btn-primary w-full hover:text-white font-red-hat-text'
             }
             rel="noreferrer"
           >

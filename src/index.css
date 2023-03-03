@@ -33,6 +33,7 @@ svg {
   --color-bg-button-primary: #0d7bc5;
   --color-bg-button-secondary: #2b49ea;
   --color-bg-button-thirdry: #00afa5;
+  --color-bg-button-third-80: rgba(0, 175, 165, 0.8);
   --color-bg-button-fourth: #0e50fc;
   --color-text-primary: #ffffff;
   --color-text-secondary: #a4a3a7;
@@ -66,6 +67,7 @@ svg {
   --color-bg-button-primary: #0d7bc5;
   --color-bg-button-secondary: #2b49ea;
   --color-bg-button-thirdry: #00afa5;
+  --color-bg-button-third-80: rgba(0, 175, 165, 0.8);
   --color-bg-button-fourth: #0e50fc;
   --color-text-primary: #104ea1;
   --color-text-secondary: #212f41;

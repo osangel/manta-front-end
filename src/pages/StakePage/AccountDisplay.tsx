@@ -50,11 +50,11 @@ const AccountDisplay = () => {
   };
 
   return (
-    <div className="text-center">
-      <div className="inline-flex xl:flex-nowrap justify-start flex-wrap-reverse gap-8">
-        <div className="-mt-2 px-11 py-4 bg-secondary flex-grow rounded-lg gap-10 relative z-20 flex justify-evenly items-center shadow-2xl">
+    <div className="text-center font-red-hat-text">
+      <div className="inline-flex xl:flex-nowrap justify-start flex-wrap-reverse gap-4">
+        <div className="-mt-2 px-14 py-4 bg-secondary flex-grow rounded-lg gap-10 relative z-20 flex justify-evenly items-center shadow-2xl">
           <div className="mt-4">
-            <h2 className="text-secondary text-center font-medium text-lg">
+            <h2 className="text-white text-center font-medium text-base font-red-hat-text">
               Total Balance
             </h2>
             <h1 className="text-white font-bold text-xl text-center mt-4">
@@ -63,34 +63,34 @@ const AccountDisplay = () => {
             <button
               onClick={onClickStartStaking}
               className={
-                'mt-8 p-3 cursor-pointer text-xl btn-hover unselectable-text text-center rounded-lg btn-primary w-full'
+                'mt-8 p-3 cursor-pointer text-sm btn-hover unselectable-text text-center rounded-lg btn-primary w-full'
               }
             >
               Start staking
             </button>
           </div>
           <div className="flex justify-end gap-5">
-            <div className=" w-52 h-52 rounded-md border-2 border-primary text-center pt-12 shadow-lg">
-              <h2 className="text-secondary font-medium text-base">
+            <div className=" w-52 h-52 rounded-md border-2 border-white-5% text-center pt-12 shadow-lg">
+              <h2 className="text-secondary font-medium text-base font-red-hat-text">
                 Available Balance
               </h2>
-              <h1 className="text-white font-bold text-lg mt-4">
+              <h1 className="text-white font-bold text-lg mt-4 font-red-hat-text">
                 {avialableBalanceDisplayString}
               </h1>
             </div>
-            <div className=" w-52 h-52 rounded-md border-2 border-primary text-center pt-12 shadow-lg">
-              <h2 className="text-secondary font-medium text-base">
+            <div className=" w-52 h-52 rounded-md border-2 border-white-5% text-center pt-12 shadow-lg">
+              <h2 className="text-secondary font-medium text-base font-red-hat-text">
                 Total Staked
               </h2>
-              <h1 className="text-white font-bold text-lg mt-4">
+              <h1 className="text-white font-bold text-lg mt-4 font-red-hat-text">
                 {stakedBalanceDisplayString}
               </h1>
             </div>
-            <div className=" w-52 h-52 rounded-md border-2 border-primary text-center pt-12 shadow-lg">
-              <h2 className="text-secondary font-medium text-base">
+            <div className=" w-52 h-52 rounded-md border-2 border-white-5% text-center pt-12 shadow-lg">
+              <h2 className="text-secondary font-medium text-base font-red-hat-text">
                 Rewards Last Round
               </h2>
-              <h1 className="text-white font-bold text-lg mt-4">
+              <h1 className="text-white font-bold text-lg mt-4 font-red-hat-text">
                 {userTotalRecentRewardsDisplayString}
               </h1>
               <h3 className="text-secondary font-medium text-xss mt-3">
@@ -111,13 +111,13 @@ const AccountDisplay = () => {
             </div>
           </div>
         </div>
-        <div className="-mt-2 max-w-sm flex flex-grow flex-col items-center justify-center flex-shrink-0 px-10 py-6 bg-secondary rounded-lg relative z-20 shadow-2xl">
+        <div className="-mt-2 max-w-sm flex flex-grow flex-col items-center justify-center flex-shrink-0 pl-6 pr-34 py-6 bg-secondary rounded-lg relative z-20 shadow-2xl">
           <div className="text-left">
-            <h2 className="text-secondary font-medium text-lg">Resources</h2>
+            <h2 className="text-white font-medium text-base font-red-hat-text">Resources</h2>
             <div className="mt-4">
               <a
                 href="https://docs.manta.network/docs/calamari/Staking/Overview"
-                className="text-link text-base"
+                className="text-third-80 text-sm hover:text-link-hover"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -127,7 +127,7 @@ const AccountDisplay = () => {
             <div className="mt-4">
               <a
                 href="https://calamari.subscan.io"
-                className="text-link text-base"
+                className="text-third-80 text-sm hover:text-link-hover"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -137,7 +137,7 @@ const AccountDisplay = () => {
             <div className="mt-4">
               <a
                 href="https://stakekma.com"
-                className="text-link text-base"
+                className="text-third-80 text-sm hover:text-link-hover"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -147,7 +147,7 @@ const AccountDisplay = () => {
             <div className="mt-4">
               <a
                 href="https://sparta.calamari.systems"
-                className="text-link text-base"
+                className="text-third-80 text-sm hover:text-link-hover"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -157,7 +157,7 @@ const AccountDisplay = () => {
             <div className="mt-4">
               <a
                 href="https://app.web3go.xyz/#/CalamariStaking"
-                className="text-link text-base"
+                className="text-third-80 text-sm hover:text-link-hover"
                 target="_blank"
                 rel="noreferrer"
               >

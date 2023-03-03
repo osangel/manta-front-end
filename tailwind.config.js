@@ -73,12 +73,15 @@ module.exports = {
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
         link: 'var(--color-bg-button-primary)',
+        'third-80': 'var(--color-bg-button-third-80)',
+        'link-hover': '#00D8CB',
         warning: 'var(--color-text-warning)',
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue': 'var(--color-manta-blue)',
         warning: '#FF8A00',
         'green-light': '#29CCB9',
+        'white-80%': 'rgba(255,255,255,0.8)',
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -92,7 +95,8 @@ module.exports = {
         secondary: 'var(--color-bg-button-primary)',
         warning: '#FF8A00',
         'white-light': '#FFFFFF1A',
-        'public-private-toggle': '#2B49EA'
+        'public-private-toggle': '#2B49EA',
+        'white-5%': 'rgba(255,255,255,0.05)',
       },
       colors: {
         'manta-gray-secondary': '#4A516B',

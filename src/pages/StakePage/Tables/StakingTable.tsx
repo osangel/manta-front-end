@@ -23,16 +23,16 @@ const NothingStakedDisplay = () => {
   if (!externalAccount) {
     primaryText = 'Please connect your wallet';
     secondaryText =
-      'polkadot.js, SubWallet, or Talisman wallet must be connected to see your balaces and rewards';
+      'polkadot.js, SubWallet, or Talisman wallet must be connected to see your balance and rewards';
   } else {
     primaryText = 'You are not currently staking KMA';
     secondaryText = 'Select a collator below to begin staking';
   }
 
   return (
-    <div className="mt-4 w-full p-6 shadow-2xl bg-secondary rounded-lg">
-      <h1 className="text-secondary text-lg font-semibold">{primaryText}</h1>
-      <h1 className="text-secondary text-lg mt-4 font-semibold">
+    <div className="mt-4 w-full p-6 shadow-2xl bg-secondary rounded-lg text-white-80% text-sm">
+      <h1 className="font-semibold font-red-hat-text">{primaryText}</h1>
+      <h1 className="mt-4 font-semibold font-red-hat-text">
         {secondaryText}
       </h1>
     </div>
@@ -233,8 +233,8 @@ const StakingTable = () => {
 
   return (
     <>
-      <div className="mt-20 mx-auto sortable-table-wrapper">
-        <h1 className="text-base font-semibold text-white">
+      <div className="mt-10 mx-auto sortable-table-wrapper">
+        <h1 className="text-base font-semibold text-white font-red-hat-text">
           Staking
         </h1>
         <div className="w-full mt-4">{mainComponent}</div>
