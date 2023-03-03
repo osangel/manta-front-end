@@ -187,13 +187,24 @@ export const SendContextProvider = (props) => {
     if (!api?.isConnected || !address || !assetType) {
       return null;
     }
-    const balanceRaw = await MantaUtilities.getPublicBalance(
-      api,
-      new BN(assetType.assetId),
-      address
-    );
-    const balance = balanceRaw ? new Balance(assetType, balanceRaw) : null;
-    return balance;
+    try {
+      if (assetType.isNativeToken) {
+        const raw = await api.query.system.account(address);
+        const total = new Balance(assetType, new BN(raw.data.free.toString()), );
+        const staked = new Balance(assetType, new BN(raw.data.miscFrozen.toString()));
+        return total.sub(staked);
+      } else {
+        const assetBalance = await api.query.assets.account(assetType.assetId, address);
+        if (assetBalance.value.isEmpty) {
+          return new Balance(assetType, new BN(0));
+        } else {
+          return new Balance(assetType, new BN(assetBalance.value.balance.toString()));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch public balance', e);
+      return null;
+    }
   };
 
   // Gets available native public balance for some public address;
