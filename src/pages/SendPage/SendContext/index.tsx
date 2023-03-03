@@ -1,4 +1,5 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
 import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSubstrate } from 'contexts/substrateContext';
@@ -304,20 +305,22 @@ export const SendContextProvider = (props) => {
 
   // Gets the amount of the native token the user is not allowed to go below
   // If the user attempts a transaction with less than this amount of the
-  // native token, the transaction will fail
+  // native token, the transaction will fail.
+  // Note that estimates are conservative (2x observed fees) and inexact
   const getReservedNativeTokenBalance = () => {
     if (!senderNativeTokenPublicBalance) {
       return null;
     }
-    const conservativeFeeEstimate = Balance.fromBaseUnits(
-      AssetType.Native(config),
-      50
-    );
-    const existentialDeposit = Balance.Native(
-      config,
-      AssetType.Native(config).existentialDeposit
-    );
-    return conservativeFeeEstimate.add(existentialDeposit);
+    let feeEstimate;
+    if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
+      feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 50);
+    } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+      feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 1);
+    } else {
+      throw new Error('Unknown network');
+    }
+    const existentialDeposit = Balance.Native(config, AssetType.Native(config).existentialDeposit);
+    return feeEstimate.add(existentialDeposit);
   };
 
   // Returns true if the current tx would cause the user to go below a
@@ -329,14 +332,18 @@ export const SendContextProvider = (props) => {
       senderAssetTargetBalance?.assetType.isNativeToken &&
       (isToPrivate() || isPublicTransfer())
     ) {
-      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(
-        AssetType.Native(config),
-        150
-      );
+      let suggestedMinFeeBalance;
+      if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
+        suggestedMinFeeBalance = Balance.fromBaseUnits(AssetType.Native(config), 150);
+      } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+        suggestedMinFeeBalance = Balance.fromBaseUnits(AssetType.Native(config), 5);
+      } else {
+        throw new Error('Unknown network');
+      }
       const balanceAfterTx = senderAssetCurrentBalance.sub(
         senderAssetTargetBalance
       );
-      return SUGGESTED_MIN_FEE_BALANCE.gte(balanceAfterTx);
+      return suggestedMinFeeBalance.gte(balanceAfterTx);
     }
     return false;
   };
