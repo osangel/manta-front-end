@@ -11,8 +11,8 @@
     "MOONRIVER_SUBSCAN_URL": "https://moonriver.subscan.io",
     "TWITTER_URL": "https://twitter.com/CalamariNetwork",
     "CALAMARI_SOCKET": "wss://ws.calamari.systems/",
-    "KUSAMA_SOCKET": "wss://kusama.api.onfinality.io/public-ws",
+    "KUSAMA_SOCKET": "wss://kusama-rpc.polkadot.io",
     "KARURA_SOCKET": "wss://karura-rpc-0.aca-api.network",
-    "MOONRIVER_SOCKET": "wss://moonriver.api.onfinality.io/public-ws",
+    "MOONRIVER_SOCKET": "wss://wss.api.moonriver.moonbeam.network",
     "MOONRIVER_RPC": "https://rpc.moonriver.moonbeam.network"
 }
