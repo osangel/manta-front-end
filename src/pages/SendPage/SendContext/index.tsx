@@ -412,6 +412,7 @@ export const SendContextProvider = (props) => {
         // Correct private balances will only appear after a sync has completed
         // Until then, do not display stale balances
         privateWallet.setBalancesAreStale(true);
+        privateWallet.syncPrivateWalletData(true);
         senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
         receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
       } catch(error) {
@@ -461,7 +462,7 @@ export const SendContextProvider = (props) => {
   const toPrivate = async () => {
     await privateWallet.toPrivate(
       state.senderAssetTargetBalance,
-      handleBlockRes
+      handleTxRes
     );
   };
 
@@ -469,7 +470,7 @@ export const SendContextProvider = (props) => {
   const toPublic = async () => {
     await privateWallet.toPublic(
       state.senderAssetTargetBalance,
-      handleBlockRes
+      handleTxRes
     );
   };
 
@@ -479,7 +480,7 @@ export const SendContextProvider = (props) => {
     await privateWallet.privateTransfer(
       senderAssetTargetBalance,
       receiverAddress,
-      handleBlockRes
+      handleTxRes
     );
   };
 
