@@ -21,7 +21,7 @@ export const getPrivateTransactionHistory = (network: string | null): TxHistoryE
     })
     .filter((event) => {
       const sixMonthsAgo = new Date();
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      sixMonthsAgo.setMinutes(sixMonthsAgo.getMinutes() - 1);
       return sixMonthsAgo < event.date;
     });
   return privateTransactionHistory;
