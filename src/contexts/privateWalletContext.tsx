@@ -12,7 +12,7 @@ import Balance from 'types/Balance';
 import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
-import { MantaPrivateWallet, MantaUtilities, Environment } from 'manta.js';
+import { MantaPrivateWallet, MantaUtilities, Environment } from 'manta-sdk-dev';
 import {
   removePendingTxHistoryEvent,
 } from 'utils/persistence/privateTransactionHistory';

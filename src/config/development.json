@@ -11,7 +11,7 @@
         {
             "name": "Dolphin",
             "path": "/dolphin",
-            "url": "wss://ws.calamari.seabird.systems",
+            "url": "ws://127.0.0.1:9944",
             "testnet": true,
             "explorer": "dolphin.subscan.io"
         }

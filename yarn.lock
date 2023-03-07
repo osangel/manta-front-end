@@ -11534,10 +11534,10 @@ manta-polkawallet-bridge@0.0.0:
     axios "^0.27.2"
     lodash "^4.17.20"
 
-manta.js@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/manta.js/-/manta.js-2.0.0.tgz#f3c6aa650bef3a3575df3d6174c95420216b8575"
-  integrity sha512-suuHs0YGalGFNRKfaMj0L71RaBfaxpO+fSyrMrOmvzf0jDaMe97cJpvKlsZaoMcnDv6hX5bXbWT8gxkEx0EJtQ==
+manta-sdk-dev@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/manta-sdk-dev/-/manta-sdk-dev-1.0.0.tgz#337a7eb7394d9ecf9c3a961f571f21f9d7f8affe"
+  integrity sha512-2L4K3qOT5Asm2nwpxk9OX9GaLG0FXdysdMXmeAB5DiucoP9Amfgsi06chGW8kesRAnNyenwMclhKd6wi7o5Gqg==
   dependencies:
     "@polkadot/api" "6.8.1"
     "@polkadot/extension-dapp" "0.39.3"
