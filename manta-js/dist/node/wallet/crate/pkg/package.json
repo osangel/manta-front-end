@@ -1,0 +1,24 @@
+{
+  "name": "manta-wasm-wallet",
+  "collaborators": [
+    "Manta Network <contact@manta.network>"
+  ],
+  "description": "Manta Wallet API WebAssembly and JS Bindings",
+  "version": "1.5.1",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Manta-Network/sdk"
+  },
+  "files": [
+    "manta_wasm_wallet_bg.wasm",
+    "manta_wasm_wallet.js",
+    "manta_wasm_wallet.d.ts"
+  ],
+  "main": "manta_wasm_wallet.js",
+  "homepage": "https://github.com/Manta-Network",
+  "types": "manta_wasm_wallet.d.ts",
+  "keywords": [
+    ""
+  ]
+}
