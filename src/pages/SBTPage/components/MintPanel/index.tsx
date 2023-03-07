@@ -7,12 +7,15 @@ import { useModal } from 'hooks';
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
 import { useMint } from 'pages/SBTPage/SBTContext/mintContext';
 import { GeneratedImg, Step, useSBT } from 'pages/SBTPage/SBTContext';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { firstUpperCase } from 'utils/string';
 import { watermarkMap, WatermarkMapType } from 'resources/images/sbt';
+import { useMetamask } from 'contexts/metamaskContext';
 import MintCheckModal from '../MintCheckModal';
 import MintedModal from '../MintedModal';
 import TokenButton, { LevelType, TokenType } from '../TokenButton';
+import WatermarkTokenPanel from '../WatermarkTokenPanel';
+import MetamaskButton from '../MetamaskButton';
 
 const WatermarkSwiper = () => {
   const { mintSet } = useGenerated();
@@ -33,7 +36,7 @@ const WatermarkSwiper = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative h-content">
       <Swiper
         navigation={true}
         pagination={true}
@@ -67,7 +70,7 @@ const WatermarkSwiper = () => {
   );
 };
 
-const tokenList = [
+export const tokenList = [
   {
     token: 'manta',
     checked: true,
@@ -144,17 +147,18 @@ const tokenList = [
     level: 'normal'
   }
 ];
-const MintPanel = () => {
-  const [applyAll, toggleApplyAll] = useState(false);
+const mantaToken = tokenList[0];
 
+const MintPanel = () => {
   const {
     mintSuccessed,
     toggleMintSuccessed,
     resetContextData,
     activeWatermarkIndex
   } = useMint();
-  const { setCurrentStep } = useSBT();
   const { mintSet, setMintSet } = useGenerated();
+  const { setCurrentStep } = useSBT();
+  const { ethAddress } = useMetamask();
 
   const { ModalWrapper, showModal, hideModal } = useModal({
     closeOnBackdropClick: false
@@ -178,9 +182,8 @@ const MintPanel = () => {
   const handleClickTokenBtn = (token: TokenType, level: LevelType) => {
     const newMintSet = new Set<GeneratedImg>();
     [...mintSet].forEach((generatedImg, index) => {
-      if (index === activeWatermarkIndex || applyAll) {
+      if (index === activeWatermarkIndex) {
         const isSelected = generatedImg.watermarkToken === token;
-
         newMintSet.add({
           ...generatedImg,
           watermarkToken: isSelected ? null : token,
@@ -195,35 +198,6 @@ const MintPanel = () => {
     setMintSet(newMintSet);
   };
 
-  const applyAllDisabled = useMemo(
-    () => !applyAll && !activeGeneratedImg?.watermarkToken,
-    [activeGeneratedImg?.watermarkToken, applyAll]
-  );
-  const applyAllDisabledStyle = applyAllDisabled
-    ? 'cursor-not-allowed'
-    : 'cursor-pointer';
-
-  const clickApplyAll = () => {
-    if (applyAllDisabled) {
-      return;
-    }
-    if (!applyAll) {
-      const { watermarkLevel, watermarkToken } = activeGeneratedImg;
-      if (watermarkLevel && watermarkToken) {
-        const newMintSet = new Set<GeneratedImg>();
-        [...mintSet].forEach((generatedImg) => {
-          newMintSet.add({
-            ...generatedImg,
-            watermarkToken: watermarkToken,
-            watermarkLevel: watermarkLevel
-          });
-        });
-        setMintSet(newMintSet);
-      }
-    }
-    toggleApplyAll(!applyAll);
-  };
-
   return (
     <div className="relative flex-1 flex flex-col mx-auto mb-20 bg-secondary rounded-xl p-6 w-75 relative mt-6 z-0">
       <div className="flex items-center">
@@ -236,64 +210,43 @@ const MintPanel = () => {
       <div className="flex ml-6">
         <WatermarkSwiper />
         <div className="flex flex-col flex-1">
-          <div className="bg-secondary rounded-lg  ml-6 pb-4">
-            <div className="text-white text-opacity-60 border-b border-split p-4 flex ">
-              {/* 
+          {!ethAddress && (
+            <div className="bg-secondary rounded-lg  ml-6 pb-4 font-red-hat-mono font-medium text-sm">
+              <div className="text-white text-opacity-60 border-b border-split p-4 flex ">
+                {/* 
               // @ts-ignore */}
-              <Popover
-                trigger="hover"
-                placement="right"
-                content={'Need to Update!'}
-                className="unselectable-text">
-                <div className="flex items-center">
-                  <span>Advanced Crypto Watermark</span>
-                  <Icon name="question" className="ml-4 cursor-pointer" />
-                </div>
-              </Popover>
+                <Popover
+                  trigger="hover"
+                  placement="right"
+                  content={'Need to Update!'}
+                  className="unselectable-text">
+                  <div className="flex items-center">
+                    <span>Advanced Crypto Watermark</span>
+                    <Icon name="question" className="ml-4 cursor-pointer" />
+                  </div>
+                </Popover>
+              </div>
+              <TokenButton
+                token={mantaToken.token as TokenType}
+                level={mantaToken.level as LevelType}
+                checked={
+                  activeGeneratedImg?.watermarkToken === mantaToken.token
+                }
+                handleClickTokenBtn={handleClickTokenBtn}
+              />
             </div>
-            {tokenList.map(({ token, level }, index) => {
-              return (
-                <TokenButton
-                  token={token as TokenType}
-                  level={level as LevelType}
-                  checked={activeGeneratedImg?.watermarkToken === token}
-                  key={index}
-                  handleClickTokenBtn={handleClickTokenBtn}
-                />
-              );
-            })}
-            <div
-              className={`p-4 text-white text-opacity-60 text-sm flex items-center ${applyAllDisabledStyle}`}
-              onClick={clickApplyAll}>
-              {applyAll ? (
-                <Icon name="greenCheck" className="mr-2 w-4 h-4" />
-              ) : (
-                <svg
-                  className="mr-2 w-4 h-4"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <circle
-                    cx="10"
-                    cy="10"
-                    r="10"
-                    fill="white"
-                    fillOpacity="0.05"
-                  />
-                  <circle
-                    cx="10"
-                    cy="10"
-                    r="9.5"
-                    stroke="white"
-                    strokeOpacity="0.1"
-                  />
-                </svg>
-              )}
-              Apply all
+          )}
+          {!ethAddress && (
+            <div className="bg-secondary rounded-lg mt-4 ml-6 pb-4">
+              <div className="text-white text-opacity-60 border-b border-split p-4 flex font-red-hat-mono font-medium text-sm">
+                Connect your MetaMask to unlock more Crypto Watermarks
+              </div>
+              <MetamaskButton />
             </div>
-          </div>
+          )}
+          {ethAddress && (
+            <WatermarkTokenPanel activeGeneratedImg={activeGeneratedImg} />
+          )}
         </div>
       </div>
       {mintSuccessed ? (
