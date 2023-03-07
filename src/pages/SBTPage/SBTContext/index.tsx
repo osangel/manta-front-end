@@ -59,6 +59,7 @@ export type SBTContextValue = {
   setImgList: (imgList: Array<UploadFile>) => void;
   uploadImgs: (files: File[]) => void;
   onGoingTask: OnGoingTaskResult | null;
+  setOnGoingTask: (onGoingTask: OnGoingTaskResult | null) => void;
   showOnGoingTask: boolean;
   getPublicBalance: (
     address: string,
@@ -194,6 +195,7 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       uploadImgs,
       onGoingTask,
       showOnGoingTask,
+      setOnGoingTask,
       getPublicBalance,
       nativeTokenBalance,
       toggleSkippedStep,

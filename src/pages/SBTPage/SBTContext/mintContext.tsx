@@ -36,7 +36,7 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const { setGeneratedImgs, setGenerateStatus } = useGenerating();
   const { mintSet, setMintSet } = useGenerated();
   const { externalAccount } = useExternalAccount();
-  const { setImgList } = useSBT();
+  const { setImgList, setOnGoingTask } = useSBT();
 
   const getWatermarkedImgs = useCallback(async () => {
     const url = `${config.SBT_NODE_SERVICE}/npo/watermark`;
@@ -69,6 +69,7 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
 
   const resetContextData = useCallback(() => {
     setImgList([]);
+    setOnGoingTask(null);
     toggleCheckedThemeItem(new Map<string, ThemeItem>());
     setGeneratedImgs([]);
     setGenerateStatus(GenerateStatus.doing);
@@ -77,6 +78,7 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
     setGenerateStatus,
     setGeneratedImgs,
     setImgList,
+    setOnGoingTask,
     setMintSet,
     toggleCheckedThemeItem
   ]);
