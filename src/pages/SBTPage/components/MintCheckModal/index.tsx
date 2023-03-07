@@ -17,21 +17,48 @@ import { useMint } from 'pages/SBTPage/SBTContext/mintContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useSBTTheme } from 'pages/SBTPage/SBTContext/sbtThemeContext';
 import Icon from 'components/Icon';
+import { firstUpperCase } from 'utils/string';
+import { watermarkMap, WatermarkMapType } from 'resources/images/sbt';
 import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
+import { LevelType, TokenType } from '../TokenButton';
 
-const MintImg = ({ url }: { url: string }) => (
-  <img src={url} className="w-24 h-24 rounded-2xl" />
-);
+const MintImg = ({
+  url,
+  token,
+  level
+}: {
+  url: string;
+  token?: TokenType | null;
+  level?: LevelType | null;
+}) => {
+  const watermarkName = token + firstUpperCase(level ?? '');
+  return (
+    <div className="relative w-24 h-24 rounded-lg">
+      <img src={url} className="w-24 h-24 rounded-lg" />
+      {watermarkName && (
+        <img
+          src={watermarkMap[watermarkName as WatermarkMapType]}
+          className="absolute top-0 left-0 w-24 h-24 rounded-lg"
+        />
+      )}
+    </div>
+  );
+};
 
 const MintImgs = () => {
   const { mintSet } = useGenerated();
   return (
-    <div className="w-full p-4 overflow-hidden overflow-x-auto">
-      <div className="w-max flex gap-4">
-        {[...mintSet].map(({ url }, index) => {
-          return <MintImg url={url} key={index} />;
-        })}
-      </div>
+    <div className="p-4 w-108 grid gap-2 grid-cols-4">
+      {[...mintSet].map(({ url, watermarkLevel, watermarkToken }, index) => {
+        return (
+          <MintImg
+            url={url}
+            key={index}
+            token={watermarkToken}
+            level={watermarkLevel}
+          />
+        );
+      })}
     </div>
   );
 };

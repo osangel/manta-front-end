@@ -18,6 +18,7 @@ import AssetType from 'types/AssetType';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useConfig } from 'contexts/configContext';
 import { MAX_UPLOAD_LEN } from '../components/UploadPanel';
+import { LevelType, TokenType } from '../components/TokenButton';
 
 export enum Step {
   Home,
@@ -41,6 +42,8 @@ export type GeneratedImg = {
   proofId?: string;
   blur_url?: string;
   assetId?: string;
+  watermarkToken?: TokenType | null;
+  watermarkLevel?: LevelType | null;
 };
 
 export type OnGoingTaskResult = {

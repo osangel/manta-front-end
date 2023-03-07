@@ -1,20 +1,160 @@
-import { useState } from 'react';
 import { Popover } from 'element-react';
+import { Navigation, Pagination } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 import Icon from 'components/Icon';
 import { useModal } from 'hooks';
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
 import { useMint } from 'pages/SBTPage/SBTContext/mintContext';
-import { Step, useSBT } from 'pages/SBTPage/SBTContext';
+import { GeneratedImg, Step, useSBT } from 'pages/SBTPage/SBTContext';
+import { useMemo, useState } from 'react';
+import { firstUpperCase } from 'utils/string';
+import { watermarkMap, WatermarkMapType } from 'resources/images/sbt';
 import MintCheckModal from '../MintCheckModal';
 import MintedModal from '../MintedModal';
+import TokenButton, { LevelType, TokenType } from '../TokenButton';
 
-const MintPanel = () => {
-  const [showWatermark, toggleWatermark] = useState(true);
-
+const WatermarkSwiper = () => {
   const { mintSet } = useGenerated();
-  const { mintSuccessed, toggleMintSuccessed, resetContextData } = useMint();
+  const { activeWatermarkIndex, setActiveWatermarkIndex } = useMint();
+
+  const handleSwiperChange = () => {
+    const bullets = [
+      ...document.querySelectorAll(
+        '.sbt-watermark-swiper .swiper-pagination-bullet'
+      )
+    ];
+    bullets.forEach((bullet, index) => {
+      const clsList = bullet.classList;
+      if (clsList.contains('swiper-pagination-bullet-active')) {
+        setActiveWatermarkIndex(index);
+      }
+    });
+  };
+
+  return (
+    <div className="relative">
+      <Swiper
+        navigation={true}
+        pagination={true}
+        onSlideChange={handleSwiperChange}
+        modules={[Navigation, Pagination]}
+        autoplay={false}
+        loop={true}
+        className="w-80 h-80 rounded-3xl unselectable-text sbt-watermark-swiper">
+        {[...mintSet].map((generateImg, index) => {
+          const watermarkName =
+            generateImg?.watermarkToken +
+            firstUpperCase(generateImg?.watermarkLevel ?? '');
+
+          return (
+            <SwiperSlide key={index} className="relative">
+              <img src={generateImg?.url} className="w-80 h-70 rounded-3xl" />
+              {generateImg?.watermarkToken && (
+                <img
+                  src={watermarkMap[watermarkName as WatermarkMapType]}
+                  className="absolute top-0 left-0 w-80 h-70"
+                />
+              )}
+            </SwiperSlide>
+          );
+        })}
+      </Swiper>
+      <span className="font-normal text-sm absolute right-1 bottom-3 font-red-hat-mono">{`${
+        activeWatermarkIndex + 1
+      }/${mintSet.size}`}</span>
+    </div>
+  );
+};
+
+const tokenList = [
+  {
+    token: 'manta',
+    checked: true,
+    level: 'supreme'
+  },
+  {
+    token: 'eth',
+    checked: false,
+    level: 'supreme'
+  },
+  {
+    token: 'usdc',
+    checked: true,
+    level: 'master'
+  },
+  {
+    token: 'uni',
+    checked: false,
+    level: 'master'
+  },
+  {
+    token: 'wbtc',
+    checked: false,
+    level: 'normal'
+  },
+  {
+    token: 'link',
+    checked: true,
+    level: 'normal'
+  },
+  {
+    token: 'matic',
+    checked: false,
+    level: 'normal'
+  },
+  {
+    token: 'bnb',
+    checked: false,
+    level: 'normal'
+  },
+  {
+    token: 'ustd',
+    checked: false,
+    level: 'normal'
+  },
+  {
+    token: 'shib',
+    checked: false,
+    level: 'normal'
+  },
+  {
+    token: 'ldo',
+    checked: false,
+    level: 'normal'
+  },
+  {
+    token: 'op',
+    checked: false,
+    level: 'normal'
+  },
+  {
+    token: 'avax',
+    checked: false,
+    level: 'normal'
+  },
+  {
+    token: 'dot',
+    checked: false,
+    level: 'normal'
+  },
+  {
+    token: 'ksm',
+    checked: false,
+    level: 'normal'
+  }
+];
+const MintPanel = () => {
+  const [applyAll, toggleApplyAll] = useState(false);
+
+  const {
+    mintSuccessed,
+    toggleMintSuccessed,
+    resetContextData,
+    activeWatermarkIndex
+  } = useMint();
   const { setCurrentStep } = useSBT();
+  const { mintSet, setMintSet } = useGenerated();
 
   const { ModalWrapper, showModal, hideModal } = useModal({
     closeOnBackdropClick: false
@@ -30,9 +170,59 @@ const MintPanel = () => {
     setCurrentStep(Step.Home);
   };
 
-  const firstMinted = [...mintSet]?.[0]?.url;
+  const activeGeneratedImg = useMemo(
+    () => [...mintSet][activeWatermarkIndex],
+    [activeWatermarkIndex, mintSet]
+  );
 
-  const checkedStyle = showWatermark ? 'bg-light-check border-check' : '';
+  const handleClickTokenBtn = (token: TokenType, level: LevelType) => {
+    const newMintSet = new Set<GeneratedImg>();
+    [...mintSet].forEach((generatedImg, index) => {
+      if (index === activeWatermarkIndex || applyAll) {
+        const isSelected = generatedImg.watermarkToken === token;
+
+        newMintSet.add({
+          ...generatedImg,
+          watermarkToken: isSelected ? null : token,
+          watermarkLevel: isSelected ? null : level
+        });
+      } else {
+        newMintSet.add({
+          ...generatedImg
+        });
+      }
+    });
+    setMintSet(newMintSet);
+  };
+
+  const applyAllDisabled = useMemo(
+    () => !applyAll && !activeGeneratedImg?.watermarkToken,
+    [activeGeneratedImg?.watermarkToken, applyAll]
+  );
+  const applyAllDisabledStyle = applyAllDisabled
+    ? 'cursor-not-allowed'
+    : 'cursor-pointer';
+
+  const clickApplyAll = () => {
+    if (applyAllDisabled) {
+      return;
+    }
+    if (!applyAll) {
+      const { watermarkLevel, watermarkToken } = activeGeneratedImg;
+      if (watermarkLevel && watermarkToken) {
+        const newMintSet = new Set<GeneratedImg>();
+        [...mintSet].forEach((generatedImg) => {
+          newMintSet.add({
+            ...generatedImg,
+            watermarkToken: watermarkToken,
+            watermarkLevel: watermarkLevel
+          });
+        });
+        setMintSet(newMintSet);
+      }
+    }
+    toggleApplyAll(!applyAll);
+  };
 
   return (
     <div className="relative flex-1 flex flex-col mx-auto mb-20 bg-secondary rounded-xl p-6 w-75 relative mt-6 z-0">
@@ -44,15 +234,7 @@ const MintPanel = () => {
       </div>
       <h1 className="text-3xl my-6">Mint Your zkSBT</h1>
       <div className="flex ml-6">
-        <div className="relative">
-          <img src={firstMinted} className="w-80 h-70 rounded-3xl" />
-          {showWatermark && (
-            <Icon
-              name="masterManta"
-              className="absolute bottom-0 left-0 top-0 right-0 opacity-90"
-            />
-          )}
-        </div>
+        <WatermarkSwiper />
         <div className="flex flex-col flex-1">
           <div className="bg-secondary rounded-lg  ml-6 pb-4">
             <div className="text-white text-opacity-60 border-b border-split p-4 flex ">
@@ -69,12 +251,48 @@ const MintPanel = () => {
                 </div>
               </Popover>
             </div>
-            <span
-              onClick={() => toggleWatermark(!showWatermark)}
-              className={`ml-4 mt-4 unselectable-text flex justify-between border-2 border-white rounded-2xl cursor-pointer w-32 px-3 py-1 ${checkedStyle}`}>
-              <Icon name="manta" className="w-6 h-6 rounded-full" />
-              MANTA
-            </span>
+            {tokenList.map(({ token, level }, index) => {
+              return (
+                <TokenButton
+                  token={token as TokenType}
+                  level={level as LevelType}
+                  checked={activeGeneratedImg?.watermarkToken === token}
+                  key={index}
+                  handleClickTokenBtn={handleClickTokenBtn}
+                />
+              );
+            })}
+            <div
+              className={`p-4 text-white text-opacity-60 text-sm flex items-center ${applyAllDisabledStyle}`}
+              onClick={clickApplyAll}>
+              {applyAll ? (
+                <Icon name="greenCheck" className="mr-2 w-4 h-4" />
+              ) : (
+                <svg
+                  className="mr-2 w-4 h-4"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <circle
+                    cx="10"
+                    cy="10"
+                    r="10"
+                    fill="white"
+                    fillOpacity="0.05"
+                  />
+                  <circle
+                    cx="10"
+                    cy="10"
+                    r="9.5"
+                    stroke="white"
+                    strokeOpacity="0.1"
+                  />
+                </svg>
+              )}
+              Apply all
+            </div>
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { ReactComponent as talisman } from 'resources/icons/talisman.svg';
 import { ReactComponent as metamask } from 'resources/icons/metamask.svg';
 // coin icons
 import { ReactComponent as bitcoin } from 'resources/icons/coins/bitcoin-icon.svg';
-import { ReactComponent as etherium } from 'resources/icons/coins/etherium-icon.svg';
+import { ReactComponent as ethereum } from 'resources/icons/coins/ethereum-icon.svg';
 import { ReactComponent as acala } from 'resources/icons/coins/acala-icon.svg';
 import { ReactComponent as kusama } from 'resources/icons/coins/kusama-icon.svg';
 import { ReactComponent as ausd } from 'resources/icons/coins/ausd-icon.svg';
@@ -82,6 +82,21 @@ import { ReactComponent as question } from 'resources/icons/question.svg';
 // stb
 import { ReactComponent as masterManta } from 'resources/icons/sbt/master-manta.svg';
 
+// ethereum tokens
+import { ReactComponent as avax } from 'resources/icons/coins/avax.svg';
+import { ReactComponent as bnb } from 'resources/icons/coins/bnb.svg';
+import { ReactComponent as dot } from 'resources/icons/coins/dot.svg';
+import { ReactComponent as usdc } from 'resources/icons/coins/usdc.svg';
+import { ReactComponent as uni } from 'resources/icons/coins/uni.svg';
+import { ReactComponent as wbtc } from 'resources/icons/coins/wbtc.svg';
+import { ReactComponent as link } from 'resources/icons/coins/link.svg';
+import { ReactComponent as matic } from 'resources/icons/coins/matic.svg';
+import { ReactComponent as ustd } from 'resources/icons/coins/ustd.svg';
+import { ReactComponent as shib } from 'resources/icons/coins/shib.svg';
+import { ReactComponent as ldo } from 'resources/icons/coins/ldo.svg';
+import { ReactComponent as op } from 'resources/icons/coins/op.svg';
+import { ReactComponent as eth } from 'resources/icons/coins/eth.svg';
+
 const icons = {
   dolphin,
   calamari,
@@ -89,7 +104,7 @@ const icons = {
   talisman,
   metamask,
   bitcoin,
-  etherium,
+  ethereum,
   acala,
   kusama,
   ausd,
@@ -153,6 +168,20 @@ const icons = {
   invalid,
   circleArrow,
   question,
-  masterManta
+  masterManta,
+  eth,
+  usdc,
+  uni,
+  wbtc,
+  link,
+  matic,
+  bnb,
+  ustd,
+  shib,
+  ldo,
+  op,
+  avax,
+  dot,
+  ksm: kusama
 };
 export default icons;

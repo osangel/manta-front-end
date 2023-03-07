@@ -21,12 +21,15 @@ type MintContextValue = {
   mintSuccessed: boolean;
   toggleMintSuccessed: (mintSuccessed: boolean) => void;
   resetContextData: () => void;
+  activeWatermarkIndex: number;
+  setActiveWatermarkIndex: (index: number) => void;
 };
 
 const MintContext = createContext<MintContextValue | null>(null);
 
 export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const [mintSuccessed, toggleMintSuccessed] = useState(false);
+  const [activeWatermarkIndex, setActiveWatermarkIndex] = useState(0);
 
   const config = useConfig();
   const { modelId, toggleCheckedThemeItem } = useSBTTheme();
@@ -106,9 +109,17 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
       saveMintInfo,
       mintSuccessed,
       toggleMintSuccessed,
-      resetContextData
+      resetContextData,
+      activeWatermarkIndex,
+      setActiveWatermarkIndex
     }),
-    [getWatermarkedImgs, saveMintInfo, mintSuccessed, resetContextData]
+    [
+      getWatermarkedImgs,
+      saveMintInfo,
+      mintSuccessed,
+      resetContextData,
+      activeWatermarkIndex
+    ]
   );
   return <MintContext.Provider value={value}>{children}</MintContext.Provider>;
 };

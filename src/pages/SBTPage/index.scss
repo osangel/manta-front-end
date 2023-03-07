@@ -20,4 +20,43 @@
     height: 12.7rem;
     background: linear-gradient(180deg, #12193c 0%, rgba(18, 25, 60, 0) 86.21%);
   }
+  .token-master {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 126, 68, 0.3) 0%,
+      rgba(41, 248, 235, 0.3) 100%
+    );
+    border: 1px solid rgba(8, 175, 203, 0.5);
+  }
+  .token-master-active {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 126, 68, 0.8) 0%,
+      rgba(41, 248, 235, 0.5) 100%
+    );
+    border: 1px solid #08afcb;
+  }
+  .token-supreme {
+    background: linear-gradient(
+      90deg,
+      rgba(216, 164, 0, 0.3) 0%,
+      rgba(254, 146, 97, 0.3) 100%
+    );
+    border: 1px solid rgba(255, 176, 138, 0.5);
+  }
+  .token-supreme-active {
+    background: linear-gradient(
+      90deg,
+      rgba(216, 164, 0, 0.8) 0%,
+      rgba(254, 146, 97, 0.8) 100%
+    );
+    border: 1px solid #ffb08a;
+  }
+  .token-normal {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .token-normal-active {
+    background: rgba(41, 204, 185, 0.5);
+    border: 1px solid #29ccb9;
+  }
 }

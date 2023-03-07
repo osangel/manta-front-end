@@ -65,6 +65,8 @@ body ::-webkit-scrollbar-thumb {
   );
   --swiper-navigation-size: 16px;
   --swiper-navigation-color: white;
+  --swiper-pagination-color: #29ccb9;
+  --swiper-pagination-bullet-inactive-color: rgba(255, 255, 255, 1);
 }
 
 .light {
@@ -106,6 +108,8 @@ body ::-webkit-scrollbar-thumb {
   );
   --swiper-navigation-size: 16px;
   --swiper-navigation-color: white;
+  --swiper-pagination-color: #29ccb9;
+  --swiper-pagination-bullet-inactive-color: rgba(255, 255, 255, 1);
 }
 
 .custom-colors {
