@@ -7,6 +7,7 @@ import { useExternalAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import BN from 'bn.js';
+import { bnToU8a } from '@polkadot/util';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import AssetType from 'types/AssetType';
@@ -529,9 +530,7 @@ export const SendContextProvider = (props) => {
   ) => {
     const assetId = senderAssetTargetBalance.assetType.assetId;
     const valueAtomicUnits = senderAssetTargetBalance.valueAtomicUnits;
-    const assetIdArray = Array.from(
-      MantaPrivateWallet.assetIdToUInt8Array(new BN(assetId))
-    );
+    const assetIdArray = bnToU8a(new BN(assetId), { bitLength: 256 });
     const valueArray = valueAtomicUnits.toArray('le', 16);
     const tx = await api.tx.mantaPay.publicTransfer(
       { id: assetIdArray, value: valueArray },
