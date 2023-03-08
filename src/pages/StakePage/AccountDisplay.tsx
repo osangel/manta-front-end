@@ -70,7 +70,7 @@ const AccountDisplay = () => {
             </button>
           </div>
           <div className="flex justify-end gap-5">
-            <div className=" w-52 h-52 rounded-md border-2 border-white-5% text-center pt-12 shadow-lg">
+            <div className=" w-52 h-52 rounded-md border-2 border-white border-opacity-20 text-center pt-12 shadow-lg">
               <h2 className="text-secondary font-medium text-base font-red-hat-text">
                 Available Balance
               </h2>
@@ -78,7 +78,7 @@ const AccountDisplay = () => {
                 {avialableBalanceDisplayString}
               </h1>
             </div>
-            <div className=" w-52 h-52 rounded-md border-2 border-white-5% text-center pt-12 shadow-lg">
+            <div className=" w-52 h-52 rounded-md border-2 border-white border-opacity-20 text-center pt-12 shadow-lg">
               <h2 className="text-secondary font-medium text-base font-red-hat-text">
                 Total Staked
               </h2>
@@ -86,14 +86,14 @@ const AccountDisplay = () => {
                 {stakedBalanceDisplayString}
               </h1>
             </div>
-            <div className=" w-52 h-52 rounded-md border-2 border-white-5% text-center pt-12 shadow-lg">
+            <div className=" w-52 h-52 rounded-md border-2 border-white border-opacity-20 text-center pt-12 shadow-lg">
               <h2 className="text-secondary font-medium text-base font-red-hat-text">
                 Rewards Last Round
               </h2>
               <h1 className="text-white font-bold text-lg mt-4 font-red-hat-text">
                 {userTotalRecentRewardsDisplayString}
               </h1>
-              <h3 className="text-secondary font-medium text-xss mt-3">
+              <h3 className="font-red-hat-text text-white text-opacity-60 font-medium text-xss mt-3">
                 {timeSinceRewardDisplayString}
               </h3>
               {userTotalRecentRewards && (

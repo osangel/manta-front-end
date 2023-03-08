@@ -1,4 +1,4 @@
-.sortable-table-wrapper {
+.calamari-footer, .sortable-table-wrapper {
   max-width: 1280px;
 }
 
@@ -70,7 +70,11 @@
 }
 
 .btn-hover:hover {
-  background: linear-gradient(180deg, #59b9ae 0%, #398ba8 0%);
+  background: linear-gradient(180deg, #00AFA5 100%, #398ba8 0%);
+}
+
+.private-public-toggle-hover:hover {
+  background: rgba(14, 80, 252, 1);
 }
 
 .disabled {

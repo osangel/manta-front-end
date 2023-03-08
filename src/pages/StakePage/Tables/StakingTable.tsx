@@ -30,7 +30,7 @@ const NothingStakedDisplay = () => {
   }
 
   return (
-    <div className="mt-4 w-full p-6 shadow-2xl bg-secondary rounded-lg text-white-80% text-sm">
+    <div className="mt-4 w-full p-6 shadow-2xl bg-secondary rounded-lg text-white text-opacity-80 text-sm">
       <h1 className="font-semibold font-red-hat-text">{primaryText}</h1>
       <h1 className="mt-4 font-semibold font-red-hat-text">
         {secondaryText}
@@ -193,17 +193,17 @@ const StakingTable = () => {
           showUnstakeModal();
         };
         return (
-          <div className="flex pr-2 justify-end w-full gap-6">
+          <div className="flex pr-2 justify-end w-full gap-3">
             {!unstakeRequest ? (
               <>
                 <Button
-                  className="btn-secondary flex items-center justify-center h-12"
+                  className="px-6 btn-secondary flex items-center justify-center h-10"
                   onClick={onClickStake}
                 >
                   Stake
                 </Button>
                 <Button
-                  className="btn-thirdry flex items-center justify-center h-12"
+                  className="btn-thirdry flex items-center justify-center h-10 text-bg-thirdry"
                   onClick={onClickUnstake}
                 >
                   Unstake

@@ -128,7 +128,7 @@ const BridgeDestinationInput = () => {
         onClick={onClickGetAddress}
         className={classNames(
           'w-32 ml-1 h-full rounded-lg text-black',
-          'dark:text-white outline-none rounded-2xl border-2 border-solid border-blue-500',
+          'dark:text-white outline-none rounded-2xl border-2 border-solid border-white border-opacity-20',
           'text-xs text-black dark:text-white',
           { disabled: disabled }
         )}>

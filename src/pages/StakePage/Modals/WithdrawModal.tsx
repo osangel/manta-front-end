@@ -49,7 +49,7 @@ export const WithdrawModal = ({hideModal}) => {
   ];
 
   return (
-    <div className="w-96 py-4 bg-fifth rounded-2xl">
+    <div className="w-96 py-4 bg-primary rounded-2xl">
       <div className="flex items-center gap-2">
         <h1 className="font-semibold text-secondary text-lg">
           {selectedUnstakeRequest.collator.name}

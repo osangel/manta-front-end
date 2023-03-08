@@ -5,7 +5,13 @@ interface IErrorProps {
 }
 
 const ErrorText: React.FC<IErrorProps> = ({ errorMessage }) => {
-  return <p className={'text-xss h-4 text-red-500 mt-2'}>{errorMessage}</p>;
+  return (
+    <p
+      className={'text-xss h-4 mt-2'}
+      style={{ color: '#DD524C' }}>
+      {errorMessage}
+    </p>
+  );
 };
 
 export default ErrorText;

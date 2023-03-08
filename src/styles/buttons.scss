@@ -6,17 +6,24 @@
 
 .btn-secondary {
   font-family: Red Hat Text !important;
+  font-size: 14px;
   color: #ffffff;
   background: $blue-secondary-bgcolor;
 }
 
 .btn-thirdry {
+  font-family: Red Hat Text !important;
+  font-size: 14px;
   color: black;
   background: transparent;
   border: 1px solid $blue-secondary-bgcolor;
 }
 
 .dark .btn-thirdry {
+  color: $blue-secondary-bgcolor;
+}
+
+.dark .btn-thirdry:hover {
   color: white;
 }
 

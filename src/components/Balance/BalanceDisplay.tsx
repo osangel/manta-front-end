@@ -12,19 +12,22 @@ const BalanceDisplay: React.FC<IBalanceDisplayProps> = ({
   className,
   loader
 }) => {
-
   let balanceDisplay = balance;
   if (!balance && !loader) {
     balanceDisplay = '--';
   } else if (!balance) {
     balanceDisplay = '';
   }
-  const balanceString = `Balance: ${balanceDisplay}`;
 
   return (
     <div id="balanceText" className={className}>
-      {balanceString}
-      {loader && <DotLoader />}
+      {!loader ? (
+        <div>
+          Balance <span className="font-red-hat-mono">{balanceDisplay}</span>
+        </div>
+      ) : (
+        <DotLoader />
+      )}
     </div>
   );
 };

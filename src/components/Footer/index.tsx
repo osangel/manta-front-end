@@ -9,23 +9,22 @@ import {
 
 const CalamariFooter = () => {
   return (
-    <div className="mt-16 flex justify-between gap-20 bg-primary py-10 px-20 font-red-hat-text text-sm">
+    <div className="mt-16 mx-auto calamari-footer flex justify-between gap-20 bg-primary py-10 font-red-hat-text text-sm">
       <div>
         <div className="text-base text-white">Calamari Network</div>
-        <div className="my-6 text-white-80%">
+        <div className="my-6 text-white text-opacity-80">
           Calamari Network is a private layer built for the entire Kusama
           ecosystem. Built on the substrate framework, Calamari Network is
           natively compatible with other projects and parachain assets including
           wrapped major cryptoassets.
         </div>
-        <div className="flex items-center text-white-80%">
+        <div className="flex items-center text-white text-opacity-80">
           <span>Made with</span>
           &nbsp;❤️&nbsp;
           <span>by </span>
           <span
-            className="cursor-pointer text-white-80% duration-200 hover:text-secondary dark:hover:text-secondary"
-            onClick={() => window.open('https://p0xlabs.xyz/')}
-          >
+            className="cursor-pointer text-white text-opacity-80 duration-200 hover:text-secondary dark:hover:text-secondary"
+            onClick={() => window.open('https://p0xlabs.xyz/')}>
             &nbsp;p0x labs
           </span>
         </div>

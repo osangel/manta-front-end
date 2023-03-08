@@ -10,9 +10,11 @@ const CollatorDisplayCell = ({ collator }) => {
   const addressDisplayString = getAbbreviatedName(address, 6, 6);
   return (
     <div className="flex items-center text-secondary gap-2">
-      <Identicon value={address} size={32} theme="polkadot" />
+      <div className="w-8 h-8 flex-shrink-0">
+        <Identicon value={address} size={32} theme="polkadot" />
+      </div>
       <div className="flex content-center flex-wrap">
-        <div className="w-full m-0 p-0 h-4 mb-1 text-primary">
+        <div className="font-red-hat-mono w-full m-0 p-0 h-4 mb-1 text-primary">
           {collator.name}
         </div>
         <div className="w-full m-0 p-0 text-xss text-secondary">

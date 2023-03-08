@@ -90,14 +90,14 @@ const UnstakingTable = () => {
           <div className="flex justify-end w-full gap-6">
             {unstakeRequest.canWithdraw && (
               <Button
-                className="btn-secondary flex items-center justify-center h-12"
+                className="px-6 btn-secondary flex items-center justify-center h-10"
                 onClick={onClickWithdraw}
               >
                 Withdraw
               </Button>
             )}
             <Button
-              className="btn-thirdry flex items-center justify-center h-12"
+              className="btn-thirdry flex items-center justify-center h-10 text-bg-thirdry"
               onClick={onClickCancelUnstake}
             >
               Cancel Unstake

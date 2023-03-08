@@ -23,6 +23,7 @@ const collatorStatusOptions = [
 
 const dropdownStyles = () => {
   return {
+    indicatorSeparator: () => null,
     control: (provided) => ({
       ...provided,
       borderStyle: 'none',
@@ -45,7 +46,7 @@ const dropdownStyles = () => {
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
-      cursor: 'pointer',
+      cursor: 'pointer'
     }),
     singleValue: (provided) => ({
       ...provided,
@@ -189,7 +190,7 @@ const CollatorsTable = () => {
       field: '',
       sortable: false,
       suppressMovable: true,
-      width: 215,
+      width: 220,
       cellRenderer: (params: any) => {
         const collator = params.data.data;
         const unstakeRequest = unstakeRequests.find(
@@ -207,20 +208,18 @@ const CollatorsTable = () => {
           return delegation.collator.address === collator.address;
         });
         return (
-          <div className="flex pr-2 justify-end w-full gap-6">
+          <div className="flex pr-2 justify-end w-full gap-3">
             {!unstakeRequest && (
               <Button
-                className="btn-secondary flex items-center justify-start h-12"
-                onClick={onClickStake}
-              >
+                className="px-6 btn-secondary flex items-center justify-start h-10"
+                onClick={onClickStake}>
                 Stake
               </Button>
             )}
             {delegation && !unstakeRequest && (
               <Button
-                className="btn-thirdry flex items-center justify-center h-12"
-                onClick={onClickUnstake}
-              >
+                className="btn-thirdry flex items-center justify-center h-10 text-bg-thirdry"
+                onClick={onClickUnstake}>
                 Unstake
               </Button>
             )}
@@ -241,7 +240,7 @@ const CollatorsTable = () => {
         Collators
       </h1>
       <div className="mt-4 flex gap-5">
-        <div className="p-3 pl-6 rounded-md border border-white-5% flex items-center gap-2 text-secondary bg-secondary">
+        <div className="p-3 pl-6 rounded-md border border-white border-opacity-20 flex items-center gap-2 text-secondary bg-secondary">
           <input
             className="bg-transparent font-red-hat-text text-sm text-thirdry outline-none"
             placeholder="Search Collators"
@@ -250,7 +249,7 @@ const CollatorsTable = () => {
           />
           <FontAwesomeIcon icon={faSearch} />
         </div>
-        <div className="rounded-md border border-white-5% flex items-center gap-2">
+        <div className="rounded-md border border-white border-opacity-20 flex items-center gap-2">
           <Select
             className="w-52 cursor-pointer bg-secondary rounded-md font-red-hat-text text-sm"
             options={collatorStatusOptions}
@@ -268,8 +267,7 @@ const CollatorsTable = () => {
             className={
               'p-3 cursor-pointer text-sm btn-hover unselectable-text text-center rounded-lg btn-primary w-full hover:text-white font-red-hat-text'
             }
-            rel="noreferrer"
-          >
+            rel="noreferrer">
             Launch your own collator
           </a>
         </div>

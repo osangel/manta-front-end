@@ -33,7 +33,7 @@ const AssetTypeSelect = ({
     <Select
       id="selectedAssetType"
       className={classNames(
-        '!absolute right-3 manta-bg-gray rounded-lg whitespace-nowrap text-black dark:text-white',
+        '!absolute right-1 manta-bg-gray rounded-lg whitespace-nowrap text-black dark:text-white',
         { disabled: disabled }
       )}
       isSearchable={false}

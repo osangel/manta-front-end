@@ -56,20 +56,20 @@ const ZkAddressDisplay = () => {
   )}`;
   return (
     <div className="flex justify-between">
-      <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-2 flex items-center gap-2">
+      <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-2 flex items-center gap-2">
         <Icon className="w-6 h-6" name="manta" />
         <span className="text-white font-light">
           {privateAddressDisplayString}
         </span>
       </div>
-      <CopyPasteIcon btnClassName="border border-secondary bg-white bg-opacity-5 rounded-lg relative p-2.5 w-10.5 text-0" iconClassName="w-5 h-5" textToCopy={privateAddress} />
+      <CopyPasteIcon btnClassName="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg relative p-2.5 w-10.5 text-0" iconClassName="w-5 h-5" textToCopy={privateAddress} />
     </div>
   );
 };
 
 const UsdBalanceDisplay = () => {
   return (
-    <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-1 mt-4 text-secondary flex flex-col justify-center items-center">
+    <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-1 mt-4 text-secondary flex flex-col justify-center items-center">
       <span className="pt-3 pb-1 text-base text-white">Total Balance</span>
       <div className="text-white pb-3 text-2xl font-bold">{'$0.00'}</div>
     </div>

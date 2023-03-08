@@ -29,7 +29,7 @@ const BalanceInput = ({
           autoComplete="off"
           onChange={(e) => onChangeAmountInput(e.target.value)}
           className={classNames(
-            'w-1/2 absolute left-4 bottom-7 p-2 text-xl placeholder-gray-500 dark:placeholder-gray-500 text-black dark:text-white manta-bg-gray bg-opacity-0 outline-none rounded-lg',
+            'font-red-hat-mono w-1/2 absolute left-4 bottom-7 py-2 text-xl placeholder-gray-500 dark:placeholder-gray-500 text-black dark:text-white manta-bg-gray bg-opacity-0 outline-none rounded-lg',
             { disabled: disabled }
           )}
           value={inputValue}
@@ -44,7 +44,7 @@ const BalanceInput = ({
       </div>
       <BalanceDisplay
         balance={balanceText}
-        className="text-sm text-white mt-2.5 mr-6 absolute right-0 bottom-3 gap-1"
+        className="text-sm text-white mt-2.5 mr-4 absolute right-0 bottom-3 gap-1"
         loader={shouldShowLoader}
       />
     </div>
@@ -68,7 +68,7 @@ const MaxButton = ({ onClickMax, isDisabled }) => {
       onClick={onClick}
       className={classNames(
         'cursor-pointer',
-        'text-center rounded-lg unselectable-text absolute left-6 bottom-3 flex items-center text-xss text-manta-blue',
+        'text-center rounded-lg unselectable-text absolute left-4 bottom-3 flex items-center text-xss text-bg-thirdry',
         { disabled: isDisabled }
       )}
     >

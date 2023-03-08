@@ -11,7 +11,7 @@ const GradientText: React.FC<IGradientTextProps> = ({
   text
 }) => {
   return (
-    <div className={`gradient-text cursor-pointer ${className}`}>{text}</div>
+    <div className={`gradient-text cursor-pointer text-bg-thirdry ${className}`}>{text}</div>
   );
 };
 

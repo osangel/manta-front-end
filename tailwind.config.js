@@ -45,6 +45,9 @@ module.exports = {
         '68': '272px',
         '140': '560px'
       },
+      lineHeight: {
+        '5.5': '22px'
+      },
       backgroundImage: {},
       backgroundColor: {
         primary: 'var(--color-bg-primary)',
@@ -65,13 +68,14 @@ module.exports = {
         'gradient-button':'var(--gradient-button-secondary)',
         'light-warning': '#FF8A0020',
         'dropdown-hover': '#00AFA580',
-        'private-public-toggle': '#0E50FC80',
+        'private-public-toggle': 'rgba(14, 80, 252, 0.5)',
       },
       textColor: {
         accent: 'var(--color-text-accent)',
         primary: 'var(--color-text-primary) !important',
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
+        'bg-thirdry': 'var(--color-bg-button-thirdry)',
         link: 'var(--color-bg-button-primary)',
         'third-80': 'var(--color-bg-button-third-80)',
         'link-hover': '#00D8CB',
@@ -81,7 +85,6 @@ module.exports = {
         'manta-blue': 'var(--color-manta-blue)',
         warning: '#FF8A00',
         'green-light': '#29CCB9',
-        'white-80%': 'rgba(255,255,255,0.8)',
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -96,7 +99,6 @@ module.exports = {
         warning: '#FF8A00',
         'white-light': '#FFFFFF1A',
         'public-private-toggle': '#2B49EA',
-        'white-5%': 'rgba(255,255,255,0.05)',
       },
       colors: {
         'manta-gray-secondary': '#4A516B',

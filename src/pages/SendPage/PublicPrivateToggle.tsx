@@ -26,7 +26,7 @@ const PublicPrivateToggle = ({ isPrivate, onToggle, prefix }) => {
         id={buttonId}
         onClick={onClick}
         className={classNames(
-          'flex text-center cursor-pointer place-items-center btn-hover unselectable-text',
+          'flex text-center cursor-pointer place-items-center private-public-toggle-hover unselectable-text',
           'rounded-full bg-private-public-toggle border border-public-private-toggle text-white',
           { disabled: disabled }
         )}>

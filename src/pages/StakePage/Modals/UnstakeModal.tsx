@@ -42,14 +42,12 @@ export const UnstakeModal = ({ hideModal }) => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [warningMessage, setWarningMessage] = useState(null);
 
-  const delegationAmountText = selectedCollatorDelegation
-    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toDisplayString(
-      0
-    )}`
-    : 'Staked: 0 KMA';
+  const delegationAmountNum = selectedCollatorDelegation
+    ? `${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
+    : '0 KMA';
 
   const minimumStakeAmountString = selectedCollator.minStake.toDisplayString(0);
-  const minimumStakeText = ` Minimum stake: ${minimumStakeAmountString}`;
+  const minimumStakeNum = `${minimumStakeAmountString}`;
 
   const usdValueText =
     unstakeTargetBalance && usdPerKma
@@ -136,37 +134,44 @@ export const UnstakeModal = ({ hideModal }) => {
   };
 
   return (
-    <div className="w-96 py-4 bg-fifth rounded-2xl">
-      <div className="flex items-center gap-2">
-        <h1 className="font-semibold text-secondary text-lg">
-          {selectedCollator.name}
-        </h1>
+    <div className="w-96 py-4 bg-primary rounded-2xl">
+      <div className="relative flex items-center gap-2">
+        <div className="absolute -mt-4">
+          <h1 className="font-semibold text-white text-base">
+            {selectedCollator.name}
+          </h1>
+        </div>
       </div>
-      <div className="mt-4">
-        <h1 className="text-secondary text-left text-sm font-medium">
-          {delegationAmountText}
-        </h1>
-        <h1 className="text-secondary text-left text-sm font-medium">
-          {minimumStakeText}
-        </h1>
-        <div
-          className={`mt-6 px-4 pt-6 h-24 flex flex-wrap items-center rounded-lg border border-gray ${
-            errorMessage ? 'border-red-500' : ''
-          }`}>
+      <div className="mt-4 text-white text-opacity-80 text-sm">
+        <div className="flex justify-between mt-2">
+          <span>Staked: </span>
+          <span className="font-red-hat-mono  text-left text-sm font-medium">
+            {delegationAmountNum}
+          </span>
+        </div>
+        <div className="flex justify-between mt-2">
+          <span>Minimum stake: </span>
+          <span className="font-red-hat-mono  text-left text-sm font-medium">
+            {minimumStakeNum}
+          </span>
+        </div>
+        <div className="mt-4 px-6 h-24 flex flex-wrap items-center rounded-xl bg-white bg-opacity-5">
           <Icon className="mr-3 w-7" name="calamari" />
-          <input
-            className="bg-fifth pl-1 flex-grow h-10 outline-none dark:text-white"
-            placeholder="Amount"
-            onChange={(e) => onChangeUnstakeAmountInput(e.target.value)}
-            value={inputValue}
-          />
-          <div className="rounded-xl justify-self-end">
-            <span onClick={onClickMax}>
-              <GradientText className="text-link text-base" text="MAX" />
-            </span>
-          </div>
-          <div className="w-full mb-2 text-xss pl-11 text-secondary">
-            {usdValueText}
+          <div className="flex flex-row items-center">
+            <div className="flex flex-col items-center">
+              <input
+                className="font-red-hat-mono text-xl bg-transparent pl-1 flex-grow h-8 outline-none dark:text-white"
+                placeholder="Amount"
+                onChange={(e) => onChangeUnstakeAmountInput(e.target.value)}
+                value={inputValue}
+              />
+              <div className="font-red-hat-mono w-full mb-1 text-xs pl-1 text-secondary">
+                {usdValueText}
+              </div>
+            </div>
+            <div className="rounded-xl justify-self-end" onClick={onClickMax}>
+              <GradientText className="text-base w-full" text="MAX" />
+            </div>
           </div>
           <br />
         </div>
@@ -177,8 +182,10 @@ export const UnstakeModal = ({ hideModal }) => {
         <WarningText warningMessage={warningMessage} />
       )}
 
-      <div className="mt-2 w-full">
-        <Button className="w-full btn-primary" onClick={onClickUnstake}>
+      <div className="mt-6 w-full">
+        <Button
+          className="font-red-hat-text text-base w-full btn-primary"
+          onClick={onClickUnstake}>
           Unstake
         </Button>
       </div>
