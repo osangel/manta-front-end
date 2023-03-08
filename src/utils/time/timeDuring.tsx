@@ -1,5 +1,5 @@
 const giantSquidStartTimeStr = 'Wed, 08 Mar 2023 14:33:57 GMT';
-const giantSquidEndTimeStr = 'Wed, 08 Mar 2023 16:54:57 GMT';
+const giantSquidEndTimeStr = 'Wed, 08 Mar 2023 16:55:57 GMT';
 
 export const giantSquidTimeDuring = (): boolean => {
   return judgeDuringTime(
