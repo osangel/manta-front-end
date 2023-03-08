@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Icon from 'components/Icon';
 
 const GiantSquidBanner: React.FC<object> = () => {
