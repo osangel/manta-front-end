@@ -50,6 +50,7 @@ svg {
     #2b49ea -7.65%,
     #00afa5 103.69%
   );
+  --giantsquid-navbar-bg: linear-gradient(90deg, #eb559f 0%, #f3ab82 100%);
 }
 
 .light {
@@ -83,6 +84,7 @@ svg {
     #2b49ea -7.65%,
     #00afa5 103.69%
   );
+  --giantsquid-navbar-bg: linear-gradient(90deg, #eb559f 0%, #f3ab82 100%);
 }
 
 .custom-colors {

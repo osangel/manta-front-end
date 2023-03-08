@@ -37,12 +37,16 @@ module.exports = {
         '38':'9.5rem',
         '50':'12.5rem',
         '67':'16.75rem',
+        '68':'4.25rem',
         '70':'17.5rem',
+        '19':'1.1875rem'
       },
       width: {
         '68': '272px'
       },
-      backgroundImage: {},
+      backgroundImage: {
+        'giant-squid': 'var(--giantsquid-navbar-bg)',
+      },
       backgroundColor: {
         primary: 'var(--color-bg-primary)',
         secondary: 'var(--color-bg-secondary)',
@@ -76,6 +80,7 @@ module.exports = {
         'manta-blue': 'var(--color-manta-blue)',
         warning: '#FF8A00',
         'green-light': '#29CCB9',
+        'banner': '#050D32',
       },
       fill: {
         current: 'var(--color-text-secondary)',

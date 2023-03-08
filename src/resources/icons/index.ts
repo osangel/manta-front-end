@@ -81,6 +81,9 @@ import { ReactComponent as txSuccess } from 'resources/icons/tx-success.svg';
 import { ReactComponent as txFailed } from 'resources/icons/tx-failed.svg';
 import { ReactComponent as txPending } from 'resources/icons/tx-pending.svg';
 
+//avtivity banner icons
+import { ReactComponent as activityRightArrow } from 'resources/icons/activity-right-arrow.svg';
+
 const icons = {
   dolphin,
   calamari,
@@ -154,6 +157,7 @@ const icons = {
   txPending,
   grayThinLine,
   blueSolidLine,
-  threeRightArrow
+  threeRightArrow,
+  activityRightArrow
 };
 export default icons;
